@@ -41,6 +41,49 @@ def coloursX(alpha, X):
         return [(0,0,0,alpha)]
     return []
 
+dirLabel = dict()
+dirLabel["boost_a"] = r"$\gamma\beta_a$ [GeV]"
+dirLabel["abs3mom_a"] = r"$|\vec{p}_a|$ [GeV]"
+dirLabel["mtt"] = r"$m_{tt}$ [GeV]"
+dirLabel["mmumu"] = r"$m_{\mu\bar{\mu}}$ [GeV]"
+dirLabel["pT"] = r"$p_T$ [GeV]"
+dirLabel["pT_a"] = r"$p_T^a$ [GeV]"
+dirLabel["pT_t"] = r"$p_T^t$ [GeV]"
+dirLabel["pT_at"] = r"$p_T^{\bar{t}}$ [GeV]"
+dirLabel["pT_mu"] = r"$p_T^{\mu}$ [GeV]"
+dirLabel["theta"] = r"$\vartheta$ [$^\circ$]"
+dirLabel["theta_a"] = r"$\vartheta_a$ [$^\circ$]"
+dirLabel["theta_t"] = r"$\vartheta_t$ [$^\circ$]"
+dirLabel["theta_at"] = r"$\vartheta_{\bar{t}}$ [$^\circ$]"
+dirLabel["theta_mu"] = r"$\vartheta_{\mu}$ [$^\circ$]"
+dirLabel["y"] = r"$y$"
+dirLabel["y_a"] = r"$y_a$"
+dirLabel["y_t"] = r"$y_t$"
+dirLabel["y_at"] = r"$y_{\bar{t}}$"
+dirLabel["y_mu"] = r"$y_{\mu}$"
+dirLabel["eta"] = r"$\eta$"
+dirLabel["eta_a"] = r"$\eta_a$"
+dirLabel["eta_t"] = r"$\eta_t$"
+dirLabel["eta_at"] = r"$\eta_{\bar{t}}$"
+dirLabel["eta_mu"] = r"$\eta_{\mu}$"
+dirLabel["eta_t-eta_at"] = r"$\eta_t-\eta_{\bar{t}}$"
+dirLabel["oA"] = r"$\sphericalangle$ [$^\circ$]"
+dirLabel["oA_at"] = r"$\sphericalangle(\vec{p}_a,\vec{p}_t)$ [$^\circ$]"
+dirLabel["oA_tat"] = r"$\sphericalangle(\vec{p}_t,\vec{p}_{\bar{t}})$ [$^\circ$]"
+dirLabel["oA_ata"] = r"$\sphericalangle(\vec{p}_{\bar{t}},\vec{p}_a)$ [$^\circ$]"
+dirLabel["oAo"] = r"$\sphericalangle_\perp$ [$^\circ$]"
+dirLabel["oAo_at"] = r"$\sphericalangle_\perp(\vec{p}_a,\vec{p}_t)$ [$^\circ$]"
+dirLabel["oAo_tat"] = r"$\sphericalangle_\perp(\vec{p}_t,\vec{p}_{\bar{t}})$ [$^\circ$]"
+dirLabel["oAo_ata"] = r"$\sphericalangle_\perp(\vec{p}_{\bar{t}},\vec{p}_a)$ [$^\circ$]"
+dirLabel["oA_att"] = r"$\sphericalangle(\vec{p}_a,\vec{p}_{t\bar{t}})$ [$^\circ$]"
+dirLabel["oA_muons"] = r"$\sphericalangle(\vec{p}_\mu,\vec{p}_{\bar{\mu}})$ [$^\circ$]"
+dirLabel["dmumu"] = r"$d_{\mu,\bar{\mu}}$ [cm]"
+dirLabel["ma"] = r"$m_a$ [GeV]"
+dirLabel["ctt"] = r"$c_{tt}(\Lambda)$"
+dirLabel["ctau"] = r"$c_\tau$ [cm]"
+dirLabel["track_mu"] = r"$d_\mu$ [cm]"
+
+
 def hist1d(data, labels, xlabel, filename=None,
            nbins=50, customXlim=None, title=None):
     n = len(data)
