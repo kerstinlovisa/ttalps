@@ -292,7 +292,7 @@ def plotMatrix(data, labelKeys, labelDict, dataLabels, filename=None, title=None
     plt.show()
     
     
-def scatter_w_c(datax, datay, dataz, xlabel, ylabel, log: bool = False,
+def scatter_w_c(datax, datay, dataz, xlabel, ylabel, zlabel, log: bool = False,
              filename=None, customXlim=None, customYlim=None, title=None):
     if log:
         plt.scatter(datax, datay, facecolors='none', edgecolors='k')
@@ -300,7 +300,8 @@ def scatter_w_c(datax, datay, dataz, xlabel, ylabel, log: bool = False,
             plt.scatter(datax, datay, c=dataz, norm=matplotlib.colors.LogNorm())
     else:
         plt.scatter(datax, datay, c=dataz, norm=matplotlib.colors.Normalize())
-    plt.colorbar()
+    cbar = plt.colorbar()
+    cbar.set_label(zlabel)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.xscale('log')
