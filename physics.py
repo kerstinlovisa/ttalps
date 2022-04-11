@@ -3,7 +3,7 @@ import numpy as np
 import scipy.integrate
 from collections import OrderedDict
 import sys
-sys.path.insert(1,'/home/ruth/Documents/TdAlps-Internal') #'/home/ruth/Documents/Uni/Projects/ALPs/invisibleVSdisplacedVSprompt/Python/SebastiansCode/TdAlps-Internal'
+sys.path.insert(1,'/home/ruth/Documents/TdAlps') #'/home/ruth/Documents/Uni/Projects/ALPs/invisibleVSdisplacedVSprompt/Python/SebastiansCode/TdAlps-Internal'
 import TdAlps
 import aux
 

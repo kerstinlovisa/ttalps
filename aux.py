@@ -1,8 +1,8 @@
 import os
 import sys
 
-COMMON_OUTPUT_PATH = "/home/ruth/Documents/Plots/" #"/home/ruth/Seafile/TTALP/RuthPlots/"
-COMMON_INPUT_PATH = "/home/ruth/Documents/lhe_files/" #"/home/ruth/Seafile/TTALP/lhe_files/"
+COMMON_OUTPUT_PATH = "/home/ruth/Documents/Plots/"
+COMMON_INPUT_PATH = "/home/ruth/Documents/samples/"
 
 class HiddenPrints:
     def __enter__(self):
