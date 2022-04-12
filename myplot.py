@@ -103,9 +103,8 @@ def hist1d(data, labels, xlabel, filename=None,
     maxheight = 0
     for i in range(n):
         heights, bins, patches = plt.hist(data[i], histtype='step', 
-                                weights=len(data[i])*[1/len(data[i])],
                                 color=coloursX(1,n)[i], bins=binList,
-                                label=labels[i], lw=1)
+                                label=labels[i], lw=1, density = True)
         maxheight = max(max(heights), maxheight)
     plt.xlabel(xlabel)
     plt.ylabel("number of events [a.u.]")
@@ -292,14 +291,12 @@ def plotMatrix(data, labelKeys, labelDict, dataLabels, filename=None, title=None
     plt.show()
     
     
-def scatter_w_c(datax, datay, dataz, xlabel, ylabel, zlabel, log: bool = False,
+def scatter_w_c(datax, datay, dataz, datas, xlabel, ylabel, zlabel, log: bool = False,
              filename=None, customXlim=None, customYlim=None, title=None):
-    if log:
-        plt.scatter(datax, datay, facecolors='none', edgecolors='k')
-        if not dataz==len(dataz)*[0.0]:
-            plt.scatter(datax, datay, c=dataz, norm=matplotlib.colors.LogNorm())
+    if log and not dataz==len(dataz)*[0.0]:
+        plt.scatter(datax, datay, c=dataz, s=datas, norm=matplotlib.colors.LogNorm())
     else:
-        plt.scatter(datax, datay, c=dataz, norm=matplotlib.colors.Normalize())
+        plt.scatter(datax, datay, c=dataz, s=datas, norm=matplotlib.colors.Normalize())
     cbar = plt.colorbar()
     cbar.set_label(zlabel)
     plt.xlabel(xlabel)
