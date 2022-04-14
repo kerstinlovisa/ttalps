@@ -364,6 +364,15 @@ class Event:
                                 +str(whose)+" , which isn't currently valid.")
                 
             return observable
+    
+    def counts(self, restrictions):
+        """Returns whether all given restrictions apply to this event"""
+        # restrictions take the form (condition, which, [whose], extra_args)
+        for restriction in restrictions:
+            if not restriction[0](self.observable(restriction[1], restriction[2], **restriction[3])):
+                return False
+        return True
+            
                 
             
 class Dataset:
@@ -414,6 +423,26 @@ class Dataset:
         tr_whose = [self.particle_translator[who] for who in whose]
         return np.array([event.observable(which, tr_whose, **kwargs)
                          for event in self.events])
+    
+    def count_with_restrictions(self, restrictions):
+        """Returns the ratio of events that hold the given restrictions"""
+        # restrictions take the form (condition, which, [whose], extra_args)
+        translated_restrictions = []
+        for restriction in restrictions:
+            tr_rest = []
+            tr_rest.append(restriction[0])
+            if restriction[1] in self.observable_translator:
+                tr_rest.append(self.observable_translator[restriction[1]])
+            else:
+                tr_rest.append(restriction[1])
+            tr_rest.append([self.particle_translator[who] for who in restriction[2]])
+            if len(restriction)==4:
+                tr_rest.append(restriction[3])
+            else:
+                tr_rest.append({})
+            translated_restrictions.append(tuple(tr_rest))
+        return len([1 for event in self.events if event.counts(translated_restrictions)])/len(self.events)
+        
 
     @classmethod
     def from_lhe_alp(cls, filename, event_num_max=-1):
