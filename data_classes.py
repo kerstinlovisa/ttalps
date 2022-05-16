@@ -254,6 +254,50 @@ class Particle:
                 res = (math.sqrt(radius**2-math.sin(theta)**2*length0**2)
                         - math.cos(theta)*length0)
                 return res
+            
+    def tracklength_to_rho_z(self, rho: float, z: float, 
+                             vertex: FourVector = None):
+        """The tracklength of a Particle up to a radius is calculated
+        
+        vertex is the Particle's production vertex. If none provided, use 0.
+        This is based on assuming:
+        rho = abs_2d(vertex + x*mom) and z = z0 + x*pz
+        which leads to two solutions for x:
+        x = (sqrt(rho^2-sin^2ph |vertex|^2)-|vertex|*cosph)/pT, x = (z-z0)/pz
+        where ph is the angle between vertex_T and mom_T
+        If vertex outside of rho and z, returns 0 (no track -> no tracklength)
+        """
+        if vertex == None:
+            vertex = FourVector([0,0,0,0])
+        phi = self.fourmomentum.angle_to_2d(vertex)
+        rho_0 = vertex.abs_2d()
+        z_0 = vertex[3]
+        if rho_0 > rho or z_0 > z:
+            return 0
+        else:
+            pT = self.fourmomentum.abs_2d()
+            if pT > 0:
+                x_2d = (math.sqrt(rho**2 - rho_0**2 * math.sin(phi)**2) - rho_0 * math.cos(phi))/pT
+            else:
+                x_2d = 0
+            pz = abs(self.fourmomentum[3])
+            if pz > 0:
+                x_z = (z - z_0)/pz
+            else:
+                x_z = 0
+            if x_z != 0:
+                if x_2d != 0:
+                    if x_z < x_2d:
+                        return self.fourmomentum.abs_3d() * x_z
+                    else:
+                        return self.fourmomentum.abs_3d() * x_2d
+                else:
+                    return self.fourmomentum.abs_3d() * x_z
+            elif x_2d != 0:
+                return self.fourmomentum.abs_3d() * x_2d
+            else:
+                return 0
+                
         
     def decay_vertex(self, ctau: float):
         """Given a lifetime ctau this method generates a decay vertex"""
@@ -309,8 +353,9 @@ class Event:
     def __repr__(self):
         return self.__str__()
     
-    def track_from_ctau(self, i, j, radius: float, ctau: float,
-                        minimum_displacement: float = None, direction="3d"):
+    def track_from_ctau(self, i, j, radius: float, ctau: float, 
+                        z: float = None, direction = "3d",
+                        minimum_displacement: float = None):
         """Tracklength of Particle j if produced by i's decay with ctau"""
         decay_vertex = self.particles[i].decay_vertex(ctau)
         if ((minimum_displacement is not None)
@@ -320,7 +365,10 @@ class Event:
             elif direction == "2d-z":
                 return [0,0]
         else:
-            track = self.particles[j].tracklength_to_radius(radius, decay_vertex)
+            if z == 0:
+                track = self.particles[j].tracklength_to_radius(radius, decay_vertex)
+            else:
+                track = self.particles[j].tracklength_to_rho_z(radius, z, decay_vertex)
             mom = self.particles[j].fourmomentum
             if direction == "3d":
                 return track
