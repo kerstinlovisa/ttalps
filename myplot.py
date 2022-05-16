@@ -5,7 +5,8 @@ from matplotlib.lines import Line2D
 import numpy as np
 
 plt.rcParams.update({'font.size': 14})
-plt.rcParams['figure.dpi']= 300
+plt.rcParams['figure.dpi'] = 300
+plt.rcParams['figure.figsize'] = [8, 5]
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
 def colour(r: int, g: int, b: int, a: int):
