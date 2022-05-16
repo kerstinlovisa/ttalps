@@ -365,7 +365,7 @@ class Event:
             elif direction == "2d-z":
                 return [0,0]
         else:
-            if z == 0:
+            if z == 0 or z is None:
                 track = self.particles[j].tracklength_to_radius(radius, decay_vertex)
             else:
                 track = self.particles[j].tracklength_to_rho_z(radius, z, decay_vertex)
