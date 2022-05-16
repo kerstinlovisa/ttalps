@@ -310,15 +310,22 @@ class Event:
         return self.__str__()
     
     def track_from_ctau(self, i, j, radius: float, ctau: float,
-                        minimum_displacement: float = None):
+                        minimum_displacement: float = None, direction="3d"):
         """Tracklength of Particle j if produced by i's decay with ctau"""
         decay_vertex = self.particles[i].decay_vertex(ctau)
         if ((minimum_displacement is not None)
             and (decay_vertex.abs_3d()<minimum_displacement)):
-            return 0
+            if direction == "3d":
+                return 0
+            elif direction == "2d-z":
+                return [0,0]
         else:
             track = self.particles[j].tracklength_to_radius(radius, decay_vertex)
-            return track
+            mom = self.particles[j].fourmomentum
+            if direction == "3d":
+                return track
+            elif direction == "2d-z":
+                return [track * mom.abs_2d()/mom.abs_3d(), track * mom[3]/mom.abs_3d()]
         
     def observable(self, which: str, whose: [int], **kwargs):
         """Returns the property which of whose, who can be several.
