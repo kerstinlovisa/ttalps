@@ -198,9 +198,10 @@ class Particle:
     tracklength_to_radius - calculates length between production (0 or input)
         and given radius
     """
-    def __init__(self, momentum: FourMomentum, name: str = None):
+    def __init__(self, momentum: FourMomentum, name: str = None, vertex: FourVector = None):
         self.fourmomentum = momentum
         self.name = name
+        self.vertex = vertex
             
     def __str__(self):
         if self.name is not None:
@@ -243,17 +244,19 @@ class Particle:
         where th is the angle between vertex and mom
         If vertex outside of radius, returns 0 (no track -> no tracklength)
         """
-        if vertex == None:
-            return radius
-        else:
-            theta = self.fourmomentum.angle_to(vertex)
-            length0 = vertex.abs_3d()
-            if length0 > radius:
-                return 0
+        if vertex is None:
+            if self.vertex is None:
+                return radius
             else:
-                res = (math.sqrt(radius**2-math.sin(theta)**2*length0**2)
-                        - math.cos(theta)*length0)
-                return res
+                vertex = self.vertex
+        theta = self.fourmomentum.angle_to(vertex)
+        length0 = vertex.abs_3d()
+        if length0 > radius:
+            return 0
+        else:
+            res = (math.sqrt(radius**2-math.sin(theta)**2*length0**2)
+                    - math.cos(theta)*length0)
+            return res
             
     def tracklength_to_rho_z(self, rho: float, z: float, 
                              vertex: FourVector = None):
@@ -267,8 +270,11 @@ class Particle:
         where ph is the angle between vertex_T and mom_T
         If vertex outside of rho and z, returns 0 (no track -> no tracklength)
         """
-        if vertex == None:
-            vertex = FourVector([0,0,0,0])
+        if self.vertex is None:
+            if vertex == None:
+                vertex = FourVector([0,0,0,0])
+        else:
+            vertex = self.vertex
         phi = self.fourmomentum.angle_to_2d(vertex)
         rho_0 = vertex.abs_2d()
         z_0 = vertex[3]
@@ -298,9 +304,9 @@ class Particle:
             else:
                 return 0
                 
-        
     def decay_vertex(self, ctau: float):
         """Given a lifetime ctau this method generates a decay vertex"""
+        
         decay_distance = np.random.exponential(scale=self.boost()*ctau)
         absmom = self.fourmomentum.abs_3d()
         rescaled = self.fourmomentum*(decay_distance/absmom)
@@ -505,9 +511,6 @@ class Dataset:
         
         Currently supports reading in events with ttmumu, tta or ttamumu
         in the final states. If tta, produces muons from alp.
-        
-        Other processes should implement extra classmethods.
-        TBD: Maybe this should be a subclass?
         """
         events = []
         event_num = 0
@@ -639,4 +642,97 @@ class Dataset:
             raise ValueError("This Part of the code should have already"
                 +" raised an exception in the previous if-else statement.")
         
+        return cls(events, particle_translator)
+    
+    @classmethod
+    def from_txt_bkg(cls, filename, event_num_max=-1):
+        """Reads in an .txt file and outputs a new Dataset object from it
+        
+        This .txt file has to be of the form:
+            top data | anti-top data | muon pair data | single muon data
+            where data: id\t x\t y\t z\t px\t py\t pz
+            and data of several such particles are appended by \t as well
+            muon pairs are of the order anti-muon muon
+        """
+        events = []
+        event_num = 0
+        with open(filename, 'r') as file:
+            for line in file:
+                top_list, atop_list, mp_list, sm_list = line.split('|')
+                
+                top_list = top_list.split('\t')
+                atop_list = atop_list.split('\t')
+                mp_list = mp_list.split('\t')
+                sm_list = sm_list.split('\t')
+                
+                particle_str_lists = [top_list, atop_list, mp_list, sm_list]
+                particle_labels = ["t", "\bar{t}", "\mu", "\bar\mu"]
+                particle_lists = []
+                
+                mus_no = 0
+                muons = []
+                amuons = []
+                
+                for i in range(len(particle_str_lists)):
+                    p_list = particle_str_lists[i]
+                    tmp_p_list = []
+                    if p_list[0] == '':
+                        p_list = p_list[1:]
+                    if p_list[-1] == '' or p_list[-1]=='\n':
+                        p_list = p_list[:-1]
+                    if len(p_list)%8 != 0:
+                        print("There is an unexpected number of data")
+                    else:
+                        for j in range(len(p_list)//8):
+                            tmp_mom_list = [float(p_list[j*8+k])
+                                            for k in [4,5,6,7]]
+                            tmp_4mom = FourMomentum(tmp_mom_list)
+                            if i in [0,1]:
+                                label = particle_labels[i]
+                            else:
+                                if p_list[j*8][0] == '-':
+                                    label = particle_labels[3]
+                                    amuons.append(mus_no)
+                                    mus_no += 1
+                                else:
+                                    label = particle_labels[2]
+                                    muons.append(mus_no)
+                                    mus_no += 1
+                            
+                            tmp_v_list = [0]+[float(p_list[j*8+k])
+                                              for k in [1,2,3]]
+                            tmp_4v = FourVector(tmp_v_list)
+                            if tmp_4v.abs_3d() > 10**-10:
+                                tmp_p = Particle(tmp_4mom, label, tmp_4v)
+                            else:
+                                tmp_p = Particle(tmp_4mom, label)
+                            tmp_p_list.append(tmp_p)
+                    particle_lists.append(tmp_p_list)
+                
+                final_top = particle_lists[0][-1]
+                final_atop = particle_lists[1][-1]
+                
+                particles = [final_top, final_atop]
+                if mus_no>=2:
+                    muon_list = particle_lists[2]+particle_lists[3]
+                    if len(muons)>0:
+                        particles.append(muon_list[muons[0]])
+                    if len(amuons)>0:
+                        particles.append(muon_list[amuons[0]])
+                    if len(particles)==4:
+                        events.append(Event(particles))
+                        event_num += 1
+                if event_num>=event_num_max and not event_num_max<0:
+                    break
+            
+        particle_translator = {"Top": 0, "top": 0, "t": 0, 
+                                "AntiTop": 1, "antitop": 1, "at": 1,
+                                "Muon": 2, "Muon1": 2, "muon": 2, 
+                                "mu": 2, "mu1": 2,
+                                "AntiMuon": 3, "Muon2": 3, 
+                                "antimuon": 3, "amu": 3, "mu2": 3}
+        
+        print(filename+" read with [top, antitop, muon, antimuon]"
+                  +" in " + str(len(events)) + " Events.")
+            
         return cls(events, particle_translator)
