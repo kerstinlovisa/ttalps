@@ -241,8 +241,8 @@ def ctaua(ma, ctL, ctR, Lambda):
 def getLSfromctt(ctL,ctR, Lambda, mu):
     with aux.HiddenPrints():
         HC = OrderedDict()
-        HC['Q'] = np.array([[0,0,0],[0,0,0],[0,0,ctL]])
-        HC['u'] = np.array([[0,0,0],[0,0,0],[0,0,-ctR]])
+        HC['Q'] = np.array([[0,0,0],[0,0,0],[0,0,-ctL]])
+        HC['u'] = np.array([[0,0,0],[0,0,0],[0,0,ctR]])
         HC['d'] = np.array([[0,0,0],[0,0,0],[0,0,0]])
         HC['L'] = np.array([[0,0,0],[0,0,0],[0,0,0]])
         HC['e'] = np.array([[0,0,0],[0,0,0],[0,0,0]])
