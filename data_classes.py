@@ -12,7 +12,7 @@ class FourVector:
     abs_2d() returns the absolute value of the x-y directions
     abs_3d() returns the absolute value in all 3 spatial directions
     theta and phi return the angle from spherical coordinates in degrees
-    angle_to gives the angle between two FourVectors in degrees
+    angle_to gives the angle between two FourVectors' spatially in degrees
     angle_to_2d gives the angle between two FourVectors in x-y in degrees
     boost_to takes a lorentz_matrix and returns another boosted FourVector
     """
@@ -92,7 +92,7 @@ class FourVector:
         return math.atan2(self.vx,self.vy)/math.pi*180
     
     def angle_to(self, other):
-        """Returns the angle between self and other in degrees"""
+        """Returns the angle between self and other (spatially) in degrees"""
         product = (self.vx*other.vx + self.vy*other.vy + self.vz*other.vz)
         ratio = product/(self.abs_3d()*other.abs_3d())
         angle = math.acos(ratio)/math.pi*180
@@ -120,7 +120,7 @@ class FourMomentum(FourVector):
     It adds the following functions:
     mass: The mass of a FourMomentum is the sqrt of its square
     gamma, beta: the relativistic gamma factor and normalised velocity
-    lorentz_matrix returns a lorentz_matrix to boost to this FM's frame
+    lorentz_matrix: returns a lorentz_matrix to boost to this FM's frame
     """
     
     @classmethod
@@ -185,8 +185,8 @@ class FourMomentum(FourVector):
 class Particle:
     """A Particle is described by its FourMomentum and a name/symbol.
     
-    It may in the future contain an additional FourVector for its 
-    production vertex, or other properties. These will be optional.
+    It can also optionally contain an additional FourVector for its 
+    production vertex. Other optional properties may be added in the future.
     
     mass - the Particle's mass as given by its FourMomentum
     inv_mass - the invariant mass between this and another Particle
@@ -198,7 +198,8 @@ class Particle:
     tracklength_to_radius - calculates length between production (0 or input)
         and given radius
     """
-    def __init__(self, momentum: FourMomentum, name: str = None, vertex: FourVector = None):
+    def __init__(self, momentum: FourMomentum, name: str = None,
+                    vertex: FourVector = None):
         self.fourmomentum = momentum
         self.name = name
         self.vertex = vertex
@@ -236,7 +237,8 @@ class Particle:
     def tracklength_to_radius(self, radius: float, vertex: FourVector = None):
         """The tracklength of a Particle up to a radius is calculated
         
-        vertex is the Particle's production vertex. If none provided, use 0.
+        vertex is the Particle's production vertex. If none provided, use 
+            self.vertex. If neither exists, use 0..
         This is based on assuming:
         r = abs_3d(vertex + x*mom)
         which leads to the solution:
@@ -262,7 +264,8 @@ class Particle:
                              vertex: FourVector = None):
         """The tracklength of a Particle up to a radius is calculated
         
-        vertex is the Particle's production vertex. If none provided, use 0.
+        vertex is the Particle's production vertex.  If none provided, use 
+            self.vertex. If neither exists, use 0..
         This is based on assuming:
         rho = abs_2d(vertex + x*mom) and z = z0 + x*pz
         which leads to two solutions for x:
@@ -270,11 +273,11 @@ class Particle:
         where ph is the angle between vertex_T and mom_T
         If vertex outside of rho and z, returns 0 (no track -> no tracklength)
         """
-        if self.vertex is None:
-            if vertex == None:
+        if vertex is None:
+            if self.vertex is None:
                 vertex = FourVector([0,0,0,0])
-        else:
-            vertex = self.vertex
+            else:
+                vertex = self.vertex
         phi = self.fourmomentum.angle_to_2d(vertex)
         rho_0 = vertex.abs_2d()
         z_0 = vertex[3]
@@ -301,7 +304,7 @@ class Particle:
                     return self.fourmomentum.abs_3d() * x_z
             elif x_2d != 0:
                 return self.fourmomentum.abs_3d() * x_2d
-            else:
+            else:[1409.4557]
                 return 0
                 
     def decay_vertex(self, ctau: float):
@@ -362,7 +365,18 @@ class Event:
     def track_from_ctau(self, i, j, radius: float, ctau: float, 
                         z: float = None, direction = "3d",
                         minimum_displacement: float = None):
-        """Tracklength of Particle j if produced by i's decay with ctau"""
+        """Tracklength of Particle j if produced by i's decay with ctau
+        
+        i - Particle that decays and produces j
+        j - Particle produced by i whose tracklength in detector is returned
+        radius - radius of the detector in 3d or 2d
+        ctau - lifetime of i which determines its decay vertex
+        z - z coordinate of the detector if direction is 2d
+        direction - "3d" for a spherical detector, "2d-z" for a cylinder,
+            also determines format of return value: 3d returns single radial
+            tracklength, 2d-z returns [tracklength in rho, in z]
+        minimum_displacement - if j appears at smaller displacement, return 0
+        """
         decay_vertex = self.particles[i].decay_vertex(ctau)
         if ((minimum_displacement is not None)
             and (decay_vertex.abs_3d()<minimum_displacement)):
@@ -382,11 +396,13 @@ class Event:
                 return [track * mom.abs_2d()/mom.abs_3d(), track * mom[3]/mom.abs_3d()]
         
     def observable(self, which: str, whose: [int], **kwargs):
-        """Returns the property which of whose, who can be several.
+        """Returns the property which of whose, where whose can be several.
         
-        which can both be a property of Event as well as of a Particle
-        The first particle calls the observable, the other(s) are arguments
-        kwargs contain any other arguments of which that aren't Particles.
+        which - a property of Event or of Particle
+        whose - list of indices of Particles in the Event
+            The first particle calls which
+            The other(s) are arguments
+        kwargs - any other arguments of which, passed on as-is to which
         """
         if len(whose)==0:
             raise ValueError("There is no particle to observe anything of.")
@@ -427,10 +443,19 @@ class Event:
             return observable
     
     def counts(self, restrictions):
-        """Returns whether all given restrictions apply to this event"""
-        # restrictions take the form (condition, which, [whose], extra_args)
+        """Returns whether all given restrictions apply to this event
+        
+        restrictions - list of tuples: (condition, which, whose, extra_args)
+        condition - function with a single parameter
+        which - the observable that the condition is placed on
+        whose - list of Particle indices
+        extra_args - additional arguments passed on as-is
+
+        returns True if all conditions are True for self, False otherwise
+        """
         for restriction in restrictions:
-            if not restriction[0](self.observable(restriction[1], restriction[2], **restriction[3])):
+            if not restriction[0](self.observable(restriction[1], 
+                                restriction[2], **restriction[3])):
                 return False
         return True
             
@@ -472,7 +497,7 @@ class Dataset:
     def observables(self, which, whose, **kwargs):
         """Returns a np.array of the relevant observable for each Event.
         
-        which is the name of the observable (if it's in the dictionary)
+        which is the name of the observable if it's in the dictionary
             or its direct code if it's not.
         whose is a list of names of particles in the Event, which get 
             translated into the internal indices of the Event.
@@ -486,7 +511,15 @@ class Dataset:
                          for event in self.events])
     
     def count_with_restrictions(self, restrictions):
-        """Returns the ratio of events that hold the given restrictions"""
+        """Returns the ratio of events that hold the given restrictions
+        
+        restrictions - list of tuples: (condition, which, whose, extra_args)
+        condition - function with a single parameter
+        which - the observable that the condition is placed on
+        whose - list of Particle names
+        extra_args - additional arguments passed on as-is
+
+        counts how many events follow all restrictions and gives its ratio"""
         # restrictions take the form (condition, which, [whose], extra_args)
         translated_restrictions = []
         for restriction in restrictions:
@@ -510,8 +543,10 @@ class Dataset:
         """Reads in an .lhe file and outputs a new Dataset object from it
         
         Currently supports reading in events with ttmumu, tta or ttamumu
-        in the final states. If tta, produces muons from alp.
-        """
+        in the final states. 
+        If tta, produces muons from alp via alp.decay_particle function.
+
+        Credit to Sebastian Bruggisser for the readout."""
         events = []
         event_num = 0
         case = None
@@ -653,7 +688,10 @@ class Dataset:
             where data: id\t x\t y\t z\t px\t py\t pz
             and data of several such particles are appended by \t as well
             muon pairs are of the order anti-muon muon
-        """
+
+        For now, this method chooses the first muon and antimuon, respectively
+        for each Event object's muon and antimuon Particle.
+        This should be reconsidered in the future. (WIP)"""
         events = []
         event_num = 0
         with open(filename, 'r') as file:
