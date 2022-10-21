@@ -23,12 +23,12 @@ The folder `MadAnalysis` contains `.cpp` and `.h` files that are scripts for the
 - `muon_pair_count.txt` which contains the number of muon-antimuon-pairs in every event
 - `muon_pair_parents.txt` which contains the PDG-ID of every muon-antimuon-pair's parent in the dataset
 - `muon_data.txt` which is the data to be read into the `.ipynb` files, containing 
- - a list of all top quarks in the event (as we know there to be only one top quark in every event, this is the same top quark in different intermediate states; the last particle in the list is the 'final state' top)
- - a list of all anti-tops in the event (again, with the last in the list being the final state antitop)
- - a list of muon-antimuon-pairs (listed as muon, then antimuon)
- - a list of unpaired muons and antimuons
- each of which is given by
- - its PDG-ID
- - its production vertex (given by the function `decay_vertex`)
- - its four-momentum (E, px, py, pz)
-The particles' properties are separated by `\t`, the particles by `|`, and the events by `\n`.
+  - a list of all top quarks in the event (as we know there to be only one top quark in every event, this is the same top quark in different intermediate states; the last particle in the list is the 'final state' top)
+  - a list of all anti-tops in the event (again, with the last in the list being the final state antitop)
+  - a list of muon-antimuon-pairs (listed as muon, then antimuon)
+  - a list of unpaired muons and antimuons
+  - each of the particle's data is given by
+    - its PDG-ID
+    - its production vertex (given by the function `decay_vertex`)
+    - its four-momentum (E, px, py, pz)
+  - The particles' properties are separated by `\t`, the particles by `|`, and the events by `\n`.
