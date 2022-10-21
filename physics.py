@@ -3,8 +3,9 @@ import numpy as np
 import scipy.integrate
 from collections import OrderedDict
 import sys
-sys.path.insert(1,'/home/ruth/Documents/TdAlps') 
-sys.path.insert(1,'/pfs/data5/home/hd/hd_hd/hd_cu194/alps/Python/SebastiansCode/TdAlps-Internal-main')
+# Use the sys.path.insert(1,'path/to/TdAlps') to include the package TdAlps to then import it
+#sys.path.insert(1,'/home/ruth/Documents/TdAlps') 
+#sys.path.insert(1,'/pfs/data5/home/hd/hd_hd/hd_cu194/alps/Python/SebastiansCode/TdAlps-Internal-main')
 import TdAlps
 import aux
 
