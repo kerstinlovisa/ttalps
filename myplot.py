@@ -9,10 +9,14 @@ plt.rcParams['figure.dpi'] = 300
 plt.rcParams['figure.figsize'] = [8, 5]
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
-def colour(r: int, g: int, b: int, a: int):
+def colour(r: int, g: int, b: int, a: float):
+    """turns Integer 0-255 values r g and b into floats, keeps opacity a float
+    
+    returns a tuple of the float values for all colour channels: (r,g,b,a)"""
     return (r/256, g/256, b/256, a)
 
-def colours(alpha: int):
+def colours(alpha: float):
+    """defines a list of seven colour tuples with opacity alpha"""
     darkBlue = colour(0, 114, 178, alpha)
     lightBlue = colour(86, 180, 233, alpha)
     green = colour(0, 158, 115, alpha)
@@ -23,6 +27,7 @@ def colours(alpha: int):
     return [darkBlue, lightBlue, green, yellow, orange, red, pink]
     
 def coloursX(alpha, X):
+    """returns a list of X colour tuples with opacity alpha, loops after 7"""
     if X>7:
         return colours(alpha) + coloursX(alpha/2, X-7)
     if X==7:
@@ -42,6 +47,7 @@ def coloursX(alpha, X):
         return [(0,0,0,alpha)]
     return []
 
+# relevant labels for plot directions in this project
 dirLabel = dict()
 dirLabel["boost_a"] = r"$\gamma\beta_a$ [GeV]"
 dirLabel["abs3mom_a"] = r"$|\vec{p}_a|$ [GeV]"
@@ -87,6 +93,15 @@ dirLabel["track_mu"] = r"$d_\mu$ [cm]"
 
 def hist1d(data, labels, xlabel, filename=None,
            nbins=50, customXlim=None, title=None):
+    """Plots 1d histogram
+    
+    data - list of datasets, each of which is plotted as a line
+    labels - list of labels of the datasets
+    xlabel - x label of the histogram
+    filename - if None, the plot is not saved, otherwise it is
+    nbins - the number of bins, default: 50
+    customXlim - if not set, the x axis contains all values in data
+    title - if not given, the plot is not given a title"""
     n = len(data)
     if (len(data)!=len(labels)):
         print("Different array lengths")
@@ -124,6 +139,20 @@ def hist1d(data, labels, xlabel, filename=None,
     
 def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None, 
                nbins=50, customXlim=None, customXlabels=None, title = None):
+    """Plots 1d histogram from (up to) three separate lists of datasets
+    
+    data1 - list of datasets, each of which is plotted as a solid line
+    data2 - list of datasets, each of which is plotted as a dashed line
+    data3 - list of datasets, each of which is plotted as a dotted line
+        (if data3 is empty, data2 is plotted with dotted lines)
+    labels - list of labels of the datasets (same for data1,2,3)
+    xlabel - x label of the histogram
+    filename - if None, the plot is not saved, otherwise it is
+    nbins - the number of bins, default: 50
+    customXlim - if not set, the x axis contains all values in data
+    customXlabels -  if not set, data1 is understood as an ALP dataset, 
+        data2 as a Top dataset, and data3 as an AntiTop dataset
+    title - if not given, the plot is not given a title"""
     n = len(data1)
     if (len(data1)!=len(labels)) or (len(data2)!=len(labels)):
         print("Different array lengths: "+str(len(data1))+", "
@@ -198,6 +227,17 @@ def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None,
     
 def scatter(datax, datay, labels, xlabel, ylabel, filename=None,
             customXlim=None, customYlim=None, title=None):
+    """Plots a scatterlot from given x and y data
+    
+    datax - list of x-values
+    datay - list of corresponding y-values
+    labels - list of labels of the datasets
+    xlabel - x label of the scatterplot
+    ylabel - y label of the scatterplot
+    filename - if None, the plot is not saved, otherwise it is
+    customXlim - if not set, the x axis contains all values in data
+    customYlim - if not set, the y axis contains all values in data
+    title - if not given, the plot is not given a title"""
     n = len(datax)
     if (len(datax)!=len(datay)) or (len(datax)!=len(labels)):
         print("Different array lengths")
@@ -220,6 +260,15 @@ def scatter(datax, datay, labels, xlabel, ylabel, filename=None,
     
 def hist1d_part(ax, data, labels, xlabel, nbins=50,
                 customXlim=None, title=None):
+    """Plots 1d histogram as a part of plotMatrix
+    
+    data - list of datasets, each of which is plotted as a line
+    labels - list of labels of the datasets
+    xlabel - x label of the histogram
+    filename - if None, the plot is not saved, otherwise it is
+    nbins - the number of bins, default: 50
+    customXlim - if not set, the x axis contains all values in data
+    title - if not given, the plot is not given a title"""
     n = len(data)
     if (len(data)!=len(labels)):
         print("Different array lengths")
@@ -250,6 +299,17 @@ def hist1d_part(ax, data, labels, xlabel, nbins=50,
 
 def scatter_part(ax, datax, datay, labels, xlabel, ylabel,
                  customXlim=None, customYlim=None, title=None):
+    """Plots a scatterplot from given x and y data as a part of plotMatrix
+    
+    datax - list of x-values
+    datay - list of corresponding y-values
+    labels - list of labels of the datasets
+    xlabel - x label of the scatterplot
+    ylabel - y label of the scatterplot
+    filename - if None, the plot is not saved, otherwise it is
+    customXlim - if not set, the x axis contains all values in data
+    customYlim - if not set, the y axis contains all values in data
+    title - if not given, the plot is not given a title"""
     n = len(datax)
     if (len(datax)!=len(datay)) or (len(datax)!=len(labels)):
         print("Different array lengths")
@@ -266,6 +326,14 @@ def scatter_part(ax, datax, datay, labels, xlabel, ylabel,
     
 
 def plotMatrix(data, labelKeys, labelDict, dataLabels, filename=None, title=None):
+    """matrix of histograms and scatterplots comparing different datasets
+    
+    data - list of datasets to compare
+    labelKeys - keys for the labelDict
+    labelDict - dictionary containing the axis labels
+    dataLabels - labels of the datasets
+    filename - if None, the plot is not saved, otherwise it is
+    title - if not given, the plot is not given a title"""
     n = len(data)
     fig, axs = plt.subplots(n,n,figsize=(n*5,n*5))
     for i in range(n):
@@ -294,6 +362,20 @@ def plotMatrix(data, labelKeys, labelDict, dataLabels, filename=None, title=None
     
 def scatter_w_c(datax, datay, dataz, datas, xlabel, ylabel, zlabel, log: bool = False,
              filename=None, customXlim=None, customYlim=None, title=None):
+    """Plots a scatterplot with a colourbar from given x, y, and z data (+ point size data)
+    
+    datax - list of x-values
+    datay - list of y-values
+    dataz - list of corresponding z-values (shown in colour values of points)
+    datas - list of corresponding s-values (shown in size of points)
+    xlabel - x label of the scatterplot
+    ylabel - y label of the scatterplot
+    zlabel - z label of the scatterplot (colourbar label)
+    log - colourbar logarithmic or linear (default: False = linear)
+    filename - if None, the plot is not saved, otherwise it is
+    customXlim - if not set, the x axis contains all values in data
+    customYlim - if not set, the y axis contains all values in data
+    title - if not given, the plot is not given a title"""
     if log and not dataz==len(dataz)*[0.0]:
         plt.scatter(datax, datay, c=dataz, s=datas, norm=matplotlib.colors.LogNorm())
     else:
