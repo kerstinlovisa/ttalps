@@ -34,7 +34,7 @@ sm={
     'alpha': 1/137, # electromagnetic coupling 
     'Vtb': 0.999, # absolute value of CKM element tb
     'Vts': 0.0404, # absolute value of CKM element ts
-    'Xt': 1.462, # 
+    'Xt': 1.462, # effective B->Knunu vertex coupling from [1409.4557]
     'BrBtoKnunu+': 4.5*10**(-6), # Branching ratio of B->K nu nu decay
     'NBBBaBar': 471*10**6, # number of BB pairs produced at BaBar
     'NBBBelleII': 5*10**10, # number of BB pairs produced at Belle II
@@ -75,7 +75,8 @@ def dGammadqsqrBtoKnunu(qsqr, alphaEM):
     """the partial decay rate of the decay B+->K+ nunu
 
     at a specific momentum transfer qsqr and 
-    value of the electromagnetic coupling alphaEM"""
+    value of the electromagnetic coupling alphaEM
+    following [1409.4557]"""
     return (sm['GF']**2 * (math.sqrt(sm['mB+']**4+sm['mK+']**4+qsqr**2-2*(sm['mB+']**2 * sm['mK+']**2 + sm['mK+']**2 * qsqr + qsqr * sm['mB+']**2)))**3 * abs(sm['Vtb'])**2 * abs(sm['Vts'])**2 * alphaEM**2 * sm['Xt']**2 * abs(formFactorFplusBplus(qsqr))**2)/(256 * sm['mB+']**3 * math.pi**5 * sm['sw']**4)
 
 def GammaBtoKnunu(alphaEM):
