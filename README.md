@@ -17,4 +17,18 @@ We use these .py-files in the Jupyter notebooks:
 - `Data_Exploration.ipynb` works with the samples to explore the generated events' parameter space
 - `dc_tests.ipynb` is used to test the classes and methods of dataclasses.py with a reduced dataset
 
-The folder `MadAnalysis` contains `.cpp` and `.h` files that are scripts for the program `MadAnalysis5` which is used here to convert `.hepmc` files with generated events to `.txt` files which contain only the relevant variables for our analysis. In an `Expert Mode` analysis `ALPanalysis.cpp` in `MadAnalysis5`, these files would be placed in the folder `ALPanalysis/Build/SampleAnalyzer/User/Analyzer/` and run through the command line. More information on the use of `MadAnalysis5` can be found at https://madanalysis.irmp.ucl.ac.be/.
+
+The folder `MadAnalysis` contains `.cpp` and `.h` files that are scripts for the program `MadAnalysis5` which is used here to convert `.hepmc` files with generated events to `.txt` files which contain only the relevant variables for our analysis. In an `Expert Mode` analysis `ALPanalysis.cpp` in `MadAnalysis5`, these files would be placed in the folder `ALPanalysis/Build/SampleAnalyzer/User/Analyzer/` and run through the command line. More information on the use of `MadAnalysis5` can be found at https://madanalysis.irmp.ucl.ac.be/. The `ALPanalysis.cpp` file produces from a `.hepmc` file of ackground events several files:
+- `muon_count.txt` which contains the number of muons and antimuons in every event
+- `muon_pair_count.txt` which contains the number of muon-antimuon-pairs in every event
+- `muon_pair_parents.txt` which contains the PDG-ID of every muon-antimuon-pair's parent in the dataset
+- `muon_data.txt` which is the data to be read into the `.ipynb` files, containing 
+ - a list of all top quarks in the event (as we know there to be only one top quark in every event, this is the same top quark in different intermediate states; the last particle in the list is the 'final state' top)
+ - a list of all anti-tops in the event (again, with the last in the list being the final state antitop)
+ - a list of muon-antimuon-pairs (listed as muon, then antimuon)
+ - a list of unpaired muons and antimuons
+ each of which is given by
+ - its PDG-ID
+ - its production vertex (given by the function `decay_vertex`)
+ - its four-momentum (E, px, py, pz)
+The particles' properties are separated by `\t`, the particles by `|`, and the events by `\n`.
