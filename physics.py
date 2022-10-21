@@ -8,45 +8,51 @@ sys.path.insert(1,'/pfs/data5/home/hd/hd_hd/hd_cu194/alps/Python/SebastiansCode/
 import TdAlps
 import aux
 
+# This dictionary contains the values for the physical constants we need
 sm={
-    'sw': math.sqrt(0.23121), 
-    'hbar': 6.582119569*10**(-25),
-    'c': 29979245800,
-    'me': 0.0005109989461, 
-    'mmu': 0.1056583745, 
-    'mtau': 1.77686, 
-    'mu': 0.00216, 
-    'md': 0.00467, 
-    'ms': 0.093, 
-    'mc': 1.27, 
-    'mb': 4.18, 
-    'mt': 163.6,#172.76, 
-    'mZ': 91.1876, 
-    'mB+': 5.27934, 
-    'mK+': 0.493677, 
-    'mpi+': 0.13957039,
-    'mpi0': 0.1349768,
-    'fpi': 0.130,
-    'tauB+': 1.638*10**(-12),
-    'GF': 1.166*10**(-5),
-    'alpha': 1/137,
-    'Vtb': 0.999,
-    'Vts': 0.0404,
-    'Xt': 1.462,
-    'BrBtoKnunu+': 4.5*10**(-6),
-    'NBBBaBar': 471*10**6,
-    'NBBBelleII': 5*10**10,
-    'mp': 0.9383,
-    'mn': 0.9396
+    'sw': math.sqrt(0.23121), # sin(theta_weak)
+    'hbar': 6.582119569*10**(-25), # h/2pi in GeVs
+    'c': 29979245800, # speed of light in cm/s
+    'me': 0.0005109989461, # eletron mass in GeV
+    'mmu': 0.1056583745, # muon mass in GeV
+    'mtau': 1.77686, # tauon mass in GeV
+    'mu': 0.00216, # up quark mass in GeV
+    'md': 0.00467, # down quark mass in GeV
+    'ms': 0.093, # strange quark mass in GeV
+    'mc': 1.27, #charm quark mass in GeV
+    'mb': 4.18, # bottom quark mass in GeV
+    'mt': 163.6, # top quark mass in GeV
+    'mZ': 91.1876, # Z boson mass in GeV
+    'mB+': 5.27934, # charged B meson mass in GeV
+    'mK+': 0.493677, # charged kaon mass in GeV
+    'mpi+': 0.13957039, # charged pion mass in GeV
+    'mpi0': 0.1349768, # neutral pion mass in GeV
+    'fpi': 0.130, # pion decay constant
+    'tauB+': 1.638*10**(-12), # charged B meson lifetime in s
+    'GF': 1.166*10**(-5), # Fermi constant
+    'alpha': 1/137, # electromagnetic coupling 
+    'Vtb': 0.999, # absolute value of CKM element tb
+    'Vts': 0.0404, # absolute value of CKM element ts
+    'Xt': 1.462, # 
+    'BrBtoKnunu+': 4.5*10**(-6), # Branching ratio of B->K nu nu decay
+    'NBBBaBar': 471*10**6, # number of BB pairs produced at BaBar
+    'NBBBelleII': 5*10**10, # number of BB pairs produced at Belle II
+    'mp': 0.9383, # proton mass in GeV
+    'mn': 0.9396 # neutron mass in GeV
 }
 
 def fz(t):
+    """auxiliary function for calculating form factors"""
     tplus = (sm['mB+']+sm['mK+'])**2
     tminus = (sm['mB+']-sm['mK+'])**2
     tzero = tplus * (1-math.sqrt(1-tminus/tplus))
     return (math.sqrt(tplus-t) - math.sqrt(tplus-tzero))/(math.sqrt(tplus-t) + math.sqrt(tplus-tzero))
 
 def formFactorFplusBplus(qsqr):
+    """the f_+ form factor of the B+->K+ decay
+    
+    qsqr - the momentum transfer in the transition
+    using parameters from hep-ph:[1811.00983]"""
     tmp = 0.329
     tmp += -0.876 * (fz(qsqr) - fz(0))
     tmp += 0.006 * (fz(qsqr) - fz(0))**2
@@ -54,6 +60,10 @@ def formFactorFplusBplus(qsqr):
     return tmp
 
 def formFactorFzeroBplus(qsqr):
+    """the f_0 form factor of the B+->K+ decay
+    
+    qsqr - the momentum transfer in the transition
+    using parameters from hep-ph:[1811.00983]"""
     tmp = 0.329
     tmp += 0.195 * (fz(qsqr) - fz(0))
     tmp += -0.446 * (fz(qsqr) - fz(0))**2
@@ -61,29 +71,52 @@ def formFactorFzeroBplus(qsqr):
     return tmp
 
 def dGammadqsqrBtoKnunu(qsqr, alphaEM):
+    """the partial decay rate of the decay B+->K+ nunu
+
+    at a specific momentum transfer qsqr and 
+    value of the electromagnetic coupling alphaEM"""
     return (sm['GF']**2 * (math.sqrt(sm['mB+']**4+sm['mK+']**4+qsqr**2-2*(sm['mB+']**2 * sm['mK+']**2 + sm['mK+']**2 * qsqr + qsqr * sm['mB+']**2)))**3 * abs(sm['Vtb'])**2 * abs(sm['Vts'])**2 * alphaEM**2 * sm['Xt']**2 * abs(formFactorFplusBplus(qsqr))**2)/(256 * sm['mB+']**3 * math.pi**5 * sm['sw']**4)
 
 def GammaBtoKnunu(alphaEM):
+    """the partial decay rate of the decay B+->K+ nunu
+
+    for the value of the electromagnetic coupling alphaEM"""
     return scipy.integrate.quad(dGammadqsqrBtoKnunu,0,(sm['mB+']-sm['mK+'])**2,args=(alphaEM))[0]
 
 def BrBtoKnunu(sB,alphaEM):
+    """the branching ratio of the process B+->K+ nunu
+
+    in a specific [0.x, 0.x+1] bin around sB = qsqr/mB**2,
+    the transfered momentum normalised by the B meson mass squared
+    for the value of the electromagnetic coupling alphaEM
+    useful for reinterpreting hep-ex:[1303.7465]"""
     qsqrmin = math.floor(10*(sB-0.00001))*0.1*sm['mB+']**2
     qsqrmax = min(math.ceil(10*(sB-0.00001))*0.1*sm['mB+']**2,(sm['mB+']-sm['mK+'])**2)
     return sm['BrBtoKnunu+'] * scipy.integrate.quad(dGammadqsqrBtoKnunu,qsqrmin,qsqrmax,args=(alphaEM))[0]/GammaBtoKnunu(alphaEM)
 
 def B2(tau):
+    """the loop function B2(tau)"""
     return 1-(tau-1)*funcB(tau)**2
 
 def B1(tau):
+    """the loop function B1(tau)"""
     return 1-tau*funcB(tau)**2
 
 def funcB(tau):
+    """an auxiliary function for the loop functions"""
     if tau>=1:
         return math.asin(1/math.sqrt(tau))
     else:
         return math.pi/2 + 1j/2 * math.log((1+math.sqrt(1-tau))/(1-math.sqrt(1-tau)))
     
 def Gammaatoll(ma, cll, ml, Lambda):
+    """decay rate of an ALP to a pair of leptons
+    
+    ma - ALP mass
+    cll - coupling of ALP to leptons
+    ml - mass of leptons
+    Lambda - cutoff scale of the ALP-EFT
+    following hep-ph: [2012.12272]"""
     if ma <= 2 * ml:
         return 0
     gamma = ml**2 * abs(cll)**2 * math.sqrt(ma**2 - 4 * ml**2) * 2 * math.pi / (Lambda**2) 
@@ -93,6 +126,13 @@ def Gammaatoll(ma, cll, ml, Lambda):
     return float(gamma)
 
 def Gammaatoqq(ma, cqq, mq, Lambda):
+    """decay rate of an ALP to a pair of quarks
+    
+    ma - ALP mass
+    cqq - coupling of ALP to quarks
+    mq - mass of leptons
+    Lambda - cutoff scale of the ALP-EFT
+    following hep-ph: [2012.12272]"""
     if ma <= 2 * mq:
         return 0
     gamma = 3 * mq**2 * abs(cqq)**2 * math.sqrt(ma**2 - 4 * mq**2) * 2 * math.pi / (Lambda**2) 
@@ -102,6 +142,12 @@ def Gammaatoqq(ma, cqq, mq, Lambda):
     return float(gamma)
 
 def Gammaatogamgam(ma, coeffs, Lambda):
+    """decay rate of an ALP to a pair of photons
+    
+    ma - ALP mass
+    coeffs - Ordered dictionary of couplings from the TdAlps package
+    Lambda - cutoff scale of the ALP-EFT
+    following hep-ph: [2012.12272]"""
     cgamgam = readCgg(coeffs)
     alphaEM = readAlphaEM(coeffs)
     effcgg = cgamgam
@@ -133,6 +179,12 @@ def Gammaatogamgam(ma, coeffs, Lambda):
     return float(gamma)
     
 def Gammaatohad(ma, coeffs, Lambda):
+    """decay rate of an ALP to hadrons
+    
+    ma - ALP mass
+    coeffs - Ordered dictionary of couplings from the TdAlps package
+    Lambda - cutoff scale of the ALP-EFT
+    following hep-ph: [2012.12272]"""
     if ma <= 1:
         return 0
     alphaS = readAlphaS(coeffs)
@@ -160,6 +212,12 @@ def Gammaatohad(ma, coeffs, Lambda):
     return float(gamma)
 
 def Gammaato3pi000(ma, coeffs, Lambda):
+    """decay rate of an ALP to three neutral pions
+    
+    ma - ALP mass
+    coeffs - Ordered dictionary of couplings from the TdAlps package
+    Lambda - cutoff scale of the ALP-EFT
+    following hep-ph: [2012.12272]"""
     if ma<3*sm['mpi0']:
         return 0
     if ma>2:
@@ -173,6 +231,12 @@ def Gammaato3pi000(ma, coeffs, Lambda):
     return float(gamma)
 
 def Gammaato3pi0pm(ma, coeffs, Lambda):
+    """decay rate of an ALP to three pions: one neutral, two charged
+    
+    ma - ALP mass
+    coeffs - Ordered dictionary of couplings from the TdAlps package
+    Lambda - cutoff scale of the ALP-EFT
+    following hep-ph: [2012.12272]"""
     if ma < sm['mpi0']+2*sm['mpi+']:
         return 0
     if ma>2:
@@ -186,6 +250,9 @@ def Gammaato3pi0pm(ma, coeffs, Lambda):
     return float(gamma)
     
 def g00(r):
+    """Auxiliary function used in the decay rate of ALP->3pi0
+
+    following hep-ph: [2012.12272]"""
     if ((r<0) or (r>1/9)):
         return 0
     integrand = lambda z: math.sqrt(1-4*r/z) * math.sqrt(1+z**2+r**2-2*r-2*z-2*z*r)
@@ -196,6 +263,9 @@ def g00(r):
     return factor*integral[0]
     
 def gpm(r):
+    """Auxiliary function used in the decay rate of ALP->pi0pi+pi-
+
+    following hep-ph: [2012.12272]"""
     if ((r<0) or (r>1/9)):
         return 0
     integrand = lambda z: math.sqrt(1-4*r/z) * math.sqrt(1+z**2+r**2-2*r-2*z-2*z*r) * (z-r)**2
@@ -206,9 +276,22 @@ def gpm(r):
     return factor*integral[0] 
 
 def BrBtoKaplus(ma, cbs, Lambda):
+    """Branching ratio of the decay B+ -> K+ a (ALP)
+    
+    ma - ALP mass
+    cbs - coupling of the ALP to the FCNC b->s
+    Lambda - cutoff scale of the ALP-EFT
+    using the Lagrangian of hep-ph: [2012.12272]"""
     return abs(cbs)**2 * math.pi/(4 * Lambda**2) * abs(formFactorFzeroBplus(ma**2))**2 * (sm['mB+']**2-sm['mK+']**2)**2/sm['mB+']**3 * math.sqrt(sm['mB+']**4+sm['mK+']**4+ma**4-2*(sm['mB+']**2 * sm['mK+']**2 + sm['mK+']**2 * ma**2 + ma**2 * sm['mB+']**2))/sm['hbar']*sm['tauB+']
 
-def Gammaa(ma, ctL,ctR, Lambda):
+def Gammaa(ma, ctL, ctR, Lambda):
+    """Decay rate of the ALP as induced only by top couplings
+    
+    ma - ALP mass
+    ctL - coupling of the lefthanded top-quark to the ALP in the UV
+    ctR - coupling of the righthanded top-quark to the ALP in the UV
+    Lambda - cutoff scale of the ALP-EFT
+    following hep-ph: [2012.12272]"""
     lscs = getLSfromctt(ctL,ctR, Lambda, ma)
     GammaTot = 0
     if ma>2*sm['me']:
@@ -232,6 +315,13 @@ def Gammaa(ma, ctL,ctR, Lambda):
     return float(GammaTot)
 
 def ctaua(ma, ctL, ctR, Lambda):
+    """Lifetime of the ALP as induced only by top couplings
+    
+    ma - ALP mass
+    ctL - coupling of the lefthanded top-quark to the ALP in the UV
+    ctR - coupling of the righthanded top-quark to the ALP in the UV
+    Lambda - cutoff scale of the ALP-EFT
+    following hep-ph: [2012.12272]"""
     gamma = Gammaa(ma,ctL,ctR,Lambda)
     if gamma == 0:
         print("The decay width of a with ma=" + str(ma) + "GeV and cff=" + str(cff) + ", cWW="+ str(cww)+ ", cBB=" + str(cbb) + " is zero.")
@@ -239,6 +329,14 @@ def ctaua(ma, ctL, ctR, Lambda):
     return sm['c']*sm['hbar']/gamma
 
 def getLSfromctt(ctL,ctR, Lambda, mu):
+    """Returns low-energy coefficient dictionary from UV ALP-top couplings
+    
+    Interface function to the TdAlps package
+    ctL - coupling of the lefthanded top-quark to the ALP in the UV
+    ctR - coupling of the righthanded top-quark to the ALP in the UV
+    Lambda - cutoff scale of the ALP-EFT where ctL and ctR are defines
+    mu - low-energy scale to which the couplings are run
+    the running is based on hep-ph: [2012.12272]"""
     with aux.HiddenPrints():
         HC = OrderedDict()
         HC['Q'] = np.array([[0,0,0],[0,0,0],[0,0,-ctL]])
@@ -254,6 +352,7 @@ def getLSfromctt(ctL,ctR, Lambda, mu):
     return TdAlps.RunRotateMatchRun(HC, Lambda, mu, 3)
 
 def readCuu(coeffs):
+    """Reads out the ALP-up quark coupling value from TdAlps-based coupling dictionary coeffs"""
     if 'U' in coeffs:
         if np.array(coeffs['U']).ndim>1:
             return -coeffs['U'][0][0]+coeffs['u'][0][0]
@@ -266,6 +365,7 @@ def readCuu(coeffs):
         return 0
         
 def readCdd(coeffs):
+    """Reads out the ALP-down quark coupling value from TdAlps-based coupling dictionary coeffs"""
     if 'D' in coeffs:
         if np.array(coeffs['D']).ndim>1:
             return -coeffs['D'][0][0]+coeffs['d'][0][0]
@@ -278,6 +378,7 @@ def readCdd(coeffs):
         return 0
         
 def readCcc(coeffs):
+    """Reads out the ALP-charm quark coupling value from TdAlps-based coupling dictionary coeffs"""
     if 'U' in coeffs:
         if np.array(coeffs['U']).ndim>1 and len(coeffs['U'][0])>1:
             return -coeffs['U'][1][1]+coeffs['u'][1][1]
@@ -287,6 +388,7 @@ def readCcc(coeffs):
     return 0
         
 def readCss(coeffs):
+    """Reads out the ALP-strange quark coupling value from TdAlps-based coupling dictionary coeffs"""
     if 'D' in coeffs:
         if np.array(coeffs['D']).ndim>1 and len(coeffs['D'][0])>1:
             return -coeffs['D'][1][1]+coeffs['d'][1][1]
@@ -296,6 +398,7 @@ def readCss(coeffs):
     return 0
             
 def readCtt(coeffs):
+    """Reads out the ALP-top quark coupling value from TdAlps-based coupling dictionary coeffs"""
     if 'U' in coeffs:
         if np.array(coeffs['U']).ndim>1 and len(coeffs['U'][0])>2:
             return -coeffs['U'][2][2]+coeffs['u'][2][2]
@@ -305,6 +408,7 @@ def readCtt(coeffs):
     return 0
             
 def readCbb(coeffs):
+    """Reads out the ALP-bottom quark coupling value from TdAlps-based coupling dictionary coeffs"""
     if 'D' in coeffs:
         if np.array(coeffs['D']).ndim>1 and len(coeffs['D'][0])>2:
             return -coeffs['D'][2][2]+coeffs['d'][2][2]
@@ -314,14 +418,17 @@ def readCbb(coeffs):
     return 0
 
 def readCGG(coeffs):
+    """Reads out the ALP-gluon coupling value from TdAlps-based coupling dictionary coeffs"""
     return coeffs['GG']
 
 def readCgg(coeffs):
+    """Reads out the ALP-photon coupling value from TdAlps-based coupling dictionary coeffs"""
     if 'gamgam' in coeffs:
         return coeffs['gamgam']
     return 0
 
 def readCee(coeffs):
+    """Reads out the ALP-electron coupling value from TdAlps-based coupling dictionary coeffs"""
     if 'E' in coeffs:
         if np.array(coeffs['E']).ndim>1:
             return -coeffs['E'][0][0]+coeffs['e'][0][0]
@@ -333,6 +440,7 @@ def readCee(coeffs):
     return 0
 
 def readCmumu(coeffs):
+    """Reads out the ALP-muon coupling value from TdAlps-based coupling dictionary coeffs"""
     if 'E' in coeffs:
         if np.array(coeffs['E']).ndim>1 and len(coeffs['E'][0])>1:
             return -coeffs['E'][1][1]+coeffs['e'][1][1]
@@ -344,6 +452,7 @@ def readCmumu(coeffs):
     return 0
 
 def readCtautau(coeffs):
+    """Reads out the ALP-tauon coupling value from TdAlps-based coupling dictionary coeffs"""
     if 'E' in coeffs:
         if np.array(coeffs['E']).ndim>1 and len(coeffs['E'][0])>2:
             return -coeffs['E'][2][2]+coeffs['e'][2][2]
@@ -355,7 +464,9 @@ def readCtautau(coeffs):
     return 0
 
 def readAlphaEM(coeffs):
+    """Reads out the electromagnetic coupling value from TdAlps-based coupling dictionary coeffs"""
     return coeffs['aEM']
 
 def readAlphaS(coeffs):
+    """Reads out the strong coupling value from TdAlps-based coupling dictionary coeffs"""
     return coeffs['a3']
