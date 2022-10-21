@@ -4,50 +4,14 @@ from matplotlib.patches import Rectangle
 from matplotlib.lines import Line2D
 import numpy as np
 
+# general plot settings
 plt.rcParams.update({'font.size': 14})
 plt.rcParams['figure.dpi'] = 300
 plt.rcParams['figure.figsize'] = [8, 5]
 plt.rc('text.latex', preamble=r'\usepackage{amsmath}')
 
-def colour(r: int, g: int, b: int, a: float):
-    """turns Integer 0-255 values r g and b into floats, keeps opacity a float
-    
-    returns a tuple of the float values for all colour channels: (r,g,b,a)"""
-    return (r/256, g/256, b/256, a)
 
-def colours(alpha: float):
-    """defines a list of seven colour tuples with opacity alpha"""
-    darkBlue = colour(0, 114, 178, alpha)
-    lightBlue = colour(86, 180, 233, alpha)
-    green = colour(0, 158, 115, alpha)
-    yellow = colour(240, 228, 66, alpha)
-    orange = colour(230, 159, 0, alpha)
-    red = colour(215, 94, 0, alpha)
-    pink = colour(204, 121, 167, alpha)
-    return [darkBlue, lightBlue, green, yellow, orange, red, pink]
-    
-def coloursX(alpha, X):
-    """returns a list of X colour tuples with opacity alpha, loops after 7"""
-    if X>7:
-        return colours(alpha) + coloursX(alpha/2, X-7)
-    if X==7:
-        return colours(alpha)
-    if X==6:
-        return colours(alpha)[0:6]
-    if X==5:
-        return colours(alpha)[0:4]+[colours(alpha)[5]]
-    if X==4:
-        return [colours(alpha)[1], colours(alpha)[2], colours(alpha)[3],
-                colours(alpha)[5]]
-    if X==3:
-        return [colours(alpha)[1], colours(alpha)[2], colours(alpha)[5]]
-    if X==2:
-        return [colours(alpha)[0], colours(alpha)[5]]
-    if X==1:
-        return [(0,0,0,alpha)]
-    return []
-
-# relevant labels for plot directions in this project
+# relevant labels for plot directions in this project, translating labels into LaTeX
 dirLabel = dict()
 dirLabel["boost_a"] = r"$\gamma\beta_a$ [GeV]"
 dirLabel["abs3mom_a"] = r"$|\vec{p}_a|$ [GeV]"
@@ -90,6 +54,44 @@ dirLabel["ctt"] = r"$c_{tt}(\Lambda)$"
 dirLabel["ctau"] = r"$c_\tau$ [cm]"
 dirLabel["track_mu"] = r"$d_\mu$ [cm]"
 
+
+def colour(r: int, g: int, b: int, a: float):
+    """turns Integer 0-255 values r g and b into floats, keeps opacity a float
+    
+    returns a tuple of the float values for all colour channels: (r,g,b,a)"""
+    return (r/256, g/256, b/256, a)
+
+def colours(alpha: float):
+    """defines a list of seven colour tuples with opacity alpha"""
+    darkBlue = colour(0, 114, 178, alpha)
+    lightBlue = colour(86, 180, 233, alpha)
+    green = colour(0, 158, 115, alpha)
+    yellow = colour(240, 228, 66, alpha)
+    orange = colour(230, 159, 0, alpha)
+    red = colour(215, 94, 0, alpha)
+    pink = colour(204, 121, 167, alpha)
+    return [darkBlue, lightBlue, green, yellow, orange, red, pink]
+    
+def coloursX(alpha, X):
+    """returns a list of X colour tuples with opacity alpha, loops after 7"""
+    if X>7:
+        return colours(alpha) + coloursX(alpha/2, X-7)
+    if X==7:
+        return colours(alpha)
+    if X==6:
+        return colours(alpha)[0:6]
+    if X==5:
+        return colours(alpha)[0:4]+[colours(alpha)[5]]
+    if X==4:
+        return [colours(alpha)[1], colours(alpha)[2], colours(alpha)[3],
+                colours(alpha)[5]]
+    if X==3:
+        return [colours(alpha)[1], colours(alpha)[2], colours(alpha)[5]]
+    if X==2:
+        return [colours(alpha)[0], colours(alpha)[5]]
+    if X==1:
+        return [(0,0,0,alpha)]
+    return []
 
 def hist1d(data, labels, xlabel, filename=None,
            nbins=50, customXlim=None, title=None):
