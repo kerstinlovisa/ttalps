@@ -304,7 +304,7 @@ class Particle:
                     return self.fourmomentum.abs_3d() * x_z
             elif x_2d != 0:
                 return self.fourmomentum.abs_3d() * x_2d
-            else:[1409.4557]
+            else:
                 return 0
                 
     def decay_vertex(self, ctau: float):
