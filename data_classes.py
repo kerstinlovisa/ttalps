@@ -507,8 +507,16 @@ class Dataset:
         if which in self.observable_translator:
             which = self.observable_translator[which]
         tr_whose = [self.particle_translator[who] for who in whose]
-        return np.array([event.observable(which, tr_whose, **kwargs)
+        avg = False
+        if "average" in kwargs:
+            if kwargs["average"]:
+                avg = True
+            del kwargs["average"]
+        obs_array = np.array([event.observable(which, tr_whose, **kwargs)
                          for event in self.events])
+        if avg:    
+            return np.average(obs_array)
+        return obs_array
     
     def count_with_restrictions(self, restrictions):
         """Returns the ratio of events that hold the given restrictions
@@ -665,14 +673,14 @@ class Dataset:
         
         if case == 3:
             print(filename+f" read with [alp, top, antitop, {decay_particle}"
-                 +f", anti{decay_particle}] in Events, where {decay_particle}s"
-                 +" generated")
+                 +f", anti{decay_particle}] in " + str(len(events))
+                 +f" Events, where {decay_particle}s generated")
         elif case == 4:
             print(filename+" read with [top, antitop, muon, antimuon]"
-                  +" in Events.")
+                  +" in " + str(len(events)) + " Events.")
         elif case == 5:
             print(filename+" read with [alp, top, antitop, muon, antimuon]"
-                  +" in Events.")
+                  +" in " + str(len(events)) + " Events.")
         else:
             raise ValueError("This Part of the code should have already"
                 +" raised an exception in the previous if-else statement.")
