@@ -26,6 +26,9 @@ bool ALPanalysis::Initialize(const MA5::Configuration& cfg, const std::map<std::
     signaloutput.open("../Output/TXT/muon_pair_parents.txt",ios::trunc);
     signaloutput << "";
     signaloutput.close();
+    //signaloutput.open("../Output/TXT/single_tree.txt",ios::trunc);
+    //signaloutput << "";
+    //signaloutput.close();
 
     cout << "Initialised Outputfiles" << endl;
     return true;
@@ -73,7 +76,7 @@ bool ALPanalysis::Execute(SampleFormat& sample, const EventFormat& event)
         		atop_found = true;
         		atop_data += this->data(part);
         	}
-            else if (abs(part.pdgid())==13)
+            else if (abs(part.pdgid())==13 and not hasTopAncestor(part))
             {
                 MCParticleFormat mother = *part.mothers()[0];
                 muon_sisters = 1;
@@ -144,8 +147,29 @@ bool ALPanalysis::Execute(SampleFormat& sample, const EventFormat& event)
 		    signaloutput << atop_data << signifier << tab;
 		    signaloutput << muon_pair_data << signifier << tab;
 		    signaloutput << muon_nonpair_data << endl;
-	    	    signaloutput.close();
+	    	signaloutput.close();
 	        }
+	        // output to file some trees to look at
+	        // int count=0;
+	        // int n;
+	        // std::string str;
+	        // for (MAuint32 i=0;i<event.mc()->particles().size();i++)
+	        // {
+	        	//cout <<i<<" : ";
+	        	// MCParticleFormat part = event.mc()->particles()[i];
+	        	// MCParticleFormat& mother = part;
+	        	//cout << mother.mothers().size() << endl;
+	        	// if (mother.mothers().size()==0)
+	        	// {
+	        		// n=0;
+	        		// str="";
+	        		// this->buildOutput(mother, n, count, str);
+	        		// str += "\n -------------------------------------------------------------------------------------------------------------------------------------------\n";
+	        		// signaloutput.open("../Output/TXT/single_tree.txt",ios::app);
+	        		// signaloutput << str << endl;
+	        		// signaloutput.close();
+	        	// }
+	        // }
 	    }
 	    else
 	    {
@@ -165,10 +189,69 @@ string ALPanalysis::data(MCParticleFormat part)
 	ss << part.decay_vertex().X() << tab;
 	ss << part.decay_vertex().Y() << tab;
 	ss << part.decay_vertex().Z() << tab;
-	ss << part.E() << tab;
+	ss << part.e() << tab;
 	ss << part.px() << tab;
 	ss << part.py() << tab;
 	ss << part.pz() << tab;
 	std::string result(ss.str());
 	return result;
+}
+
+bool ALPanalysis::hasTopAncestor(MCParticleFormat part)
+{
+	if (abs(part.pdgid()) == 6)
+	{
+		return true;
+	}
+	else
+	{
+		if (part.mothers().size()==1)
+		{
+			MCParticleFormat mother = *part.mothers()[0];
+			return hasTopAncestor(mother);
+		}
+		else if (part.mothers().size()==0)
+		{
+			return false;
+		}
+		else
+		{
+			for (int i=0; i<part.mothers().size(); i++)
+			{
+				MCParticleFormat mother = *part.mothers()[i];
+				if (hasTopAncestor(mother))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		
+	}
+}
+
+
+void ALPanalysis::buildOutput (MCParticleFormat &mother, int &n, int &count, std::string &tobebuilt)
+{
+  count++;
+  int id = abs(mother.pdgid());
+  if (id == 6 || id == 13 || id == 21 || id == 24 || id == 5)
+  {
+  	tobebuilt += std::to_string(mother.pdgid())+"\t";
+  }
+  else
+  {
+  	tobebuilt += "\t";
+  }
+  n++;
+  for(MAuint32 i=0; i<mother.daughters().size(); i++)
+	{
+	MCParticleFormat dau = *mother.daughters()[i];
+	buildOutput(dau, n, count, tobebuilt);
+	if(i+1<mother.daughters().size()){
+		tobebuilt += "\n";
+		for (int j=0; j<n; j++){tobebuilt +="\t";}
+	}
+  }
+  n--;
 }

@@ -14,6 +14,8 @@ class ALPanalysis : public AnalyzerBase
   virtual void Finalize(const SampleFormat& summary, const std::vector<SampleFormat>& files);
   virtual bool Execute(SampleFormat& sample, const EventFormat& event);
   std::string data(MCParticleFormat part);
+  void buildOutput(MCParticleFormat& mother, int& n, int& count, std::string& tobebuilt);
+  bool hasTopAncestor(MCParticleFormat part);
  private:
 };
 }
