@@ -41,3 +41,8 @@ The folder `MadAnalysis` contains `.cpp` and `.h` files that are scripts for the
 - Add the folder `ALPanalysis/Output/TXT` - otherwise the .txt files won't be saved while running the analysis
 - Add the file `input.txt` including the path to the input background .hepmc file
 - Run `./MadAnalysis5job input.txt`
+
+## Running the .ipynb remotely with Jupyter notebook
+- In lxplus start jupyter notebook with no browser `ipython notebook --no-browser --port=<port-number>`. Specified port number is optional
+- On local computer tunnel the remote local host with `ssh -N -f -L localhost:8888:localhost:<port-number> <username>@lxplus7.cern.ch` and enter password
+- In browser type `localhost:8888`

@@ -42,12 +42,17 @@ filenames_bkg.sort(key=len)
 # data_ttj = dc.Dataset.from_txt_bkg(inputpath+"bkg/converted/muon_data.txt")
 data_ttj = dc.Dataset.from_txt_bkg(muondatapath+"muon_data.txt")
 
-data_inclusive = [dc.Dataset.from_lhe_alp(filename)
-                     for filename in filenames_inclusive]
-data_boosted = [dc.Dataset.from_lhe_alp(filename)
-                     for filename in filenames_boosted]
+# data_inclusive = [dc.Dataset.from_lhe_alp(filename)
+#                      for filename in filenames_inclusive]
+# data_boosted = [dc.Dataset.from_lhe_alp(filename)
+#                      for filename in filenames_boosted]
 data_bkg = [dc.Dataset.from_lhe_alp(filename)
                      for filename in filenames_bkg]
+
+print("1")
+print(data_bkg[0])
+print(data_ttj[0])
+print("2")
 
 def data(which, whose, where, **kwargs):
     """calculates a specific observable for a specific dataset
@@ -108,29 +113,29 @@ def rate(where, restrictions):
 
 print('   #Plotting kinematics of the inclusive signal events')
 # kinematics of the inclusive signal events
-mypl.hist1d(data("boost",["alp"],"incl"),massLabels,dirLabel["boost_a"],outputpath+"ALP_boost.png",customXlim=[0,2000])
-mypl.hist1d(data("p3",["alp"],"incl"),massLabels,dirLabel["abs3mom_a"],outputpath+"ALP_3mom.png",customXlim=[0,1000])
-mypl.hist1d(data("inv_mass",["top","antitop"],"incl"),massLabels,dirLabel["mtt"],outputpath+"mtt.png",customXlim=[0,2000])
-mypl.hist1d(data("pT",["alp"],"incl"),massLabels,dirLabel["pT_a"],outputpath+"ALP_pT.png",customXlim=[0,1000])
-mypl.hist1d(data("pT",["top"],"incl"),massLabels,dirLabel["pT_t"],outputpath+"Top_pT.png",customXlim=[0,1000])
-mypl.hist1d(data("pT",["antitop"],"incl"),massLabels,dirLabel["pT_at"],outputpath+"AntiTop_pT.png",customXlim=[0,1000])
-mypl.hist1d(data("pT",["muon"],"incl"),massLabels,dirLabel["pT_mu"],outputpath+"Muon_pT.png",customXlim=[0,1000])
-mypl.hist1d(data("theta",["alp"],"incl"),massLabels,dirLabel["theta_a"],outputpath+"ALP_theta.png")
-mypl.hist1d(data("theta",["top"],"incl"),massLabels,dirLabel["theta_t"],outputpath+"Top_theta.png")
-mypl.hist1d(data("theta",["antitop"],"incl"),massLabels,dirLabel["theta_at"],outputpath+"AntiTop_theta.png")
-mypl.hist1d(data("theta",["muon"],"incl"),massLabels,dirLabel["theta_mu"],outputpath+"Muon_theta.png")
-mypl.hist1d(data("y",["alp"],"incl"),massLabels,dirLabel["y_a"],outputpath+"ALP_rapidity.png")
-mypl.hist1d(data("y",["top"],"incl"),massLabels,dirLabel["y_t"],outputpath+"Top_rapidity.png")
-mypl.hist1d(data("y",["antitop"],"incl"),massLabels,dirLabel["y_at"],outputpath+"AntiTop_rapidity.png")
-mypl.hist1d(data("y",["muon"],"incl"),massLabels,dirLabel["y_mu"],outputpath+"Muon_rapidity.png")
-mypl.hist1d(data("eta",["alp"],"incl"),massLabels,dirLabel["eta_a"],outputpath+"ALP_pseudorapidity.png")
-mypl.hist1d(data("eta",["top"],"incl"),massLabels,dirLabel["eta_t"],outputpath+"Top_pseudorapidity.png")
-mypl.hist1d(data("eta",["antitop"],"incl"),massLabels,dirLabel["eta_at"],outputpath+"AntiTop_pseudorapidity.png")
-mypl.hist1d(data("eta",["muon"],"incl"),massLabels,dirLabel["eta_mu"],outputpath+"Muon_pseudorapidity.png")
-mypl.hist1d(data("oA",["alp","top"],"incl"),massLabels,dirLabel["oA_at"],outputpath+"Angle_ALPTop.png")
-mypl.hist1d(data("oA",["top","antitop"],"incl"),massLabels,dirLabel["oA_tat"],outputpath+"Angle_TopAntiTop.png")
-mypl.hist1d(data("oA",["antitop","alp"],"incl"),massLabels,dirLabel["oA_ata"],outputpath+"Angle_AntiTopALP.png")
-mypl.hist1d(data("oA",["muon","antimuon"],"incl"),massLabels,dirLabel["oA_muons"],outputpath+"Angle_Muons.png")
+# mypl.hist1d(data("boost",["alp"],"incl"),massLabels,dirLabel["boost_a"],outputpath+"ALP_boost.png",customXlim=[0,2000])
+# mypl.hist1d(data("p3",["alp"],"incl"),massLabels,dirLabel["abs3mom_a"],outputpath+"ALP_3mom.png",customXlim=[0,1000])
+# mypl.hist1d(data("inv_mass",["top","antitop"],"incl"),massLabels,dirLabel["mtt"],outputpath+"mtt.png",customXlim=[0,2000])
+# mypl.hist1d(data("pT",["alp"],"incl"),massLabels,dirLabel["pT_a"],outputpath+"ALP_pT.png",customXlim=[0,1000])
+# mypl.hist1d(data("pT",["top"],"incl"),massLabels,dirLabel["pT_t"],outputpath+"Top_pT.png",customXlim=[0,1000])
+# mypl.hist1d(data("pT",["antitop"],"incl"),massLabels,dirLabel["pT_at"],outputpath+"AntiTop_pT.png",customXlim=[0,1000])
+# mypl.hist1d(data("pT",["muon"],"incl"),massLabels,dirLabel["pT_mu"],outputpath+"Muon_pT.png",customXlim=[0,1000])
+# mypl.hist1d(data("theta",["alp"],"incl"),massLabels,dirLabel["theta_a"],outputpath+"ALP_theta.png")
+# mypl.hist1d(data("theta",["top"],"incl"),massLabels,dirLabel["theta_t"],outputpath+"Top_theta.png")
+# mypl.hist1d(data("theta",["antitop"],"incl"),massLabels,dirLabel["theta_at"],outputpath+"AntiTop_theta.png")
+# mypl.hist1d(data("theta",["muon"],"incl"),massLabels,dirLabel["theta_mu"],outputpath+"Muon_theta.png")
+# mypl.hist1d(data("y",["alp"],"incl"),massLabels,dirLabel["y_a"],outputpath+"ALP_rapidity.png")
+# mypl.hist1d(data("y",["top"],"incl"),massLabels,dirLabel["y_t"],outputpath+"Top_rapidity.png")
+# mypl.hist1d(data("y",["antitop"],"incl"),massLabels,dirLabel["y_at"],outputpath+"AntiTop_rapidity.png")
+# mypl.hist1d(data("y",["muon"],"incl"),massLabels,dirLabel["y_mu"],outputpath+"Muon_rapidity.png")
+# mypl.hist1d(data("eta",["alp"],"incl"),massLabels,dirLabel["eta_a"],outputpath+"ALP_pseudorapidity.png")
+# mypl.hist1d(data("eta",["top"],"incl"),massLabels,dirLabel["eta_t"],outputpath+"Top_pseudorapidity.png")
+# mypl.hist1d(data("eta",["antitop"],"incl"),massLabels,dirLabel["eta_at"],outputpath+"AntiTop_pseudorapidity.png")
+# mypl.hist1d(data("eta",["muon"],"incl"),massLabels,dirLabel["eta_mu"],outputpath+"Muon_pseudorapidity.png")
+# mypl.hist1d(data("oA",["alp","top"],"incl"),massLabels,dirLabel["oA_at"],outputpath+"Angle_ALPTop.png")
+# mypl.hist1d(data("oA",["top","antitop"],"incl"),massLabels,dirLabel["oA_tat"],outputpath+"Angle_TopAntiTop.png")
+# mypl.hist1d(data("oA",["antitop","alp"],"incl"),massLabels,dirLabel["oA_ata"],outputpath+"Angle_AntiTopALP.png")
+# mypl.hist1d(data("oA",["muon","antimuon"],"incl"),massLabels,dirLabel["oA_muons"],outputpath+"Angle_Muons.png")
 
 print('   #Plotting kinematics of the inclusive and boosted signal events and the ttmumu background events')
 # kinematics of the inclusive and boosted signal events and the ttmumu background events
