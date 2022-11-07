@@ -32,3 +32,12 @@ The folder `MadAnalysis` contains `.cpp` and `.h` files that are scripts for the
     - its production vertex (given by the function `decay_vertex`)
     - its four-momentum (E, px, py, pz)
   - The particles' properties are separated by `\t`, the particles by `|`, and the events by `\n`.
+
+## Running `MadAnalysis5`
+- Start by running `MadAnalysis5` in expert mode `./bin/mg5 -e`. Assuming the directory and workspace is named ALPanalysis:
+- Change the `ALPanalysis/Build/SampleAnalyzer/User/Analyzer/` accounding to `ALPanalysis.cpp` in the `MadAnalysis` folder
+- Run `source setup.sh`
+- In `ALPanalysis` compile with `make`
+- Add the folder `ALPanalysis/Output/TXT` - otherwise the .txt files won't be saved while running the analysis
+- Add the file `input.txt` including the path to the input background .hepmc file
+- Run `./MadAnalysis5job input.txt`
