@@ -140,7 +140,7 @@ def hist1d(data, labels, xlabel, filename=None,
     plt.show()
     
 def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None, 
-               nbins=50, customXlim=None, customXlabels=None, title = None):
+               nbins=50, customXlim=None, customXlabels=None, title = None, log_scale = False):
     """Plots 1d histogram from (up to) three separate lists of datasets
     
     data1 - list of datasets, each of which is plotted as a solid line
@@ -162,13 +162,14 @@ def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None,
     if customXlim == None:
         lmax = max(data1[0])
         lmin = min(data1[0])
-        for i in range(n):
+        for i in range(0,n):
             lmax = max(lmax, max(data1[i]))
             lmin = min(lmin, min(data1[i]))
-            lmax = max(lmax, max(data2[i]))
-            lmin = min(lmin, min(data2[i]))
+        for j in range(0,len(data2)):
+            lmax = max(lmax, max(data2[j]))
+            lmin = min(lmin, min(data2[j]))
         if not len(data3)==0:
-            for i in range(len(data3)):
+            for i in range(0,len(data3)):
                 lmax = max(lmax, max(data3[i]))
                 lmin = min(lmin, min(data3[i]))
     else:
@@ -180,7 +181,7 @@ def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None,
         heights, _, _ = plt.hist(data1[i], histtype='step', 
                                  weights=len(data1[i])*[1/len(data1[i])],
                                  color=coloursX(1,n)[i], bins=binList, 
-                                 lw=1, ls='solid')
+                                 lw=1, ls='solid', log=log_scale)
         maxheight = max(max(heights), maxheight)
     for i in range(len(data2)):
         if not len(data3)==0:
@@ -190,7 +191,7 @@ def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None,
         heights, _, _ = plt.hist(data2[i], histtype='step',
                                  weights=len(data2[i])*[1/len(data2[i])],
                                  color=coloursX(1,n)[i], bins=binList,
-                                 lw=1, ls=linestyle)
+                                 lw=1, ls=linestyle, log=log_scale)
         maxheight = max(max(heights), maxheight)
     for i in range(len(data3)):
         if len(data3) > 1:
@@ -200,7 +201,7 @@ def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None,
         heights, _, _ = plt.hist(data3[i], histtype='step', 
                                  weights=len(data3[i])*[1/len(data3[i])],
                                  color=colours[i], bins=binList,
-                                 lw=1, ls='dotted')
+                                 lw=1, ls='dotted', log=log_scale)
         maxheight = max(max(heights), maxheight)
     plt.xlabel(xlabel)
     plt.ylabel("number of events [a.u.]")
