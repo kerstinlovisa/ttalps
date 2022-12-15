@@ -140,7 +140,7 @@ def hist1d(data, labels, xlabel, filename=None,
     plt.show()
     
 def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None, 
-               nbins=50, customXlim=None, customXlabels=None, title = None, log_scale = False):
+               nbins=50, customXlim=None, customXlabels=None, title = None, log_scale = False, stacked3 = False, selLabel=None):
     """Plots 1d histogram from (up to) three separate lists of datasets
     
     data1 - list of datasets, each of which is plotted as a solid line
@@ -154,7 +154,12 @@ def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None,
     customXlim - if not set, the x axis contains all values in data
     customXlabels -  if not set, data1 is understood as an ALP dataset, 
         data2 as a Top dataset, and data3 as an AntiTop dataset
-    title - if not given, the plot is not given a title"""
+    title - if not given, the plot is not given a title
+    log_scale - if true the y-axis is displayed in log scale
+    stacked3 - if true data3 will be stacked
+    selLabel - list of strings for selection, if None no text will be printed 
+               not yet implemented!
+    """
     n = len(data1)
     if (len(data1)!=len(labels)) or (len(data2)!=len(labels)):
         print("Different array lengths: "+str(len(data1))+", "
@@ -177,38 +182,58 @@ def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None,
         lmax = customXlim[1]
     binList = np.arange(lmin, lmax, (lmax-lmin)/nbins)
     maxheight = 0
+    if len(data3) > 1:
+        colours = coloursX(1,n)
+    else:
+        colours = coloursX(1,1)
+    if stacked3:
+        if not len(data3[i]) == 0:
+            weights3 = []
+            total_length = 0
+            for i in range(len(data3)):
+                total_length += len(data3[i])
+            for i in range(len(data3)):
+                weights3.append(len(data3[i])*[1/total_length])
+            heights, _, _ = plt.hist(data3, histtype='step', 
+                                    weights=weights3,
+                                    color=coloursX(1,len(data3)), bins=binList,
+                                    lw=1, ls='dotted', stacked=stacked3)
+            # maxheight = max(max(heights), maxheight)
+    else:
+        for i in range(len(data3)):
+            if not len(data3[i]) == 0:
+                heights, _, _ = plt.hist(data3[i], histtype='step',
+                                        weights=len(data3[i])*[1/len(data3[i])],
+                                        color=coloursX(1,n)[i], bins=binList,
+                                        lw=1, ls='dotted')
+                maxheight = max(max(heights), maxheight)
     for i in range(n):
-        heights, _, _ = plt.hist(data1[i], histtype='step', 
-                                 weights=len(data1[i])*[1/len(data1[i])],
-                                 color=coloursX(1,n)[i], bins=binList, 
-                                 lw=1, ls='solid', log=log_scale)
-        maxheight = max(max(heights), maxheight)
+        if not len(data1[i]) == 0:
+            heights, _, _ = plt.hist(data1[i], histtype='step', 
+                                    weights=len(data1[i])*[1/len(data1[i])],
+                                    color=coloursX(1,n)[i], bins=binList, 
+                                    lw=1, ls='solid')
+            maxheight = max(max(heights), maxheight)
     for i in range(len(data2)):
         if not len(data3)==0:
             linestyle = 'dashed'
         else:
             linestyle = 'dotted'
-        heights, _, _ = plt.hist(data2[i], histtype='step',
-                                 weights=len(data2[i])*[1/len(data2[i])],
-                                 color=coloursX(1,n)[i], bins=binList,
-                                 lw=1, ls=linestyle, log=log_scale)
-        maxheight = max(max(heights), maxheight)
-    for i in range(len(data3)):
-        if len(data3) > 1:
-            colours = coloursX(1,n)
-        else:
-            colours = coloursX(1,1)
-        heights, _, _ = plt.hist(data3[i], histtype='step', 
-                                 weights=len(data3[i])*[1/len(data3[i])],
-                                 color=colours[i], bins=binList,
-                                 lw=1, ls='dotted', log=log_scale)
-        maxheight = max(max(heights), maxheight)
+        if not len(data2[i]) == 0:
+            heights, _, _ = plt.hist(data2[i], histtype='step',
+                                    weights=len(data2[i])*[1/len(data2[i])],
+                                    color=coloursX(1,n)[i], bins=binList,
+                                    lw=1, ls=linestyle)
+            maxheight = max(max(heights), maxheight)
     plt.xlabel(xlabel)
     plt.ylabel("number of events [a.u.]")
     plt.xlim([lmin,lmax])
-    plt.ylim(bottom=0)
-    plt.gca().get_yaxis().set_major_formatter(matplotlib.ticker.
-                                              FormatStrFormatter('%.2f')) 
+    if not log_scale:
+        plt.ylim(bottom=0)
+        plt.gca().get_yaxis().set_major_formatter(matplotlib.ticker.
+                                              FormatStrFormatter('%.2f'))
+    else:
+        plt.yscale("log")
     handles = [Line2D([],[],c=coloursX(1,n)[i],lw=3) for i in range(n)]
     if not len(data3)==0:
         handles += [Line2D([], [], c='k', lw=3, ls=style) 
@@ -222,6 +247,131 @@ def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None,
         labelList = labels + customXlabels
     plt.legend(handles, labelList, handlelength=1, bbox_to_anchor=(1.05,1.15),
                loc="upper left")
+    # if selLabel is not None:
+        # xmin, xmax, ymin, ymax = plt.axes()
+        # plt.text(0.8*xmax,0.8*ymax, 'Selection:  ' + selLabel)
+    if title is not None:
+        plt.title(title)
+    if filename is not None:
+        plt.savefig(filename)
+    plt.show()
+
+def hist1dcross(data1, data2, data3, crosssec1, crosssec2, crosssec3, intlumi, labels, xlabel, filename=None, 
+               nbins=50, customXlim=None, customXlabels=None, title = None, log_scale = False, stacked3 = False, selLabel=None):
+    """Plots 1d histogram from (up to) three separate lists of datasets
+    
+    data1 - list of datasets, each of which is plotted as a solid line
+    data2 - list of datasets, each of which is plotted as a dashed line
+    data3 - list of datasets, each of which is plotted as a dotted line
+        (if data3 is empty, data2 is plotted with dotted lines)
+    crossec1 - cross section value for data1
+    crossec2 - cross section value for data2
+    crossec3 - cross section value for data3
+               TODO - make use of the cross section variable implemented in Dataset
+    intlumi - integrated luminosity
+    labels - list of labels of the datasets (same for data1,2,3)
+    xlabel - x label of the histogram
+    filename - if None, the plot is not saved, otherwise it is
+    nbins - the number of bins, default: 50
+    customXlim - if not set, the x axis contains all values in data
+    customXlabels -  if not set, data1 is understood as an ALP dataset, 
+        data2 as a Top dataset, and data3 as an AntiTop dataset
+    title - if not given, the plot is not given a title
+    log_scale - if true the y-axis is displayed in log scale
+    stacked3 - if true data3 will be stacked
+    selLabel - list of strings for selection, if None no text will be printed 
+               not yet implemented!
+    """
+
+    n = len(data1)
+    if (len(data1)!=len(labels)) or (len(data2)!=len(labels)):
+        print("Different array lengths: "+str(len(data1))+", "
+              +str(len(data2))+", "+str(len(data3))+", "+str(len(labels)))
+    if customXlim == None:
+        lmax = max(data1[0])
+        lmin = min(data1[0])
+        for i in range(0,n):
+            lmax = max(lmax, max(data1[i]))
+            lmin = min(lmin, min(data1[i]))
+        for j in range(0,len(data2)):
+            lmax = max(lmax, max(data2[j]))
+            lmin = min(lmin, min(data2[j]))
+        if not len(data3)==0:
+            for i in range(0,len(data3)):
+                lmax = max(lmax, max(data3[i]))
+                lmin = min(lmin, min(data3[i]))
+    else:
+        lmin = customXlim[0]
+        lmax = customXlim[1]
+    binList = np.arange(lmin, lmax, (lmax-lmin)/nbins)
+    maxheight = 0
+    #for i in range(len(data3)):
+    if len(data3) > 1:
+        colours = coloursX(1,n)
+    else:
+        colours = coloursX(1,1)
+    if stacked3:
+            weights3 = []
+            total_length = 0
+            for i in range(len(data3)):
+                total_length += len(data3[i])
+            for i in range(len(data3)):
+                if not len(data3[i]) == 0:
+                    weights3.append(np.array(len(data3[i])*[1/len(data3[i])])*crosssec3[i]*intlumi)
+            heights, _, _ = plt.hist(data3, histtype='step', 
+                                    weights=weights3,
+                                    color=coloursX(1,len(data3)), bins=binList,
+                                    lw=1, ls='dotted', log=log_scale, stacked=stacked3)
+            # maxheight = max(max(heights), maxheight)
+    else:
+        for i in range(len(data3)):
+            if not len(data3[i]) == 0:
+                heights, _, _ = plt.hist(data3[i], histtype='step',
+                                        weights=np.array(len(data3[i])*[1/100000])*crosssec3[i]*intlumi,
+                                        color=coloursX(1,n)[i], bins=binList,
+                                        lw=1, ls='dotted', log=log_scale)
+                maxheight = max(max(heights), maxheight)
+    for i in range(n):
+        if not len(data1[i]) == 0:
+            heights, _, _ = plt.hist(data1[i], histtype='step', 
+                                    weights=np.array(len(data1[i])*[1/len(data1[i])])*crosssec1[i]*intlumi,
+                                    color=coloursX(1,n)[i], bins=binList, 
+                                    lw=1, ls='solid', log=log_scale)
+            maxheight = max(max(heights), maxheight)
+    for i in range(len(data2)):
+        if not len(data3)==0:
+            linestyle = 'dashed'
+        else:
+            linestyle = 'dotted'
+        if not len(data2[i]) == 0:
+            heights, _, _ = plt.hist(data2[i], histtype='step',
+                                    weights=np.array(len(data2[i])*[1/len(data2[i])])*crosssec2[i]*intlumi,
+                                    color=coloursX(1,n)[i], bins=binList,
+                                    lw=1, ls=linestyle, log=log_scale)
+            maxheight = max(max(heights), maxheight)
+    plt.xlabel(xlabel)
+    plt.ylabel("number of events [a.u.]")
+    plt.xlim([lmin,lmax])
+    if not log_scale:
+        plt.ylim(bottom=0)
+    if not log_scale:
+        plt.gca().get_yaxis().set_major_formatter(matplotlib.ticker.
+                                                  FormatStrFormatter('%.2f')) 
+    handles = [Line2D([],[],c=coloursX(1,n)[i],lw=3) for i in range(n)]
+    if not len(data3)==0:
+        handles += [Line2D([], [], c='k', lw=3, ls=style) 
+                    for style in ['solid', 'dashed', 'dotted']]
+    else:
+        handles += [Line2D([], [], c='k', lw=3, ls=style) 
+                    for style in ['solid', 'dotted']]
+    if customXlabels == None:
+        labelList = labels + ['ALP', 'Top', 'Anti-Top']
+    else:
+        labelList = labels + customXlabels
+    plt.legend(handles, labelList, handlelength=1, bbox_to_anchor=(1.05,1.15),
+               loc="upper left")
+    # if selLabel is not None:
+        #plt.text(0.8*xmax,0.8*ymax, 'Selection:  ' + selLabel)
     if title is not None:
         plt.title(title)
     if filename is not None:

@@ -472,9 +472,14 @@ class Dataset:
     observables returns a np.array of the observable which of the particle(s)
         whose, both of which get translated with the self-owned dictionaries
         before being passed to each of the Event objects
+    self.cross_section is the cross section of the dataset, default 1.0 means it won't be used
+    self.int_luminosity is the luminosity, default 1.0 means it won't be used
+    self.N is the total number of events
+        TODO implement cross_section, int_luminosity and N better for easier use
+        N should also be input in future
     """
     
-    def __init__(self, events: [Event], particle_dict: dict):
+    def __init__(self, events: [Event], particle_dict: dict, cross_sec = 1.0, int_lumi = 1.0):
         self.events = events
         self.particle_translator = particle_dict
         self.observable_translator = { 
@@ -487,12 +492,26 @@ class Dataset:
             "y": "rapidity",
             "eta": "pseudorapidity"
         }
+        self.cross_section = cross_sec
+        self.int_luminosity = int_lumi
+        self.N = len(self.events)
         
     def __str__(self):
         return f"This Dataset contains {len(self.events)} events."
     
     def __repr__(self):
         return self.__str__()
+
+    def set_exp_weights(self, cross_sec: float, int_lumi: float, N: int):
+        self.cross_section = cross_sec
+        self.int_luminosity = int_lumi
+        self.N = N
+
+    def get_weighted_events(self):
+        return (len(self.events)*self.cross_section*self.int_luminosity)/self.N
+
+    def print_expected_events(self):
+        print(f"This Dataset contains {(len(self.events)*self.cross_section*self.int_luminosity)/self.N} events.")
         
     def observables(self, which, whose, **kwargs):
         """Returns a np.array of the relevant observable for each Event.
@@ -545,6 +564,29 @@ class Dataset:
             translated_restrictions.append(tuple(tr_rest))
         return len([1 for event in self.events if event.counts(translated_restrictions)])/len(self.events)
         
+    @classmethod
+    def event_selection(cls, dataset, restriction):
+        # restrictions take the form (condition, which, [whose], extra_args)
+        translated_restrictions = []
+        tr_rest = []
+        tr_rest.append(restriction[0])
+        if restriction[1] in dataset.observable_translator:
+            tr_rest.append(dataset.observable_translator[restriction[1]])
+        else:
+            tr_rest.append(restriction[1])
+        tr_rest.append([dataset.particle_translator[who] for who in restriction[2]])
+        if len(restriction)==4:
+            tr_rest.append(restriction[3])
+        else:
+            tr_rest.append({})
+        translated_restrictions.append(tuple(tr_rest))
+
+        events_sel = []
+        for event in dataset.events:
+            if event.counts(translated_restrictions):
+                events_sel.append(event)
+        return cls(events_sel, dataset.particle_translator)
+
 
     @classmethod
     def from_lhe_alp(cls, filename, event_num_max=-1):
@@ -750,6 +792,7 @@ class Dataset:
                             tmp_4v = FourVector(tmp_v_list)
                             if tmp_4v.abs_3d() > 10**-10:
                                 tmp_p = Particle(tmp_4mom, label, tmp_4v)
+                                print("FourVector used")
                             else:
                                 tmp_p = Particle(tmp_4mom, label)
                             tmp_p_list.append(tmp_p)
@@ -761,14 +804,35 @@ class Dataset:
                 particles = [final_top, final_atop]
                 if mus_no>=2:
                     muon_list = particle_lists[2]+particle_lists[3]
-                    if len(muons)>0:
-                        particles.append(muon_list[muons[0]])
-                    if len(amuons)>0:
-                        particles.append(muon_list[amuons[0]])
+                    index_mu = -1
+                    index_amu = -1
+                    angle_max = 0.0
+                    if len(muons)>0 and len(amuons)>0:
+                        for muon_i in muons:
+                            for amuon_i in amuons:
+                                angle = muon_list[muon_i].fourmomentum.angle_to(muon_list[amuon_i].fourmomentum)
+                                if angle>angle_max:
+                                    if (muon_list[muon_i].fourmomentum*muon_list[muon_i].fourmomentum) >= 0 and (muon_list[amuon_i].fourmomentum*muon_list[amuon_i].fourmomentum) >= 0:
+                                        index_mu = muon_i
+                                        index_amu = amuon_i
+                        if (index_mu != muons[-1]):
+                            print(index_mu)
+                        if (index_amu != amuons[-1]):
+                            print(index_amu)
+                        if (index_mu >= 0 and index_amu >= 0):
+                            particles.append(muon_list[index_mu])
+                            particles.append(muon_list[index_amu])
+                        else:
+                            print("Muon mass error, event ignored")
                     if len(particles)==4:
                         events.append(Event(particles))
                         event_num += 1
+                    else:
+                        print(f"Event not included: {len(particles)} number of particles, {len(particle_lists[2])} number of muons, {len(particle_lists[3])} number of antimuons,")
+                else:
+                    print(f"Event not included: {mus_no} number of muons.")
                 if event_num>=event_num_max and not event_num_max<0:
+                    print(f"Too many events: {event_num}")
                     break
             
         particle_translator = {"Top": 0, "top": 0, "t": 0, 
