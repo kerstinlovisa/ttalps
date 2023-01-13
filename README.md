@@ -5,14 +5,10 @@ This GitLab repository contains the code so far accumulated in the exploration o
 ## Setup of virtual invironment
 
 - For running the code with all necessary libraries, run with python3 venv as:
-
-`python3 -m venv ttalps` 
-- For invironment name ttalps, in the ttalps directory.
-
-`source bin/activate`
-
-`pip install -r requirements.txt`
-- To deactivate `deactive`.
+`python3 -m venv ttalps`. For invironment name ttalps, in the ttalps directory.
+- Activate: `source bin/activate`
+- Download libraries: `pip install -r requirements.txt`
+- Deactivate `deactive`.
 
 ## Structure of the code
 
