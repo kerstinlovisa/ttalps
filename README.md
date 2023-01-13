@@ -2,6 +2,15 @@
 
 This GitLab repository contains the code so far accumulated in the exploration of signatures of ALPs produced together with a top antitop pair at the CMS detector at the LHC, with the ALP decaying into a muon pair. We use this code to compare the signatures of signal events (tta->ttmumu) with background events which do not have an ALP (ttmumu) to separate the two sets of events on the basis of their kinematic variables.
 
+## Setup of virtual invironment
+
+For running the code with all necessary libraries, run with python3 venv as:
+`python3 -m venv ttalps` 
+For invironment name ttalps, in the ttalps directory.
+`source bin/activate`
+`pip install -r requirements.txt`
+To deactivate `deactive`.
+
 ## Structure of the code
 
 The code is made up of four auxiliary python files:
@@ -43,6 +52,7 @@ The folder `MadAnalysis` contains `.cpp` and `.h` files that are scripts for the
 - Run `./MadAnalysis5job input.txt`
 
 ## Running the .ipynb remotely with Jupyter notebook
-- In lxplus start jupyter notebook with no browser `ipython notebook --no-browser --port=<port-number>`. Specified port number is optional
-- On local computer tunnel the remote local host with `ssh -N -f -L localhost:8888:localhost:<port-number> <username>@lxplus7.cern.ch` and enter password
+- In lxplus start jupyter notebook with no browser `jupyter notebook --no-browser --port=<port-number>`. Specified port number is optional
+- On local computer tunnel the remote local host with `ssh -N -f -L localhost:8888:localhost:<port-number> <username>@lxplus<7xx>.cern.ch`, for current lxplusnumber 7xx, and enter password
 - In browser type `localhost:8888`
+For VS code only first step is needed, then open browser under PORTS is VS code.
