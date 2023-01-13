@@ -22,6 +22,7 @@ dirLabel["pT_a"] = r"$p_T^a$ [GeV]"
 dirLabel["pT_t"] = r"$p_T^t$ [GeV]"
 dirLabel["pT_at"] = r"$p_T^{\bar{t}}$ [GeV]"
 dirLabel["pT_mu"] = r"$p_T^{\mu}$ [GeV]"
+dirLabel["pT_amu"] = r"$p_T^{\bar{\mu}}$ [GeV]"
 dirLabel["theta"] = r"$\vartheta$ [$^\circ$]"
 dirLabel["theta_a"] = r"$\vartheta_a$ [$^\circ$]"
 dirLabel["theta_t"] = r"$\vartheta_t$ [$^\circ$]"
@@ -38,6 +39,11 @@ dirLabel["eta_t"] = r"$\eta_t$"
 dirLabel["eta_at"] = r"$\eta_{\bar{t}}$"
 dirLabel["eta_mu"] = r"$\eta_{\mu}$"
 dirLabel["eta_t-eta_at"] = r"$\eta_t-\eta_{\bar{t}}$"
+dirLabel["deltaR"] = r"$\DeltaR$"
+dirLabel["deltaR_at"] = r"$\Delta$R($at$)"
+dirLabel["deltaR_tat"] = r"$\Delta$R($t\bar{t}$)"
+dirLabel["deltaR_ata"] = r"$\Delta$R($a\bar{t}$)"
+dirLabel["deltaR_muons"] = r"$\Delta$R($\mu\bar{\mu}$)"
 dirLabel["oA"] = r"$\sphericalangle$ [$^\circ$]"
 dirLabel["oA_at"] = r"$\sphericalangle(\vec{p}_a,\vec{p}_t)$ [$^\circ$]"
 dirLabel["oA_tat"] = r"$\sphericalangle(\vec{p}_t,\vec{p}_{\bar{t}})$ [$^\circ$]"
@@ -83,18 +89,18 @@ def coloursX(alpha, X):
     if X==5:
         return colours(alpha)[0:4]+[colours(alpha)[5]]
     if X==4:
-        return [colours(alpha)[1], colours(alpha)[2], colours(alpha)[3],
-                colours(alpha)[5]]
+        return [colours(alpha)[0], colours(alpha)[1], colours(alpha)[2],
+                colours(alpha)[3]]
     if X==3:
-        return [colours(alpha)[1], colours(alpha)[2], colours(alpha)[5]]
+        return [colours(alpha)[1], colours(alpha)[2], colours(alpha)[4]]
     if X==2:
-        return [colours(alpha)[0], colours(alpha)[5]]
+        return [colours(alpha)[5], colours(alpha)[6]]
     if X==1:
-        return [(0,0,0,alpha)]
+        return [colours(alpha)[4]]
     return []
 
 def hist1d(data, labels, xlabel, filename=None,
-           nbins=50, customXlim=None, title=None):
+           nbins=50, customXlim=None, title=None, log_scale=False, clip=False):
     """Plots 1d histogram
     
     data - list of datasets, each of which is plotted as a line
@@ -103,7 +109,11 @@ def hist1d(data, labels, xlabel, filename=None,
     filename - if None, the plot is not saved, otherwise it is
     nbins - the number of bins, default: 50
     customXlim - if not set, the x axis contains all values in data
-    title - if not given, the plot is not given a title"""
+    title - if not given, the plot is not given a title
+    log_scale - if true the y-axis is displayed in log scale
+    clip - option to plot the overflow of a cut off x-axis in the last bin, 
+        using numpy clip function
+    """
     n = len(data)
     if (len(data)!=len(labels)):
         print("Different array lengths")
@@ -117,9 +127,12 @@ def hist1d(data, labels, xlabel, filename=None,
     else:
         lmin = customXlim[0]
         lmax = customXlim[1]
-    binList = np.arange(lmin*0.95, lmax*1.05, (lmax*1.05-lmin*0.95)/nbins)
+    # binList = np.arange(lmin*0.95, lmax*1.05, (lmax*1.05-lmin*0.95)/nbins)
+    binList = np.arange(lmin, lmax+(lmax-lmin)/nbins, (lmax-lmin)/nbins)
     maxheight = 0
     for i in range(n):
+        if clip:
+            data[i] = np.clip(data[i],binList[0],binList[-1])
         heights, bins, patches = plt.hist(data[i], histtype='step', 
                                 color=coloursX(1,n)[i], bins=binList,
                                 label=labels[i], lw=1, density = True)
@@ -127,9 +140,12 @@ def hist1d(data, labels, xlabel, filename=None,
     plt.xlabel(xlabel)
     plt.ylabel("number of events [a.u.]")
     plt.xlim([lmin, lmax])
-    plt.ylim(bottom=0)
-    plt.gca().get_yaxis().set_major_formatter(matplotlib.ticker.
+    if not log_scale:
+        plt.ylim(bottom=0)
+        plt.gca().get_yaxis().set_major_formatter(matplotlib.ticker.
                                               FormatStrFormatter('%.2f'))
+    else:
+        plt.yscale("log")
     handles = [Line2D([], [], c=coloursX(1,n)[i], lw=3) for i in range(n)]
     plt.legend(handles, labels, handlelength=1, bbox_to_anchor=(1.05,1.05),
                loc="upper left")
@@ -157,8 +173,7 @@ def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None,
     title - if not given, the plot is not given a title
     log_scale - if true the y-axis is displayed in log scale
     stacked3 - if true data3 will be stacked
-    selLabel - list of strings for selection, if None no text will be printed 
-               not yet implemented!
+    selLabel - list of strings for selection, if None no text will be printed
     """
     n = len(data1)
     if (len(data1)!=len(labels)) or (len(data2)!=len(labels)):
@@ -180,7 +195,7 @@ def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None,
     else:
         lmin = customXlim[0]
         lmax = customXlim[1]
-    binList = np.arange(lmin, lmax, (lmax-lmin)/nbins)
+    binList = np.arange(lmin, lmax+(lmax-lmin)/nbins, (lmax-lmin)/nbins)
     maxheight = 0
     if len(data3) > 1:
         colours = coloursX(1,n)
@@ -256,17 +271,149 @@ def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None,
         plt.savefig(filename)
     plt.show()
 
-def hist1dcross(data1, data2, data3, crosssec1, crosssec2, crosssec3, intlumi, labels, xlabel, filename=None, 
-               nbins=50, customXlim=None, customXlabels=None, title = None, log_scale = False, stacked3 = False, selLabel=None):
+def hist1dcomp2(data1, data2, data3, labels, xlabel, filename=None, 
+               nbins=50, customXlim=None, customXlabels=None, title = None, 
+               log_scale = False, stacked3 = False, selLabel=[], clip=False):
     """Plots 1d histogram from (up to) three separate lists of datasets
     
     data1 - list of datasets, each of which is plotted as a solid line
     data2 - list of datasets, each of which is plotted as a dashed line
     data3 - list of datasets, each of which is plotted as a dotted line
         (if data3 is empty, data2 is plotted with dotted lines)
-    crossec1 - cross section value for data1
-    crossec2 - cross section value for data2
-    crossec3 - cross section value for data3
+    labels - list of labels of the datasets (same for data1,2,3)
+    xlabel - x label of the histogram
+    filename - if None, the plot is not saved, otherwise it is
+    nbins - the number of bins, default: 50
+    customXlim - if not set, the x axis contains all values in data
+    customXlabels -  if not set, data1 is understood as an ALP dataset, 
+        data2 as a Top dataset, and data3 as an AntiTop dataset
+    title - if not given, the plot is not given a title
+    log_scale - if true the y-axis is displayed in log scale
+    stacked3,stacked2 - if true all dataset in data1/data2 will be stacked together
+    selLabel - list of strings for selection, if None no text will be printed
+    clip - option to plot the overflow of a cut off x-axis in the last bin, 
+        using numpy clip function
+    """
+    n = len(data1)
+    if (len(data1)!=len(labels)) or (len(data2)!=len(labels)):
+        print("Different array lengths: "+str(len(data1))+", "
+              +str(len(data2))+", "+str(len(data3))+", "+str(len(labels)))
+    if customXlim == None:
+        lmax = max(data1[0])
+        lmin = min(data1[0])
+        for i in range(0,n):
+            lmax = max(lmax, max(data1[i]))
+            lmin = min(lmin, min(data1[i]))
+        for j in range(0,len(data2)):
+            lmax = max(lmax, max(data2[j]))
+            lmin = min(lmin, min(data2[j]))
+        if not len(data3)==0:
+            for i in range(0,len(data3)):
+                lmax = max(lmax, max(data3[i]))
+                lmin = min(lmin, min(data3[i]))
+    else:
+        lmin = customXlim[0]
+        lmax = customXlim[1]
+    binList = np.arange(lmin, lmax+(lmax-lmin)/nbins, (lmax-lmin)/nbins)
+    maxheight = 0
+    if len(data3) > 1:
+        colours = coloursX(1,n)
+    else:
+        colours = coloursX(1,3)
+    if stacked3:
+        if not len(data3[i]) == 0:
+            weights3 = []
+            total_length = 0
+            for i in range(len(data3)):
+                total_length += len(data3[i])
+            for i in range(len(data3)):
+                weights3.append(len(data3[i])*[1/total_length])
+            if clip:
+                data3[i] = np.clip(data3[i],binList[0],binList[-1])
+            heights, _, _ = plt.hist(data3, histtype='step', 
+                                    weights=weights3,
+                                    color=colours, bins=binList,
+                                    lw=1, ls='solid', stacked=stacked3)
+            # maxheight = max(max(heights), maxheight)
+    else:
+        for i in range(len(data3)):
+            if clip:
+                data3[i] = np.clip(data3[i],binList[0],binList[-1])
+            if not len(data3[i]) == 0:
+                heights, _, _ = plt.hist(data3[i], histtype='step',
+                                        weights=len(data3[i])*[1/len(data3[i])],
+                                        color=coloursX(1,n)[i], bins=binList,
+                                        lw=1, ls='solid')
+                maxheight = max(max(heights), maxheight)
+    for i in range(n):
+        if not len(data1[i]) == 0:
+            if clip:
+                data1[i] = np.clip(data1[i],binList[0],binList[-1])
+            heights, _, _ = plt.hist(data1[i], histtype='step', 
+                                    weights=len(data1[i])*[1/len(data1[i])],
+                                    color=coloursX(1,n)[i], bins=binList, 
+                                    lw=1, ls='solid')
+            maxheight = max(max(heights), maxheight)
+    for i in range(len(data2)):
+        if not len(data3)==0:
+            linestyle = 'dashed'
+        else:
+            linestyle = 'dotted'
+        if not len(data2[i]) == 0:
+            if clip:
+                data2[i] = np.clip(data2[i],binList[0],binList[-1])
+            heights, _, _ = plt.hist(data2[i], histtype='step',
+                                    weights=len(data2[i])*[1/len(data2[i])],
+                                    color=coloursX(1,len(data2))[i], bins=binList,
+                                    lw=1, ls='solid')
+            maxheight = max(max(heights), maxheight)
+    plt.xlabel(xlabel)
+    plt.ylabel("number of events [a.u.]")
+    plt.xlim([lmin,lmax])
+    if not log_scale:
+        plt.ylim(bottom=0)
+        plt.gca().get_yaxis().set_major_formatter(matplotlib.ticker.
+                                              FormatStrFormatter('%.2f'))
+    else:
+        plt.yscale("log")
+    handles = [Line2D([],[],c=coloursX(1,n)[i],lw=3) for i in range(n)]
+    if not len(data3)==0:
+        handles += [Line2D([], [], c=coloursX(1,len(data2))[i], lw=3, ls='solid') 
+                    for i in range(len(data2))]
+        if len(data3) > 1:
+            handles += [Line2D([], [], c=coloursX(1,len(data2))[i], lw=3, ls='solid') 
+                        for i in range(len(data3))]
+        else:
+            handles += [Line2D([], [], c=coloursX(1,3)[i], lw=3, ls='solid')]
+    else:
+        handles += [Line2D([], [], c=coloursX(1,len(data2))[i], lw=3, ls='solid') 
+                    for i in range(len(data2))]
+    if customXlabels == None:
+        labelList = labels + ['ALP', 'Top', 'Anti-Top']
+    else:
+        labelList = labels + customXlabels
+    if len(selLabel) != 0:
+        labelList = labelList + ['Selections:'] + selLabel
+        handles += [Line2D([],[],c='white',lw=0) for i in range(len(selLabel)+1)]
+        # xmin, xmax, ymin, ymax = plt.axis()
+        # plt.text(,0.9*ymax, selLabel, horizontalalignment='right',
+        # verticalalignment='top')
+    plt.legend(handles, labelList, handlelength=1, bbox_to_anchor=(1.05,1.15),
+               loc="upper left")
+    if title is not None:
+        plt.title(title)
+    if filename is not None:
+        plt.savefig(filename)
+    plt.show()
+
+def hist1dcross(data1, data2, data3, crosssec1, crosssec2, crosssec3, N1, N2, N3, 
+                intlumi, labels, xlabel, filename=None, nbins=50, customXlim=None, 
+                customXlabels=None, title = None, log_scale = False, stacked2 = False, 
+                stacked3 = False, selLabel=None, clip=False):
+    """Plots 1d histogram from (up to) three separate lists of datasets
+    
+    data1,data2,data3 - list of datasets, each of which is plotted as a solid line
+    crossec1,crossec2,crossec3 - cross section value for data1,data2,data3
                TODO - make use of the cross section variable implemented in Dataset
     intlumi - integrated luminosity
     labels - list of labels of the datasets (same for data1,2,3)
@@ -278,9 +425,10 @@ def hist1dcross(data1, data2, data3, crosssec1, crosssec2, crosssec3, intlumi, l
         data2 as a Top dataset, and data3 as an AntiTop dataset
     title - if not given, the plot is not given a title
     log_scale - if true the y-axis is displayed in log scale
-    stacked3 - if true data3 will be stacked
+    stacked3,stacked2 - if true all dataset in data1/data2 will be stacked together
     selLabel - list of strings for selection, if None no text will be printed 
-               not yet implemented!
+    clip - option to plot the overflow of a cut off x-axis in the last bin, 
+        using numpy clip function
     """
 
     n = len(data1)
@@ -303,7 +451,7 @@ def hist1dcross(data1, data2, data3, crosssec1, crosssec2, crosssec3, intlumi, l
     else:
         lmin = customXlim[0]
         lmax = customXlim[1]
-    binList = np.arange(lmin, lmax, (lmax-lmin)/nbins)
+    binList = np.arange(lmin, lmax+(lmax-lmin)/nbins, (lmax-lmin)/nbins)
     maxheight = 0
     #for i in range(len(data3)):
     if len(data3) > 1:
@@ -317,37 +465,56 @@ def hist1dcross(data1, data2, data3, crosssec1, crosssec2, crosssec3, intlumi, l
                 total_length += len(data3[i])
             for i in range(len(data3)):
                 if not len(data3[i]) == 0:
-                    weights3.append(np.array(len(data3[i])*[1/len(data3[i])])*crosssec3[i]*intlumi)
+                    weights3.append(np.array(len(data3[i])*[1/N3[i]])*crosssec3[i]*intlumi)
+                if clip:
+                    data3[i] = np.clip(data3[i],binList[0],binList[-1])
             heights, _, _ = plt.hist(data3, histtype='step', 
                                     weights=weights3,
                                     color=coloursX(1,len(data3)), bins=binList,
-                                    lw=1, ls='dotted', log=log_scale, stacked=stacked3)
+                                    lw=1, ls='solid', log=log_scale, stacked=stacked3)
             # maxheight = max(max(heights), maxheight)
     else:
         for i in range(len(data3)):
             if not len(data3[i]) == 0:
+                if clip:
+                    data3[i] = np.clip(data3[i],binList[0],binList[-1])
                 heights, _, _ = plt.hist(data3[i], histtype='step',
-                                        weights=np.array(len(data3[i])*[1/100000])*crosssec3[i]*intlumi,
+                                        weights=np.array(len(data3[i])*[1/N3[i]])*crosssec3[i]*intlumi,
                                         color=coloursX(1,n)[i], bins=binList,
-                                        lw=1, ls='dotted', log=log_scale)
+                                        lw=1, ls='solid', log=log_scale)
+                maxheight = max(max(heights), maxheight)
+    if stacked2:
+        weights2 = []
+        total_length = 0
+        for i in range(len(data2)):
+            total_length += len(data2[i])
+        for i in range(len(data2)):
+            if not len(data2[i]) == 0:
+                weights2.append(np.array(len(data2[i])*[1/N2[i]])*crosssec2[i]*intlumi)
+            if clip:
+                data2[i] = np.clip(data2[i],binList[0],binList[-1])
+        heights, _, _ = plt.hist(data2, histtype='step', 
+                                weights=weights2,
+                                color=coloursX(1,len(data2)), bins=binList,
+                                lw=1, ls='solid', log=log_scale, stacked=stacked2)
+    else:
+        for i in range(len(data2)):
+            if not len(data2[i]) == 0:
+                if clip:
+                    data2[i] = np.clip(data2[i],binList[0],binList[-1])
+                heights, _, _ = plt.hist(data2[i], histtype='step',
+                                        weights=np.array(len(data2[i])*[1/N2[i]])*crosssec2[i]*intlumi,
+                                        color=coloursX(1,len(data2))[i], bins=binList,
+                                        lw=1, ls='solid', log=log_scale)
                 maxheight = max(max(heights), maxheight)
     for i in range(n):
         if not len(data1[i]) == 0:
+            if clip:
+                data1[i] = np.clip(data1[i],binList[0],binList[-1])
             heights, _, _ = plt.hist(data1[i], histtype='step', 
-                                    weights=np.array(len(data1[i])*[1/len(data1[i])])*crosssec1[i]*intlumi,
+                                    weights=np.array(len(data1[i])*[1/N1[i]])*crosssec1[i]*intlumi,
                                     color=coloursX(1,n)[i], bins=binList, 
                                     lw=1, ls='solid', log=log_scale)
-            maxheight = max(max(heights), maxheight)
-    for i in range(len(data2)):
-        if not len(data3)==0:
-            linestyle = 'dashed'
-        else:
-            linestyle = 'dotted'
-        if not len(data2[i]) == 0:
-            heights, _, _ = plt.hist(data2[i], histtype='step',
-                                    weights=np.array(len(data2[i])*[1/len(data2[i])])*crosssec2[i]*intlumi,
-                                    color=coloursX(1,n)[i], bins=binList,
-                                    lw=1, ls=linestyle, log=log_scale)
             maxheight = max(max(heights), maxheight)
     plt.xlabel(xlabel)
     plt.ylabel("number of events [a.u.]")
@@ -362,16 +529,17 @@ def hist1dcross(data1, data2, data3, crosssec1, crosssec2, crosssec3, intlumi, l
         handles += [Line2D([], [], c='k', lw=3, ls=style) 
                     for style in ['solid', 'dashed', 'dotted']]
     else:
-        handles += [Line2D([], [], c='k', lw=3, ls=style) 
-                    for style in ['solid', 'dotted']]
+        handles += [Line2D([], [], c=coloursX(1,len(data2))[i], lw=3, ls='solid') 
+                    for i in range(len(data2))]
     if customXlabels == None:
         labelList = labels + ['ALP', 'Top', 'Anti-Top']
     else:
         labelList = labels + customXlabels
+    if len(selLabel) != 0:
+        labelList = labelList + ['Selections:'] + selLabel
+        handles += [Line2D([],[],c='white',lw=0) for i in range(len(selLabel)+1)]
     plt.legend(handles, labelList, handlelength=1, bbox_to_anchor=(1.05,1.15),
                loc="upper left")
-    # if selLabel is not None:
-        #plt.text(0.8*xmax,0.8*ymax, 'Selection:  ' + selLabel)
     if title is not None:
         plt.title(title)
     if filename is not None:

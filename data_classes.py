@@ -94,7 +94,10 @@ class FourVector:
     def angle_to(self, other):
         """Returns the angle between self and other (spatially) in degrees"""
         product = (self.vx*other.vx + self.vy*other.vy + self.vz*other.vz)
-        ratio = product/(self.abs_3d()*other.abs_3d())
+        if (self.vx == other.vx and self.vy == other.vy and self.vz == other.vz):
+            ratio = 1.0
+        else:
+            ratio = product/(self.abs_3d()*other.abs_3d())
         angle = math.acos(ratio)/math.pi*180
         return angle
     
@@ -221,6 +224,18 @@ class Particle:
     def inv_mass(self, other):
         """Returns the invariant mass between this and another Particle"""
         return (self.fourmomentum+other.fourmomentum).mass()
+
+    def inv_mass_from_angle(self, other):
+        """Returns the invariant mass between this and another Particle"""
+        # M^2 = 2*pT1*pT2*(cosh(eta1-eta2)-cos(phi1-phi2))
+        pT1 = math.sqrt(self.fourmomentum.vx*self.fourmomentum.vx + self.fourmomentum.vy*self.fourmomentum.vy)
+        pT2 = math.sqrt(other.fourmomentum.vx*other.fourmomentum.vx + other.fourmomentum.vy*other.fourmomentum.vy)
+        deta = self.pseudorapidity() - other.pseudorapidity()
+        dphi = abs(self.fourmomentum.phi() - other.fourmomentum.phi())
+        if dphi > math.pi:
+            dphi -= 2*math.pi
+        M2 = 2*pT1*pT2*(math.cosh(deta)-math.cos(dphi))
+        return math.sqrt(M2)
     
     def rapidity(self):
         """Returns the Particle's rapidity"""
@@ -229,7 +244,14 @@ class Particle:
     def pseudorapidity(self):
         """Returns the Particle's pseudorapidity"""
         return math.atanh(self.fourmomentum[3]/self.fourmomentum.abs_3d())
-    
+
+    def delta_r(self, other):
+        deta = self.pseudorapidity() - other.pseudorapidity()
+        dphi = abs(self.fourmomentum.phi() - other.fourmomentum.phi())
+        if dphi > math.pi:
+            dphi -= 2*math.pi
+        return math.sqrt(deta*deta + dphi*dphi)
+
     def boost(self):
         """Returns the Particle's boost gamma*|beta|"""
         return self.fourmomentum.abs_3d()/self.mass()
@@ -490,7 +512,8 @@ class Dataset:
             "theta": "fourmomentum.theta",
             "phi": "fourmomentum.phi",
             "y": "rapidity",
-            "eta": "pseudorapidity"
+            "eta": "pseudorapidity",
+            "deltaR": "delta_r"
         }
         self.cross_section = cross_sec
         self.int_luminosity = int_lumi
@@ -690,6 +713,7 @@ class Dataset:
                         else:
                             raise InputError("The given event doesn't contain"
                                              +" the expected particles")
+
                         events.append(event)
                 else:
                     continue
@@ -728,9 +752,100 @@ class Dataset:
                 +" raised an exception in the previous if-else statement.")
         
         return cls(events, particle_translator)
-    
+
+    def get_closest_muons(muons, amuons, muon_list, particles):
+        index_mu = -1
+        index_amu = -1
+        angle_max = 0.0
+        if len(muons)>0 and len(amuons)>0:
+            for muon_i in muons:
+                # if muon_list[muon_i].pseudorapidity() < 2.5:
+                for amuon_i in amuons:
+                    # if muon_list[muon_i].pseudorapidity() < 2.5:
+                    angle = muon_list[muon_i].fourmomentum.angle_to(muon_list[amuon_i].fourmomentum)
+                    if angle>angle_max:
+                        if ((muon_list[muon_i].fourmomentum+muon_list[amuon_i].fourmomentum)*(muon_list[muon_i].fourmomentum+muon_list[amuon_i].fourmomentum)) >= 0:
+                            index_mu = muon_i
+                            index_amu = amuon_i
+                            angle_max = angle
+            # if (index_mu != muons[-1]):
+            #     print(index_mu)
+            # if (index_amu != amuons[-1]):
+            #     print(index_amu)
+            if (index_mu >= 0 and index_amu >= 0):
+                particles.append(muon_list[index_mu])
+                particles.append(muon_list[index_amu])
+            # else:
+                # print("Muon mass error, event ignored")
+        return particles
+
+    def get_closest_muons_no_charge_req(muon_list, particles):
+        index_mu = -1
+        index_mu2 = -1
+        angle_max = 0.0
+        for i in range(len(muon_list)):
+            # if muon_list[muon_i].pseudorapidity() < 2.5:
+            for j in range(len(muon_list)):
+                if j != i:
+                    # if muon_list[muon_i].pseudorapidity() < 2.5:
+                    angle = muon_list[i].fourmomentum.angle_to(muon_list[j].fourmomentum)
+                    if angle>angle_max:
+                        if ((muon_list[i].fourmomentum+muon_list[j].fourmomentum)*(muon_list[i].fourmomentum+muon_list[j].fourmomentum)) >= 0:
+                            index_mu = i
+                            index_mu2 = j
+                            angle_max = angle
+        if (index_mu >= 0 and index_mu2 >= 0):
+            particles.append(muon_list[index_mu])
+            particles.append(muon_list[index_mu2])
+        # else:
+            # print("Muon mass error, event ignored")
+        return particles
+
+    def get_mass_error_muons(muons, amuons, muon_list, particles):
+        index_mu = -1
+        index_amu = -1
+        angle_max = 0.0
+        for i in range(len(muon_list)):
+            # if muon_list[muon_i].pseudorapidity() < 2.5:
+            for j in range(len(muon_list)):
+                if j != i:
+                    # if muon_list[muon_i].pseudorapidity() < 2.5:
+                    angle = muon_list[i].fourmomentum.angle_to(muon_list[j].fourmomentum)
+                    if angle>angle_max:
+                        if ((muon_list[i].fourmomentum+muon_list[j].fourmomentum)*(muon_list[i].fourmomentum+muon_list[j].fourmomentum)) < 0:
+                            index_mu = i
+                            index_amu = j
+                            angle_max = angle
+        if (index_mu >= 0 and index_amu >= 0):
+            particles.append(muon_list[index_mu])
+            particles.append(muon_list[index_amu])
+        return particles
+
+    def get_muon_pairs(muon_pair_list, particles):
+        if (len(muon_pair_list)%2 != 0):
+            print("Error: unexpected number of muons in pairs: ", len(muon_pair_list))
+        elif len(muon_pair_list) == 2:
+            if ((muon_pair_list[0].fourmomentum+muon_pair_list[1].fourmomentum)*(muon_pair_list[0].fourmomentum+muon_pair_list[1].fourmomentum)) >= 0:
+                particles.append(muon_pair_list[0])
+                particles.append(muon_pair_list[1])
+        else:
+            i = 0
+            index_pair = -1
+            angle_max = 0.0
+            while i < len(muon_pair_list):
+                angle = muon_pair_list[i].fourmomentum.angle_to(muon_pair_list[i+1].fourmomentum)
+                if angle>angle_max:
+                    if ((muon_pair_list[i].fourmomentum+muon_pair_list[i+1].fourmomentum)*(muon_pair_list[i].fourmomentum+muon_pair_list[i+1].fourmomentum)) >= 0:
+                        index_pair = i
+                        angle_max = angle
+                i += 2
+            if index_pair >= 0:
+                particles.append(muon_pair_list[index_pair])
+                particles.append(muon_pair_list[index_pair+1])
+        return particles
+
     @classmethod
-    def from_txt_bkg(cls, filename, event_num_max=-1):
+    def from_txt_bkg(cls, filename, event_num_max=-1, charge_req=1):
         """Reads in an .txt file and outputs a new Dataset object from it
         
         This .txt file has to be of the form:
@@ -760,6 +875,7 @@ class Dataset:
                 mus_no = 0
                 muons = []
                 amuons = []
+                pmuons = []
                 
                 for i in range(len(particle_str_lists)):
                     p_list = particle_str_lists[i]
@@ -769,16 +885,21 @@ class Dataset:
                     if p_list[-1] == '' or p_list[-1]=='\n':
                         p_list = p_list[:-1]
                     if len(p_list)%8 != 0:
+                    # if len(p_list)%9 != 0:
                         print("There is an unexpected number of data")
                     else:
                         for j in range(len(p_list)//8):
+                        # for j in range(len(p_list)//9):
                             tmp_mom_list = [float(p_list[j*8+k])
                                             for k in [4,5,6,7]]
+                            # tmp_mom_list = [float(p_list[j*9+k])
+                            # for k in [4,5,6,7]]
                             tmp_4mom = FourMomentum(tmp_mom_list)
                             if i in [0,1]:
                                 label = particle_labels[i]
                             else:
                                 if p_list[j*8][0] == '-':
+                                # if p_list[j*9][0] == '-':
                                     label = particle_labels[3]
                                     amuons.append(mus_no)
                                     mus_no += 1
@@ -786,9 +907,13 @@ class Dataset:
                                     label = particle_labels[2]
                                     muons.append(mus_no)
                                     mus_no += 1
+                                if i == 2:
+                                    pmuons.append(mus_no)
                             
                             tmp_v_list = [0]+[float(p_list[j*8+k])
                                               for k in [1,2,3]]
+                            # tmp_v_list = [0]+[float(p_list[j*9+k])
+                                            #   for k in [1,2,3]]
                             tmp_4v = FourVector(tmp_v_list)
                             if tmp_4v.abs_3d() > 10**-10:
                                 tmp_p = Particle(tmp_4mom, label, tmp_4v)
@@ -800,37 +925,80 @@ class Dataset:
                 
                 final_top = particle_lists[0][-1]
                 final_atop = particle_lists[1][-1]
+
+                # Fixing an error from MadAnalysis where duplicates of the muon pairs were added
+                # one muon pair [amuon, muon] is given as [amuon, muon, amuon, amuon, muons]
+                if len(particle_lists[2]) == 5:
+                    tmp = []
+                    tmp.append(particle_lists[2][0])
+                    tmp.append(particle_lists[2][1])
+                    particle_lists[2] = tmp
+                    amuons_tmp = [0]
+                    muons_tmp = [1]
+                    for i in range(3,len(amuons)):
+                        amuons_tmp.append(amuons[i] - 3)
+                    for i in range(2,len(muons)):
+                        muons_tmp.append(muons[i]-3)
+                    amuons = amuons_tmp
+                    muons = muons_tmp
+                if len(particle_lists[2]) == 10:
+                    tmp = []
+                    tmp.append(particle_lists[2][0])
+                    tmp.append(particle_lists[2][1])
+                    tmp.append(particle_lists[2][5])
+                    tmp.append(particle_lists[2][6])
+                    particle_lists[2] = tmp
+                    amuons_tmp = [0,2]
+                    muons_tmp = [1,3]
+                    for i in range(6,len(amuons)):
+                        amuons_tmp.append(amuons[i] - 6)
+                    for i in range(4,len(muons)):
+                        muons_tmp.append(muons[i]-6)
+                    amuons = amuons_tmp
+                    muons = muons_tmp
                 
                 particles = [final_top, final_atop]
                 if mus_no>=2:
                     muon_list = particle_lists[2]+particle_lists[3]
-                    index_mu = -1
-                    index_amu = -1
-                    angle_max = 0.0
-                    if len(muons)>0 and len(amuons)>0:
-                        for muon_i in muons:
-                            for amuon_i in amuons:
-                                angle = muon_list[muon_i].fourmomentum.angle_to(muon_list[amuon_i].fourmomentum)
-                                if angle>angle_max:
-                                    if (muon_list[muon_i].fourmomentum*muon_list[muon_i].fourmomentum) >= 0 and (muon_list[amuon_i].fourmomentum*muon_list[amuon_i].fourmomentum) >= 0:
-                                        index_mu = muon_i
-                                        index_amu = amuon_i
-                        if (index_mu != muons[-1]):
-                            print(index_mu)
-                        if (index_amu != amuons[-1]):
-                            print(index_amu)
-                        if (index_mu >= 0 and index_amu >= 0):
-                            particles.append(muon_list[index_mu])
-                            particles.append(muon_list[index_amu])
-                        else:
-                            print("Muon mass error, event ignored")
+                    if charge_req == 1:
+                        particles = Dataset.get_closest_muons(muons, amuons, muon_list, particles)
+                    elif charge_req == -1:
+                        particles = Dataset.get_closest_muons_no_charge_req(muon_list, particles)
+                    elif charge_req == 0:
+                        particles = Dataset.get_mass_error_muons(muons, amuons, muon_list, particles)
+                    elif charge_req == -2:
+                        particles = Dataset.get_muon_pairs(particle_lists[2], particles)
+                    else:
+                        print("Error: invalid requirement option")
+                    # index_mu = -1
+                    # index_amu = -1
+                    # angle_max = 0.0
+                    # if len(muons)>0 and len(amuons)>0:
+                    #     for muon_i in muons:
+                    #         # if muon_list[muon_i].pseudorapidity() < 2.5:
+                    #         for amuon_i in amuons:
+                    #             # if muon_list[muon_i].pseudorapidity() < 2.5:
+                    #             angle = muon_list[muon_i].fourmomentum.angle_to(muon_list[amuon_i].fourmomentum)
+                    #             if angle>angle_max:
+                    #                 if ((muon_list[muon_i].fourmomentum+muon_list[amuon_i].fourmomentum)*(muon_list[muon_i].fourmomentum+muon_list[amuon_i].fourmomentum)) >= 0:
+                    #                     index_mu = muon_i
+                    #                     index_amu = amuon_i
+                    #     if (index_mu != muons[-1]):
+                    #         print(index_mu)
+                    #     if (index_amu != amuons[-1]):
+                    #         print(index_amu)
+                    #     if (index_mu >= 0 and index_amu >= 0):
+                    #         particles.append(muon_list[index_mu])
+                    #         particles.append(muon_list[index_amu])
+                    #     else:
+                    #         print("Muon mass error, event ignored")
                     if len(particles)==4:
                         events.append(Event(particles))
                         event_num += 1
-                    else:
-                        print(f"Event not included: {len(particles)} number of particles, {len(particle_lists[2])} number of muons, {len(particle_lists[3])} number of antimuons,")
-                else:
-                    print(f"Event not included: {mus_no} number of muons.")
+                    # else:
+                        # print(f"Event not included: {len(particles)} number of particles, {len(particle_lists[2])} number of muons, {len(particle_lists[3])} number of antimuons,")
+                # else:
+                    # print(f"Event not included: {mus_no} number of muons.")
                 if event_num>=event_num_max and not event_num_max<0:
                     print(f"Too many events: {event_num}")
                     break
