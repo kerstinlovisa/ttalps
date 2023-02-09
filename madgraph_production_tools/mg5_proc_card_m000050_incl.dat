@@ -33,6 +33,7 @@ set default_unset_couplings 99
 set max_t_for_channel 99
 set zerowidth_tchannel True
 set nlo_mixed_expansion True
+
 import model sm
 define p = g u c d s u~ c~ d~ s~
 define j = g u c d s u~ c~ d~ s~
@@ -40,18 +41,24 @@ define l+ = e+ mu+
 define l- = e- mu-
 define vl = ve vm vt
 define vl~ = ve~ vm~ vt~
-import model ALP-ctt
+
+import model ttalps
+
 generate p p > t t~ ax
-output ttALP
-launch ttALP
-done
+output dummy_value
+launch
+
+1
+
 # proton beams
 set lpp1 1
 set lpp2 1
 set ebeam1 6500.0
 set ebeam2 6500.0
-set nevents 100000
+set nevents 100
 # minimum pt for the charged leptons
 set pt_min_pdg {9000005:20}
 set bwcutoff 15.0
 set Ma 50e-03
+
+pythia8_card.dat

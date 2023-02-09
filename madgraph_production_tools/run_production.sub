@@ -1,0 +1,12 @@
+Universe              = vanilla
+executable            = run_production.sh
+# part n_events m_z_prime epsilon
+arguments             = $(ProcId) 100000 1 1e-7
+GetEnv                = True
+output                = output/$(ClusterId).$(ProcId).out
+error                 = error/$(ClusterId).$(ProcId).err
+log                   = log/$(ClusterId).log
+requirements 	      = (OpSysAndVer =?= "CentOS7")
++JobFlavour           = "tomorrow"
+
+queue 10
