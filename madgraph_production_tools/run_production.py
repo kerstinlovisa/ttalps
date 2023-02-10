@@ -7,15 +7,15 @@ from math import sqrt, pi
 import random
 import subprocess
 
-python_path="/afs/desy.de/user/j/jniedzie/miniconda3/envs/tta/bin/python3"
-mg_path="/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/bin/mg5_aMC"
-hepmc_path="/afs/desy.de/user/j/jniedzie/hepmc2root/bin/hepmc2root.py"
-pythia_path="/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/HEPTools/pythia8/share/Pythia8/xmldoc"
+python_path = "/afs/desy.de/user/j/jniedzie/miniconda3/envs/tta/bin/python3"
+mg_path = "/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/bin/mg5_aMC"
+hepmc_path = "/afs/desy.de/user/j/jniedzie/hepmc2root/bin/hepmc2root.py"
+pythia_path = "/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/HEPTools/pythia8/share/Pythia8/xmldoc"
 
-base_mg_card = "mg5_proc_card_m000050_incl.dat"
 base_pythia_card = "pythia8_card.dat"
 
-n_events=100
+keep_lhe = False
+
 
 def remove_existing_files(output_path, file_name):
     command = f"rm -rf {output_path}/{file_name}/"
@@ -32,7 +32,7 @@ def run_madgraph(config_path):
 
 def convert_hepmc_to_root(output_path, file_name):
     hepmc_file_path_original = output_path + "/" + file_name + "/Events/run_01/tag_1_pythia8_events.hepmc.gz"
-    hepmc_file_path = output_path + "/" + file_name + "/Events/run_01/"+ file_name +".hepmc.gz"
+    hepmc_file_path = output_path + "/" + file_name + "/Events/run_01/" + file_name + ".hepmc.gz"
 
     command = f"mv {hepmc_file_path_original} {hepmc_file_path}"
     os.system(command)
@@ -45,11 +45,19 @@ def convert_hepmc_to_root(output_path, file_name):
 
 
 def move_and_cleanup_files(output_path, file_name):
-    command = f"mv {file_name}.root {output_path}/"
+    
+    output_dir_name = "_".join(file_name.split("_")[0:-1])
+    
+    command = f"mkdir -p {output_path}/{output_dir_name}"
     os.system(command)
     
-    # command = f"mv {output_path}/{file_name}/Events/run_01/unweighted_events.lhe.gz {output_path}/{file_name}.lhe.gz"
-    # os.system(command)
+    command = f"mv {file_name}.root {output_path}/{output_dir_name}/"
+    os.system(command)
+    
+    if keep_lhe:
+        command = f"mv {output_path}/{file_name}/Events/run_01/unweighted_events.lhe.gz "
+        command += f"{output_path}/{output_dir_name}/{file_name}.lhe.gz"
+        os.system(command)
     
     command = f"rm -fr {output_path}/{file_name}/"
     os.system(command)
@@ -87,7 +95,10 @@ def copy_and_update_config(base_config_path, new_config_path, values_to_change):
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--part", help="", default=0)
+    parser.add_argument("-n", "--n_events", help="", default=100)
+    parser.add_argument("-m", "--alp_mass", help="", default=50e-03)
     parser.add_argument("-o", "--output_path", help="", default=".")
+    parser.add_argument("-pr", "--process", help="", default="tta")
     
     return parser.parse_args()
 
@@ -96,13 +107,25 @@ def clear_string(s):
     return s.replace(".", "p").replace("-", "m")
     
 
+def get_output_file_name(process, part, n_events, alp_mass):
+    alp_mass_name = clear_string(f"{alp_mass}")
+    
+    file_name = f"{process}"
+    
+    if process == "tta":
+        file_name += f"_mAlp-{alp_mass_name}GeV"
+    file_name += f"_nEvents-{n_events}"
+    file_name += f"_part-{part}"
+    
+    return file_name
+
+
 def main():
     random.seed(None)
 
     os.system(f"export PYTHIA8DATA={python_path}")
     
     args = get_args()
-    part = args.part
     output_path = args.output_path
 
     create_paths(("tmp_cards", output_path))
@@ -111,15 +134,26 @@ def main():
     new_mg_card_path = f"tmp_cards/mg_card_{file_hash}.txt"
     new_pythia_card_path = f"tmp_cards/pythia8_card_{file_hash}.dat"
 
-    file_name = f"tta-0p050GeV"
-    file_name += f"_nEvents-{n_events}"
-    file_name += f"_part-{part}"
+    process = args.process
+
+    file_name = get_output_file_name(process, args.part, args.n_events, args.alp_mass)
 
     # prepare MG card
     to_change = {
         ("output", "dummy_value"): output_path+"/"+file_name,
         ("pythia8_card.dat", "pythia8_card.dat"): new_pythia_card_path,
+        ("set Ma", "dummy_value"): args.alp_mass,
+        ("set nevents", "dummy_value"): args.n_events,
+        ("set iseed", "dummy_value"): random.randint(0, 999999999),
     }
+
+    if process == "tta":
+        base_mg_card = "mg5_card_tta.dat"
+    elif process == "ttj":
+        base_mg_card = "mg5_card_ttj.dat"
+    else:
+        print(f"\n\nERROR -- unrecognized process: {process}")
+        exit(0)
 
     copy_and_update_config(base_mg_card, new_mg_card_path, to_change)
 
