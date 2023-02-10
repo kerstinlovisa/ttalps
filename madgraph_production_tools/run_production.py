@@ -37,10 +37,12 @@ def convert_hepmc_to_root(output_path, file_name):
     command = f"mv {hepmc_file_path_original} {hepmc_file_path}"
     os.system(command)
 
-    command = f"gzip -d {hepmc_file_path}"
+    command = f"cd {output_path}/{file_name}/Events/run_01/;"
+    command += f"gzip -d {file_name}.hepmc.gz"
     os.system(command)
     
-    command = f"{python_path} {hepmc_path} {hepmc_file_path.replace('.gz', '')}"
+    command = f"cd {output_path}/{file_name}/Events/run_01/;"
+    command += f"{python_path} {hepmc_path} {file_name}.hepmc"
     os.system(command)
 
 
@@ -51,7 +53,7 @@ def move_and_cleanup_files(output_path, file_name):
     command = f"mkdir -p {output_path}/{output_dir_name}"
     os.system(command)
     
-    command = f"mv {file_name}.root {output_path}/{output_dir_name}/"
+    command = f"mv {output_path}/{file_name}/Events/run_01/{file_name}.root {output_path}/{output_dir_name}/"
     os.system(command)
     
     if keep_lhe:
@@ -147,10 +149,14 @@ def main():
         ("set iseed", "dummy_value"): random.randint(0, 900000000),
     }
 
+    base_mg_card = None
+
     if process == "tta":
         base_mg_card = "mg5_card_tta.dat"
     elif process == "ttj":
         base_mg_card = "mg5_card_ttj.dat"
+    elif process == "ttmumu":
+        base_mg_card = "mg5_card_ttmumu.dat"
     else:
         print(f"\n\nERROR -- unrecognized process: {process}")
         exit(0)
