@@ -1,12 +1,12 @@
 Universe              = vanilla
 executable            = run_production.sh
 #			process		part	  n_events	alp_mass
-arguments             = ttj 		$(ProcId) 100		50e-03
+arguments             = ttj 		$(ProcId) 10000		50e-03
 GetEnv                = True
 output                = output/$(ClusterId).$(ProcId).out
 error                 = error/$(ClusterId).$(ProcId).err
 log                   = log/$(ClusterId).log
 requirements 	      = (OpSysAndVer =?= "CentOS7")
-+JobFlavour           = "espresso"
++JobFlavour           = "longlunch"
 
-queue 5
+queue 10

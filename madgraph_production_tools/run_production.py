@@ -144,7 +144,7 @@ def main():
         ("pythia8_card.dat", "pythia8_card.dat"): new_pythia_card_path,
         ("set Ma", "dummy_value"): args.alp_mass,
         ("set nevents", "dummy_value"): args.n_events,
-        ("set iseed", "dummy_value"): random.randint(0, 999999999),
+        ("set iseed", "dummy_value"): random.randint(0, 900000000),
     }
 
     if process == "tta":
