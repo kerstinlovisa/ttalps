@@ -137,6 +137,23 @@ class hepmc2root:
         int    Particle_d1[%(size)d];
         int    Particle_d2[%(size)d];
         int    Particle_d3[%(size)d];
+        int    Particle_d4[%(size)d];
+        int    Particle_d5[%(size)d];
+        int    Particle_d6[%(size)d];
+        int    Particle_d7[%(size)d];
+        int    Particle_d8[%(size)d];
+        int    Particle_d9[%(size)d];
+        int    Particle_d10[%(size)d];
+        int    Particle_d11[%(size)d];
+        int    Particle_d12[%(size)d];
+        int    Particle_d13[%(size)d];
+        int    Particle_d14[%(size)d];
+        int    Particle_d15[%(size)d];
+        int    Particle_d16[%(size)d];
+        int    Particle_d17[%(size)d];
+        int    Particle_d18[%(size)d];
+        int    Particle_d19[%(size)d];
+        int    Particle_d20[%(size)d];
 };''' % {'size': MAXPART}
 
         # indices to vertices
@@ -189,7 +206,28 @@ class hepmc2root:
         
     def __str__(self, index):
         bag = self.bag
-        d   = " <%4d, %4d, %4d>" % (bag.Particle_d1[index], bag.Particle_d2[index], bag.Particle_d3[index])
+        d   = " <%4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d>" % \
+              (bag.Particle_d1[index],
+               bag.Particle_d2[index],
+               bag.Particle_d3[index],
+               bag.Particle_d4[index],
+               bag.Particle_d5[index],
+               bag.Particle_d6[index],
+               bag.Particle_d7[index],
+               bag.Particle_d8[index],
+               bag.Particle_d9[index],
+               bag.Particle_d10[index],
+               bag.Particle_d11[index],
+               bag.Particle_d12[index],
+               bag.Particle_d13[index],
+               bag.Particle_d14[index],
+               bag.Particle_d15[index],
+               bag.Particle_d16[index],
+               bag.Particle_d17[index],
+               bag.Particle_d18[index],
+               bag.Particle_d19[index],
+               bag.Particle_d20[index],
+)
         px  = bag.Particle_px[index]
         py  = bag.Particle_py[index]
         pt  = sqrt(px**2+py**2)
@@ -337,10 +375,44 @@ class hepmc2root:
                         bag.Particle_d1[index] = d[0]
                         bag.Particle_d2[index] = d[1]
                         bag.Particle_d3[index] = d[2]
+                        bag.Particle_d4[index] = d[3]
+                        bag.Particle_d5[index] = d[4]
+                        bag.Particle_d6[index] = d[5]
+                        bag.Particle_d7[index] = d[6]
+                        bag.Particle_d8[index] = d[7]
+                        bag.Particle_d9[index] = d[8]
+                        bag.Particle_d10[index] = d[9]
+                        bag.Particle_d11[index] = d[10]
+                        bag.Particle_d12[index] = d[11]
+                        bag.Particle_d13[index] = d[12]
+                        bag.Particle_d14[index] = d[13]
+                        bag.Particle_d15[index] = d[14]
+                        bag.Particle_d16[index] = d[15]
+                        bag.Particle_d17[index] = d[16]
+                        bag.Particle_d18[index] = d[17]
+                        bag.Particle_d19[index] = d[18]
+                        bag.Particle_d20[index] = d[19]
                     else:
                         bag.Particle_d1[index] = -1
                         bag.Particle_d2[index] = -1
                         bag.Particle_d3[index] = -1
+                        bag.Particle_d4[index] = -1
+                        bag.Particle_d5[index] = -1
+                        bag.Particle_d6[index] = -1
+                        bag.Particle_d7[index] = -1
+                        bag.Particle_d8[index] = -1
+                        bag.Particle_d9[index] = -1
+                        bag.Particle_d10[index] = -1
+                        bag.Particle_d11[index] = -1
+                        bag.Particle_d12[index] = -1
+                        bag.Particle_d13[index] = -1
+                        bag.Particle_d14[index] = -1
+                        bag.Particle_d15[index] = -1
+                        bag.Particle_d16[index] = -1
+                        bag.Particle_d17[index] = -1
+                        bag.Particle_d18[index] = -1
+                        bag.Particle_d19[index] = -1
+                        bag.Particle_d20[index] = -1
 
                 # fill ntuple
                 
