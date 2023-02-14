@@ -316,7 +316,7 @@ class hepmc2root:
             elif key == 'V':
                 # VERTEX
                 vbarcode = int(token[1])
-                self.vertex[vbarcode] = [-1, -1, -1]
+                self.vertex[vbarcode] = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
                 x    = float(token[3])
                 y    = float(token[4])
                 z    = float(token[5])
