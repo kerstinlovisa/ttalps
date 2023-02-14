@@ -91,6 +91,13 @@ int main(int argc, char *argv[])
     if(!event->has_two_opposite_sign_muons()) continue;
     cut_flow["3_os_muons"]++;
     
+    
+    // top-antitop
+    // n muons >= 2
+    // n non-top (62) muons >= 2
+    // count in 4 categories (ss, os x siblins, non-siblings)
+    // 
+    
     if(!event->are_non_top_muons_siblings()){
       output_file_non_siblings->cd();
       output_tree_non_siblings->Fill();

@@ -35,6 +35,9 @@ private:
   void setup_particle_mothers();
   void find_muons();
   void setup_motherless_particles();
+  
+  std::tuple<int, int> get_sisters_indices(Particle *mother, int i_particle);
+  std::tuple<bool, bool> check_sister(int sister_index, Particle *particle, std::vector<Particle*> particles);
 };
 
 #endif /* Event_hpp */

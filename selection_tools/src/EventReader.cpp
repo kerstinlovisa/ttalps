@@ -35,6 +35,7 @@ std::vector<Event*> EventReader::read_events(TTree *tree)
 
   int particle_daughter1[99999];
   int particle_daughter2[99999];
+  int particle_daughter3[99999];
 
   int particle_status[99999];
 
@@ -60,6 +61,7 @@ std::vector<Event*> EventReader::read_events(TTree *tree)
   
   tree->SetBranchAddress("Particle_d1", &particle_daughter1);
   tree->SetBranchAddress("Particle_d2", &particle_daughter2);
+  tree->SetBranchAddress("Particle_d3", &particle_daughter3);
   
   tree->SetBranchAddress("Particle_status", &particle_status);
   
@@ -91,7 +93,8 @@ std::vector<Event*> EventReader::read_events(TTree *tree)
       auto particle = new Particle(particle_x[i_particle], particle_y[i_particle], particle_z[i_particle],
                                    particle_px[i_particle], particle_py[i_particle], particle_pz[i_particle],
                                    particle_energy[i_particle], particle_mass[i_particle], particle_ctau[i_particle],
-                                   particle_pid[i_particle], particle_daughter1[i_particle], particle_daughter2[i_particle],
+                                   particle_pid[i_particle],
+                                   particle_daughter1[i_particle], particle_daughter2[i_particle], particle_daughter3[i_particle],
                                    particle_status[i_particle], i_particle, particle_barcode[i_particle]);
       
       event->add_particle(particle);

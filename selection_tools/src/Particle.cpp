@@ -9,19 +9,21 @@
 
 using namespace std;
 
-Particle::Particle(float _x, float _y, float _z, float _px, float _py, float _pz,
-                   float _energy, float _mass, float _ctau,
-                   int _pdgid, int _daughter_1, int _daughter_2, int _status, int _index, int _barcode):
-x(_x), y(_y), z(_z), px(_px), py(_py), pz(_pz),
-energy(_energy), mass(_mass), ctau(_ctau),
-pdgid(_pdgid), daughter_1(_daughter_1), daughter_2(_daughter_2), status(_status), index(_index), barcode(_barcode)
+Particle::Particle(float _x, float _y, float _z, float _px, float _py, float _pz, float _energy, float _mass, float _ctau,
+                   int _pdgid, int _daughter_1, int _daughter_2, int _daughter_3, int _status, int _index, int _barcode):
+x(_x), y(_y), z(_z), px(_px), py(_py), pz(_pz), energy(_energy), mass(_mass), ctau(_ctau),
+pdgid(_pdgid), status(_status), index(_index), barcode(_barcode)
 {
-  
+  daughters.push_back(_daughter_1);
+  daughters.push_back(_daughter_2);
+  daughters.push_back(_daughter_3);
 }
 
 void Particle::print()
 {
-  cout<<"Particle "<<index<<" ("<<pdgid<<"): \td1: "<<daughter_1<<"\td2: "<<daughter_2<<"\tn_mothers: "<<mothers.size()<<"\tbar: "<<barcode<<endl;
+  cout<<"Particle "<<index<<" ("<<pdgid<<"), daughters: ";
+  for(int daughter : daughters) cout<<"\t"<<daughter;
+  cout<<"\tn_mothers: "<<mothers.size()<<"\tbar: "<<barcode<<endl;
 }
 
 
