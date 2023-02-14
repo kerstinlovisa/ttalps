@@ -8,3 +8,6 @@ madgraph_production_tools/error/*
 madgraph_production_tools/output/*
 madgraph_production_tools/py.py
 madgraph_production_tools/tmp_cards/*
+
+
+selection_tools/xApplySelections.xcodeproj/
