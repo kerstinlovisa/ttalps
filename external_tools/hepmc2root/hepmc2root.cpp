@@ -292,7 +292,7 @@ int main(int argc, char *argv[])
   string file_name = argv[1];
   string output_file_name = "";
   
-  if(argc > 1) output_file_name = argv[2];
+  if(argc == 3) output_file_name = argv[2];
   else{
     output_file_name = file_name.substr(file_name.find_last_of("/\\") + 1);
     output_file_name = std::regex_replace(output_file_name, std::regex(".hepmc"), ".root");
