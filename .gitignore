@@ -14,3 +14,5 @@ selection_tools/xApplySelections.xcodeproj/
 
 external_tools/hepmc2root/__pycache__/*
 external_tools/hepmc2root/hepmc2root
+external_tools/hepmc2root/xHepmcToRoot.xcodeproj/*
+external_tools/hepmc2root/test.root

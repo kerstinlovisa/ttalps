@@ -143,8 +143,6 @@ class hepmc2root:
 };
 '''
 
-        print(self.struct)
-        
         # indices to vertices
         
         self.pvertex = [0]*MAXPART
@@ -188,7 +186,7 @@ class hepmc2root:
                 sys.exit("** hepmc2root: no leaf found for branch %s" % bname)
             leafname = leaf.GetName()
             leaftype = leaf.GetTypeName()
-            print("%4d\t%-20s\t%s" % (ii+1, bname, leaftype))
+            # print("%4d\t%-20s\t%s" % (ii+1, bname, leaftype))
             
     def __del__(self):
         self.tree.Write("", ROOT.TObject.kOverwrite)

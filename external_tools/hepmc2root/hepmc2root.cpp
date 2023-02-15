@@ -10,52 +10,48 @@
 
 using namespace std;
 
-string TREENAME= "Events";
-int MAXPART = 5000;
-int debug = 0;
+const int n_particles = 5000;
 int n_daughters = 20;
 
-struct Bag {
+struct Event {
   int    Event_numberP;
   int    Event_processID;
   int    Event_number;
   int    Event_numberMP;
-  float Event_scale;
-  float Event_alphaQCD;
-  float Event_alphaQED;
+  float  Event_scale;
+  float  Event_alphaQCD;
+  float  Event_alphaQED;
   int    Event_barcodeSPV;
   int    Event_numberV;
   int    Event_barcodeBP1;
   int    Event_barcodeBP2;
   
-  
   float Xsection_value;
   float Xsection_error;
   
-  int    PDF_parton1;
-  int    PDF_parton2;
+  int   PDF_parton1;
+  int   PDF_parton2;
   float PDF_x1;
   float PDF_x2;
   float PDF_Q2;
   float PDF_x1f;
   float PDF_x2f;
-  int    PDF_id1;
-  int    PDF_id2;
+  int   PDF_id1;
+  int   PDF_id2;
   
-  float Particle_x[5000];
-  float Particle_y[5000];
-  float Particle_z[5000];
-  float Particle_ctau[5000];
-  
-  int    Particle_barcode[5000];
-  int    Particle_pid[5000];
-  float Particle_px[5000];
-  float Particle_py[5000];
-  float Particle_pz[5000];
-  float Particle_energy[5000];
-  float Particle_mass[5000];
-  int    Particle_status[5000];
-  int    Particle_d[100][5000];
+  float Particle_x[n_particles];
+  float Particle_y[n_particles];
+  float Particle_z[n_particles];
+  float Particle_ctau[n_particles];
+  int   Particle_barcode[n_particles];
+  int   Particle_pid[n_particles];
+  float Particle_px[n_particles];
+  float Particle_py[n_particles];
+  float Particle_pz[n_particles];
+  float Particle_energy[n_particles];
+  float Particle_mass[n_particles];
+  int   Particle_status[n_particles];
+  int   Particle_d[100][n_particles];
 };
 
 string makeBranchName(string input, string type="F")
@@ -66,205 +62,72 @@ string makeBranchName(string input, string type="F")
 class hepmc2root
 {
 public:
-  hepmc2root(string filename, string outfilename = "", string treename="Events", int complevel=2){
-    inp = ifstream(filename);
+  hepmc2root(string input_file_name, string output_file_name = ""){
+    input_file = ifstream(input_file_name);
+    file = new TFile(output_file_name.c_str(), "recreate");
+    tree = new TTree("Events", "HEPMC_tree");
     
-    // get rid of the header
-    string line;
-    std::getline(inp, line);
-    std::getline(inp, line);
-    
-    file = new TFile(outfilename.c_str(), "recreate");
-    tree = new TTree(treename.c_str(), "HEPMC_tree");
-    
-    bag = Bag();
-    
-    tree->Branch("Event_numberP", &(bag.Event_numberP), "Event_numberP/I");
-    tree->Branch("Event_processID", &(bag.Event_processID), "Event_processID/I");
-    tree->Branch("Event_number", &(bag.Event_number), "Event_number/I");
-    tree->Branch("Event_numberMP", &(bag.Event_numberMP), "Event_numberMP/I");
-    tree->Branch("Event_scale", &(bag.Event_scale), "Event_scale/F");
-    tree->Branch("Event_alphaQCD", &(bag.Event_alphaQCD), "Event_alphaQCD/F");
-    tree->Branch("Event_alphaQED", &(bag.Event_alphaQED), "Event_alphaQED/F");
-    tree->Branch("Event_barcodeSPV", &(bag.Event_barcodeSPV), "Event_barcodeSPV/I");
-    tree->Branch("Event_numberV", &(bag.Event_numberV), "Event_numberV/I");
-    tree->Branch("Event_barcodeBP1", &(bag.Event_barcodeBP1), "Event_barcodeBP1/I");
-    tree->Branch("Event_barcodeBP2", &(bag.Event_barcodeBP2), "Event_barcodeBP2/I");
-    
-    tree->Branch("Xsection_value", &(bag.Xsection_value), "Xsection_value/F");
-    tree->Branch("Xsection_error", &(bag.Xsection_error), "Xsection_error/F");
-    
-    tree->Branch("PDF_parton1", &(bag.PDF_parton1), "PDF_parton1/I");
-    tree->Branch("PDF_parton2", &(bag.PDF_parton2), "PDF_parton2/I");
-    tree->Branch("PDF_x1", &(bag.PDF_x1), "PDF_x1/F");
-    tree->Branch("PDF_x2", &(bag.PDF_x2), "PDF_x2/F");
-    tree->Branch("PDF_Q2", &(bag.PDF_Q2), "PDF_Q2/F");
-    tree->Branch("PDF_x1f", &(bag.PDF_x1f), "PDF_x1f/F");
-    tree->Branch("PDF_x2f", &(bag.PDF_x2f), "PDF_x2f/F");
-    tree->Branch("PDF_id1", &(bag.PDF_id1), "PDF_id1/I");
-    tree->Branch("PDF_id2", &(bag.PDF_id2), "PDF_id2/I");
-    
-    tree->Branch("Particle_x", &(bag.Particle_x), makeBranchName("Particle_x", "F").c_str());
-    tree->Branch("Particle_y", &(bag.Particle_y), makeBranchName("Particle_y", "F").c_str());
-    tree->Branch("Particle_z", &(bag.Particle_z), makeBranchName("Particle_z", "F").c_str());
-    
-    tree->Branch("Particle_ctau", &(bag.Particle_ctau), makeBranchName("Particle_ctau", "F").c_str());
-    tree->Branch("Particle_barcode", &(bag.Particle_barcode), makeBranchName("Particle_barcode", "I").c_str());
-    tree->Branch("Particle_pid", &(bag.Particle_pid), makeBranchName("Particle_pid", "I").c_str());
-    
-    tree->Branch("Particle_px", &(bag.Particle_px), makeBranchName("Particle_px", "F").c_str());
-    tree->Branch("Particle_py", &(bag.Particle_py), makeBranchName("Particle_py", "F").c_str());
-    tree->Branch("Particle_pz", &(bag.Particle_pz), makeBranchName("Particle_pz", "F").c_str());
-    tree->Branch("Particle_energy", &(bag.Particle_energy), makeBranchName("Particle_energy", "F").c_str());
-    tree->Branch("Particle_mass", &(bag.Particle_mass), makeBranchName("Particle_mass", "F").c_str());
-    tree->Branch("Particle_status", &(bag.Particle_status), makeBranchName("Particle_status", "I").c_str());
-    
-    for(int i_daughter=0; i_daughter<n_daughters; i_daughter++){
-      string branch_name = "Particle_d"+to_string(i_daughter);
-      tree->Branch(branch_name.c_str(), &(bag.Particle_d[i_daughter]), makeBranchName(branch_name, "I").c_str());
-    }
+    event = Event();
+    setup_branches();
   }
-  ~hepmc2root(){
-    
-  }
+  ~hepmc2root(){}
   
-  TFile *file;
-  TTree *tree;
-  Bag bag;
-  vector<TBranch*> branches;
-  int pvertex[5000] = {0};
-  ifstream inp;
-  map<int, vector<int>> vertex;
-  
-  bool call(){
+  bool process(){
     
-    vector<string> event;
-    vector<string> token;
     string line;
     bool found_event = false;
     
-    while(std::getline(inp, line)){
-      
-      event.push_back(line);
-      token.clear();
-    
-      istringstream iss(line);
-      string tmp;
-      while(iss>>tmp) token.push_back(tmp);
-    
-      string key = token[0];
-      if(key != "E") continue;
-      
+    while(getline(input_file, line)){
+      get_tokens(line);
+      if(tokens.size()==0) continue;
+      if(tokens[0] != "E") continue;
       found_event = true;
       break;
     }
+    if(!found_event) return false;
     
-    if(!found_event){
-      cout<<"event not found, so returning"<<endl;
-      return false;
-    }
-    
-    if(token.size()==0){
-      cout<<"** hepmc2root.py: can't find start of event"<<endl;
-      exit(0);
-    }
-    
-    bag.Event_number     = stoi(token[1]);
-    bag.Event_numberMP   = stoi(token[2]);
-    bag.Event_scale      = stod(token[3]);
-    bag.Event_alphaQCD   = stod(token[4]);
-    bag.Event_alphaQED   = stod(token[5]);
-    bag.Event_processID  = stoi(token[6]);
-    bag.Event_barcodeSPV = stoi(token[7]);
-    bag.Event_numberV    = stoi(token[8]);
-    bag.Event_barcodeBP1 = stoi(token[9]);
-    bag.Event_barcodeBP2 = stoi(token[10]);
-    bag.Event_numberP    = 0;
-    
+    set_event_variables();
     vertex.clear();
     
     bool for_line_broken = false;
     
-    while(std::getline(inp, line)){
+    while(getline(input_file, line)){
+      get_tokens(line);
+      string key = tokens[0];
       
-      token.clear();
-      event.push_back(line);
-      
-      istringstream iss(line);
-      string tmp;
-      while(iss>>tmp) token.push_back(tmp);
-      
-      string key = token[0];
-      
-      if(key == 'C'){
-        bag.Xsection_value = stod(token[1]);
-        bag.Xsection_error = stod(token[2]);
-      }
-      else if(key == 'F'){
-        bag.PDF_parton1  = stoi(token[1]);
-        bag.PDF_parton2  = stoi(token[2]);
-        bag.PDF_x1       = stod(token[3]);
-        bag.PDF_x2       = stod(token[4]);
-        bag.PDF_Q2       = stod(token[5]);
-        bag.PDF_x1f      = stod(token[6]);
-        bag.PDF_x2f      = stod(token[7]);
-        bag.PDF_id1      = stoi(token[8]);
-        bag.PDF_id2      = stoi(token[9]);
-        
-      }
+      if(key == 'C') set_xsec_variables();
+      else if(key == 'F') set_pdf_variables();
       else if(key == 'V'){
-        int vbarcode = stoi(token[1]);
+        int vbarcode = stoi(tokens[1]);
         
         vertex[vbarcode] = vector<int>(n_daughters, -1);
         
-        float x    = stod(token[3]);
-        float y    = stod(token[4]);
-        float z    = stod(token[5]);
-        float ctau = stod(token[6]);
-        int nout = stoi(token[8]);
+        float x    = stod(tokens[3]);
+        float y    = stod(tokens[4]);
+        float z    = stod(tokens[5]);
+        float ctau = stod(tokens[6]);
+        int nout   = stoi(tokens[8]);
         
         for(int ii=0; ii<nout; ii++){
           bool for_broken = false;
           
-          while(std::getline(inp, line)){
+          while(getline(input_file, line)){
+            get_tokens(line);
             
-            token.clear();
-            event.push_back(line);
+            string key = tokens[0];
             
-            istringstream iss(line);
-            string tmp;
-            while(iss>>tmp) token.push_back(tmp);
-            
-            if(debug > 1){
-              for(auto t : token) cout<<"\t "<< t;
-              cout<<endl;
-            }
-            string key = token[0];
-        
-            if(key != 'P'){
-              cout<<"** hepmc2root: faulty event record\n" << line << endl;
-              exit(0);
-            }
-            
-            if(bag.Event_numberP < MAXPART){
+            if(event.Event_numberP < n_particles){
 
-              int index = bag.Event_numberP;
-              bag.Event_numberP++;
+              int index = event.Event_numberP;
+              event.Event_numberP++;
               
-              bag.Particle_x[index]       = x;
-              bag.Particle_y[index]       = y;
-              bag.Particle_z[index]       = z;
-              bag.Particle_ctau[index]    = ctau;
+              event.Particle_x[index]       = x;
+              event.Particle_y[index]       = y;
+              event.Particle_z[index]       = z;
+              event.Particle_ctau[index]    = ctau;
               
-              bag.Particle_barcode[index] = stoi(token[1]);
-              bag.Particle_pid[index]     = stoi(token[2]);
-              bag.Particle_px[index]      = stod(token[3]);
-              bag.Particle_py[index]      = stod(token[4]);
-              bag.Particle_pz[index]      = stod(token[5]);
-              bag.Particle_energy[index]  = stod(token[6]);
-              bag.Particle_mass[index]    = stod(token[7]);
-              bag.Particle_status[index]  = stoi(token[8]);
-              pvertex[index] = stoi(token[11]);
+              set_particle_variables(index);
+              pvertex[index] = stoi(tokens[11]);
               
               if(ii < vertex[vbarcode].size()){
                 vertex[vbarcode][ii] = index;
@@ -277,18 +140,18 @@ public:
         }
       }
       
-      if(vertex.size() >= bag.Event_numberV){
-        for(int index=0; index<bag.Event_numberP; index++){
+      if(vertex.size() >= event.Event_numberV){
+        for(int index=0; index<event.Event_numberP; index++){
           int code = pvertex[index];
           
           if(vertex.find(code) != vertex.end()){
             for(int i=0; i<n_daughters; i++){
-              bag.Particle_d[i][index] = vertex[code][i];
+              event.Particle_d[i][index] = vertex[code][i];
             }
           }
           else{
             for(int i=0; i<n_daughters; i++){
-              bag.Particle_d[i][index] = -1;
+              event.Particle_d[i][index] = -1;
             }
           }
         }
@@ -301,6 +164,122 @@ public:
     
     return true;
   }
+  
+  void close(){
+    tree->Write("", TObject::kOverwrite);
+    file->Close();
+  }
+  
+private:
+  TFile *file;
+  TTree *tree;
+  Event event;
+  vector<TBranch*> branches;
+  int pvertex[n_particles] = {0};
+  ifstream input_file;
+  map<int, vector<int>> vertex;
+  vector<string> tokens;
+  
+  void setup_branches(){
+    tree->Branch("Event_numberP", &(event.Event_numberP), "Event_numberP/I");
+    tree->Branch("Event_processID", &(event.Event_processID), "Event_processID/I");
+    tree->Branch("Event_number", &(event.Event_number), "Event_number/I");
+    tree->Branch("Event_numberMP", &(event.Event_numberMP), "Event_numberMP/I");
+    tree->Branch("Event_scale", &(event.Event_scale), "Event_scale/F");
+    tree->Branch("Event_alphaQCD", &(event.Event_alphaQCD), "Event_alphaQCD/F");
+    tree->Branch("Event_alphaQED", &(event.Event_alphaQED), "Event_alphaQED/F");
+    tree->Branch("Event_barcodeSPV", &(event.Event_barcodeSPV), "Event_barcodeSPV/I");
+    tree->Branch("Event_numberV", &(event.Event_numberV), "Event_numberV/I");
+    tree->Branch("Event_barcodeBP1", &(event.Event_barcodeBP1), "Event_barcodeBP1/I");
+    tree->Branch("Event_barcodeBP2", &(event.Event_barcodeBP2), "Event_barcodeBP2/I");
+    
+    tree->Branch("Xsection_value", &(event.Xsection_value), "Xsection_value/F");
+    tree->Branch("Xsection_error", &(event.Xsection_error), "Xsection_error/F");
+    
+    tree->Branch("PDF_parton1", &(event.PDF_parton1), "PDF_parton1/I");
+    tree->Branch("PDF_parton2", &(event.PDF_parton2), "PDF_parton2/I");
+    tree->Branch("PDF_x1", &(event.PDF_x1), "PDF_x1/F");
+    tree->Branch("PDF_x2", &(event.PDF_x2), "PDF_x2/F");
+    tree->Branch("PDF_Q2", &(event.PDF_Q2), "PDF_Q2/F");
+    tree->Branch("PDF_x1f", &(event.PDF_x1f), "PDF_x1f/F");
+    tree->Branch("PDF_x2f", &(event.PDF_x2f), "PDF_x2f/F");
+    tree->Branch("PDF_id1", &(event.PDF_id1), "PDF_id1/I");
+    tree->Branch("PDF_id2", &(event.PDF_id2), "PDF_id2/I");
+    
+    tree->Branch("Particle_x", &(event.Particle_x), makeBranchName("Particle_x", "F").c_str());
+    tree->Branch("Particle_y", &(event.Particle_y), makeBranchName("Particle_y", "F").c_str());
+    tree->Branch("Particle_z", &(event.Particle_z), makeBranchName("Particle_z", "F").c_str());
+    
+    tree->Branch("Particle_ctau", &(event.Particle_ctau), makeBranchName("Particle_ctau", "F").c_str());
+    tree->Branch("Particle_barcode", &(event.Particle_barcode), makeBranchName("Particle_barcode", "I").c_str());
+    tree->Branch("Particle_pid", &(event.Particle_pid), makeBranchName("Particle_pid", "I").c_str());
+    
+    tree->Branch("Particle_px", &(event.Particle_px), makeBranchName("Particle_px", "F").c_str());
+    tree->Branch("Particle_py", &(event.Particle_py), makeBranchName("Particle_py", "F").c_str());
+    tree->Branch("Particle_pz", &(event.Particle_pz), makeBranchName("Particle_pz", "F").c_str());
+    tree->Branch("Particle_energy", &(event.Particle_energy), makeBranchName("Particle_energy", "F").c_str());
+    tree->Branch("Particle_mass", &(event.Particle_mass), makeBranchName("Particle_mass", "F").c_str());
+    tree->Branch("Particle_status", &(event.Particle_status), makeBranchName("Particle_status", "I").c_str());
+    
+    for(int i_daughter=0; i_daughter<n_daughters; i_daughter++){
+      string branch_name = "Particle_d"+to_string(i_daughter);
+      tree->Branch(branch_name.c_str(), &(event.Particle_d[i_daughter]), makeBranchName(branch_name, "I").c_str());
+    }
+  }
+  
+  void get_tokens(string line){
+    tokens.clear();
+    istringstream iss(line);
+    string tmp;
+    while(iss>>tmp) tokens.push_back(tmp);
+  }
+  
+  void set_event_variables()
+  {
+    event.Event_number     = stoi(tokens[1]);
+    event.Event_numberMP   = stoi(tokens[2]);
+    event.Event_scale      = stod(tokens[3]);
+    event.Event_alphaQCD   = stod(tokens[4]);
+    event.Event_alphaQED   = stod(tokens[5]);
+    event.Event_processID  = stoi(tokens[6]);
+    event.Event_barcodeSPV = stoi(tokens[7]);
+    event.Event_numberV    = stoi(tokens[8]);
+    event.Event_barcodeBP1 = stoi(tokens[9]);
+    event.Event_barcodeBP2 = stoi(tokens[10]);
+    event.Event_numberP    = 0;
+  }
+  
+  void set_xsec_variables()
+  {
+    event.Xsection_value = stod(tokens[1]);
+    event.Xsection_error = stod(tokens[2]);
+  }
+  
+  void set_pdf_variables()
+  {
+    event.PDF_parton1  = stoi(tokens[1]);
+    event.PDF_parton2  = stoi(tokens[2]);
+    event.PDF_x1       = stod(tokens[3]);
+    event.PDF_x2       = stod(tokens[4]);
+    event.PDF_Q2       = stod(tokens[5]);
+    event.PDF_x1f      = stod(tokens[6]);
+    event.PDF_x2f      = stod(tokens[7]);
+    event.PDF_id1      = stoi(tokens[8]);
+    event.PDF_id2      = stoi(tokens[9]);
+  }
+  
+  void set_particle_variables(int index)
+  {
+    event.Particle_barcode[index] = stoi(tokens[1]);
+    event.Particle_pid[index]     = stoi(tokens[2]);
+    event.Particle_px[index]      = stod(tokens[3]);
+    event.Particle_py[index]      = stod(tokens[4]);
+    event.Particle_pz[index]      = stod(tokens[5]);
+    event.Particle_energy[index]  = stod(tokens[6]);
+    event.Particle_mass[index]    = stod(tokens[7]);
+    event.Particle_status[index]  = stoi(tokens[8]);
+  }
+  
 };
 
 int main(int argc, char *argv[])
@@ -310,25 +289,24 @@ int main(int argc, char *argv[])
     exit(0);
   }
   
-  string filename = argv[1];
-  string outfilename = "";
+  string file_name = argv[1];
+  string output_file_name = "";
   
-  if(argc > 1) outfilename = argv[2];
+  if(argc > 1) output_file_name = argv[2];
   else{
-    outfilename = filename.substr(filename.find_last_of("/\\") + 1);
-    outfilename = std::regex_replace(outfilename, std::regex(".hepmc"), ".root");
+    output_file_name = file_name.substr(file_name.find_last_of("/\\") + 1);
+    output_file_name = std::regex_replace(output_file_name, std::regex(".hepmc"), ".root");
   }
   
-  auto stream = new hepmc2root(filename, outfilename);
+  auto stream = new hepmc2root(file_name, output_file_name);
   
   int ii = 0;
-  while(stream->call()){
+  while(stream->process()){
     if(ii % 100 == 0) cout<<ii<<endl;
     ii++;
   }
 
-  stream->tree->Write("", TObject::kOverwrite);
-  stream->file->Close();
+  stream->close();
   
 }
 
