@@ -9,7 +9,8 @@ import subprocess
 
 python_path = "/afs/desy.de/user/j/jniedzie/miniconda3/envs/tta/bin/python3"
 mg_path = "/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/bin/mg5_aMC"
-hepmc_path = "/afs/desy.de/user/j/jniedzie/hepmc2root/bin/hepmc2root.py"
+#hepmc_path = "/afs/desy.de/user/j/jniedzie/hepmc2root/bin/hepmc2root.py"
+hepmc_path = "/afs/desy.de/user/j/jniedzie/ttalps/ttalps/external_tools/hepmc2root/hepmc2root"
 pythia_path = "/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/HEPTools/pythia8/share/Pythia8/xmldoc"
 
 base_pythia_card = "pythia8_card.dat"
@@ -42,7 +43,8 @@ def convert_hepmc_to_root(output_path, file_name):
     os.system(command)
     
     command = f"cd {output_path}/{file_name}/Events/run_01/;"
-    command += f"{python_path} {hepmc_path} {file_name}.hepmc"
+    #command += f"{python_path} {hepmc_path} {file_name}.hepmc"
+    command += f"{hepmc_path} {file_name}.hepmc"
     os.system(command)
 
 

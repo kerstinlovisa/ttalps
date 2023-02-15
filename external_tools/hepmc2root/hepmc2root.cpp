@@ -11,7 +11,7 @@
 using namespace std;
 
 const int n_particles = 5000;
-int n_daughters = 20;
+int n_daughters = 100;
 
 struct Event {
   int    Event_numberP;
