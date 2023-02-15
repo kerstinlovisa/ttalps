@@ -23,20 +23,20 @@ public:
   
   void setup();
   
-  bool has_orphant_muons();
+  int get_n_muons();
+  int get_n_non_top_muons();
+  
   bool has_two_opposite_sign_muons();
   bool has_ttbar_pair();
   bool are_non_top_muons_siblings();
   
   std::vector<Particle*> particles;
-  std::vector<Particle*> muons;
-  
+
 private:
   void setup_particle_mothers();
-  void find_muons();
   void setup_motherless_particles();
   
-  std::tuple<int, int> get_sisters_indices(Particle *mother, int i_particle);
+  std::vector<int> get_sisters_indices(Particle *mother, int i_particle);
   std::tuple<bool, bool> check_sister(int sister_index, Particle *particle, std::vector<Particle*> particles);
 };
 

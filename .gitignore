@@ -13,3 +13,4 @@ madgraph_production_tools/tmp_cards/*
 selection_tools/xApplySelections.xcodeproj/
 
 external_tools/hepmc2root/__pycache__/*
+external_tools/hepmc2root/hepmc2root

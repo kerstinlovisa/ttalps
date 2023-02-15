@@ -18,26 +18,24 @@ std::vector<Event*> EventReader::read_events(TTree *tree)
 
   int n_particles;
 
-  float particle_x[99999];
-  float particle_y[99999];
-  float particle_z[99999];
+  float particle_x[5000];
+  float particle_y[5000];
+  float particle_z[5000];
 
-  float particle_px[99999];
-  float particle_py[99999];
-  float particle_pz[99999];
+  float particle_px[5000];
+  float particle_py[5000];
+  float particle_pz[5000];
 
-  float particle_energy[99999];
-  float particle_mass[99999];
+  float particle_energy[5000];
+  float particle_mass[5000];
 
-  float particle_ctau[99999];
-  int  particle_pid[99999];
-  float particle_barcode[99999];
+  float particle_ctau[5000];
+  int  particle_pid[5000];
+  float particle_barcode[5000];
 
-  int particle_daughter1[99999];
-  int particle_daughter2[99999];
-  int particle_daughter3[99999];
-
-  int particle_status[99999];
+  int particle_daughter[n_daughters][5000];
+  
+  int particle_status[5000];
 
   tree->SetBranchAddress("Xsection_value", &cross_section);
   tree->SetBranchAddress("Xsection_error", &cross_section_err);
@@ -59,9 +57,9 @@ std::vector<Event*> EventReader::read_events(TTree *tree)
   tree->SetBranchAddress("Particle_pid", &particle_pid);
   tree->SetBranchAddress("Particle_barcode", &particle_barcode);
   
-  tree->SetBranchAddress("Particle_d1", &particle_daughter1);
-  tree->SetBranchAddress("Particle_d2", &particle_daughter2);
-  tree->SetBranchAddress("Particle_d3", &particle_daughter3);
+  for(int i=0; i<n_daughters; i++){
+    tree->SetBranchAddress(("Particle_d"+to_string(i)).c_str(), &particle_daughter[i]);
+  }
   
   tree->SetBranchAddress("Particle_status", &particle_status);
   
@@ -88,13 +86,16 @@ std::vector<Event*> EventReader::read_events(TTree *tree)
     
     for(int i_particle=0; i_particle<n_particles; i_particle++){
       
-//      cout<<i_particle<<"\t"<<particle_pid[i_particle]<<"\t"<<particle_daughter1[i_particle]<<"\t"<<particle_daughter2[i_particle]<<endl;
+//      cout<<i_particle<<"\t"<<particle_pid[i_particle]<<"\t"<<particle_daughter[i_particle]<<"\t"<<particle_daughter2[i_particle]<<endl;
+      
+      vector<int> daughters;
+      for(int i=0; i<n_daughters; i++) daughters.push_back(particle_daughter[i][i_particle]);
       
       auto particle = new Particle(particle_x[i_particle], particle_y[i_particle], particle_z[i_particle],
                                    particle_px[i_particle], particle_py[i_particle], particle_pz[i_particle],
                                    particle_energy[i_particle], particle_mass[i_particle], particle_ctau[i_particle],
                                    particle_pid[i_particle],
-                                   particle_daughter1[i_particle], particle_daughter2[i_particle], particle_daughter3[i_particle],
+                                   daughters,
                                    particle_status[i_particle], i_particle, particle_barcode[i_particle]);
       
       event->add_particle(particle);

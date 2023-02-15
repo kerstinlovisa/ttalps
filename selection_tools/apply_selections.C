@@ -11,7 +11,8 @@
 
 using namespace std;
 
-int max_events = 1000;
+int max_events = 10000;
+int n_daughters = 40;
 
 TFile *input_file, *output_file_siblings, *output_file_non_siblings;
 
@@ -58,7 +59,7 @@ int main(int argc, char *argv[])
   auto [output_tree_siblings, output_tree_non_siblings] = get_output_trees(input_tree, argv[3], argv[4], file_name);
   
 // load events
-  auto event_reader = EventReader(max_events);
+  auto event_reader = EventReader(max_events, n_daughters);
   auto events = event_reader.read_events(input_tree);
   
 // fill output tree and cut flow
@@ -68,8 +69,9 @@ int main(int argc, char *argv[])
     
     {"1_tt_pair", 0},
     {"2_n_muons_ge_2", 0},
-    {"3_os_muons", 0},
-    {"4_sibling_muons", 0}
+    {"3_n_non_top_muons_ge_2", 0},
+    {"4_os_muons", 0},
+    {"5_sibling_muons", 0}
   };
   
   int i_event=0;
@@ -78,25 +80,34 @@ int main(int argc, char *argv[])
     output_tree_siblings->GetEntry(i_event);
     output_tree_non_siblings->GetEntry(i_event);
     
+//    cout<<"Event "<<i_event<<endl;
     i_event++;
+    
+//    event->print_all_particles();
     
     cut_flow["0_initial"]++;
     
+    // top-antitop
     if(!event->has_ttbar_pair()) continue;
     cut_flow["1_tt_pair"]++;
     
-    if(event->muons.size() < 2) continue;
+    // n muons >= 2
+    if(event->get_n_muons() < 2) continue;
     cut_flow["2_n_muons_ge_2"]++;
+    
+    // n non-top (62) muons >= 2
+    if(event->get_n_non_top_muons() < 2) continue;
+    cut_flow["3_n_non_top_muons_ge_2"]++;
+    
+    
+    // count in 4 categories (ss, os x siblins, non-siblings)
+    //
     
     if(!event->has_two_opposite_sign_muons()) continue;
     cut_flow["3_os_muons"]++;
     
     
-    // top-antitop
-    // n muons >= 2
-    // n non-top (62) muons >= 2
-    // count in 4 categories (ss, os x siblins, non-siblings)
-    // 
+    
     
     if(!event->are_non_top_muons_siblings()){
       output_file_non_siblings->cd();

@@ -11,7 +11,7 @@ class Particle
 {
 public:
   Particle(float _x, float _y, float _z, float _px, float _py, float _pz, float _energy, float _mass, float _ctau,
-           int _pdgid, int _daughter_1, int _daughter_2, int _daughter_3, int _status, int _index, int _barcode);
+           int _pdgid, std::vector<int> _daughters, int _status, int _index, int _barcode);
   ~Particle(){}
   
   void print();
@@ -24,6 +24,7 @@ public:
   float x, y, z, px, py, pz, energy, mass, ctau;
   std::vector<int> mothers, daughters;
   int pdgid, status, index, barcode;
+  bool is_selfmother;
 };
 
 
