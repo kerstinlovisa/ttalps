@@ -28,7 +28,7 @@ public:
   
   bool has_two_opposite_sign_muons();
   bool has_ttbar_pair();
-  bool are_non_top_muons_siblings();
+  int passes_preselection();
   
   std::vector<Particle*> particles;
 
@@ -37,7 +37,7 @@ private:
   void setup_motherless_particles();
   
   std::vector<int> get_sisters_indices(Particle *mother, int i_particle);
-  std::tuple<bool, bool> check_sister(int sister_index, Particle *particle, std::vector<Particle*> particles);
+  int check_sister(int sister_index, Particle *particle, std::vector<Particle*> particles);
 };
 
 #endif /* Event_hpp */
