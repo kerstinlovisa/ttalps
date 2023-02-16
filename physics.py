@@ -331,6 +331,22 @@ def ctaua(ma, ctL, ctR, Lambda):
         return 0
     return sm['c']*sm['hbar']/gamma
 
+def ctauamumu(ma, ctL, ctR, Lambda):
+    """Lifetime of the ALP as induced only by top couplings
+    
+    ma - ALP mass
+    ctL - coupling of the lefthanded top-quark to the ALP in the UV
+    ctR - coupling of the righthanded top-quark to the ALP in the UV
+    Lambda - cutoff scale of the ALP-EFT
+    following hep-ph: [2012.12272]"""
+    # gamma = Gammaa(ma,ctL,ctR,Lambda)
+    lscs = getLSfromctt(ctL,ctR, Lambda, ma)
+    gamma= float(Gammaatoll(ma,readCmumu(lscs),sm['mmu'],Lambda))
+    if gamma == 0:
+        print("The decay width of a with ma=" + str(ma) + "GeV and cff=" + str(cff) + ", cWW="+ str(cww)+ ", cBB=" + str(cbb) + " is zero.")
+        return 0
+    return sm['c']*sm['hbar']/gamma
+
 def getLSfromctt(ctL,ctR, Lambda, mu):
     """Returns low-energy coefficient dictionary from UV ALP-top couplings
     

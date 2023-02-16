@@ -16,6 +16,8 @@ class ALPanalysis : public AnalyzerBase
   std::string data(MCParticleFormat part);
   void buildOutput(MCParticleFormat& mother, int& n, int& count, std::string& tobebuilt);
   bool hasTopAncestor(MCParticleFormat part);
+  std::vector<MCParticleFormat> findAncestorLine(MCParticleFormat part, std::vector<MCParticleFormat> line);
+  MCParticleFormat jetAncestor(MCParticleFormat part);
  private:
 };
 }

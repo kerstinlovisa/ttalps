@@ -75,6 +75,10 @@ class FourVector:
         """Returns a FourVector flipped in its spatial components."""
         return FourVector([self.vt,-self.vx,-self.vy,-self.vz])
     
+    def abs_z(self):
+        """Returns the absolute value of the z component."""
+        return math.sqrt(self.vz**2)
+
     def abs_2d(self):
         """Returns the absolute value of the x and y components."""
         return math.sqrt(self.vx**2+self.vy**2)
@@ -202,14 +206,19 @@ class Particle:
         and given radius
     """
     def __init__(self, momentum: FourMomentum, name: str = None,
-                    vertex: FourVector = None):
+                    vertex: FourVector = None, pdgid: int = None):
         self.fourmomentum = momentum
         self.name = name
         self.vertex = vertex
+        self.pdgid = pdgid
             
     def __str__(self):
         if self.name is not None:
-            return ("Particle " + self.name + " with momentum "
+            if self.vertex is not None:
+                return ("Particle " + self.name + " (" + str(self.pdgid) + ") with momentum "
+                    + str(self.fourmomentum) + " and vertex " + str(self.vertex))
+            else:
+                return ("Particle " + self.name + " (" + str(self.pdgid) + ") with momentum "
                     + str(self.fourmomentum))
         else:
             return "Particle with momentum " + str(self.fourmomentum)
@@ -217,10 +226,65 @@ class Particle:
     def __repr__(self):
         return str(self)
     
+    def tau(self):
+        """
+        Returns tau of the particle in s
+        """
+        if self.vertex is None:
+            print("Error: no vertex information.")
+            return 0
+        if self.vertex.vt == 0:
+            # vertex information is given in mm and c is given as cm/s in physics.
+            return self.vertex.abs_3d()/(10*ph.sm["c"])
+        return self.vertex.vt
+    
+    def ctau(self):
+        """
+        Returns ctau of the particle in s
+        """
+        if self.vertex is None:
+            print("Error: no vertex information.")
+            return 0
+        if self.vertex.vt == 0:
+            # vertex information is given in mm and c is given as cm/s in physics.
+            return self.vertex.abs_3d()/10
+        return self.vertex.vt*ph.sm["c"]
+    
+    def vertex_3d(self):
+        """
+        Returns the displacement of the vertex position from [0,0,0] in cm.
+        Vertex from MadAnalysis is given in mm, so value is divided by 10 here.
+        """
+        return self.vertex.abs_3d()/10
+    
+    def vertex_2d(self):
+        """
+        Returns the displacement of the xy vertex position from [0,0,0] in cm.
+        Vertex from MadAnalysis is given in mm, so value is divided by 10 here.
+        """
+        return self.vertex.abs_2d()/10
+    
+    def vertex_z(self):
+        """
+        Returns the displacement of the z vertex position from [0,0,0] in cm.
+        Vertex from MadAnalysis is given in mm, so value is divided by 10 here.
+        """
+        return self.vertex.vz/10
+
+    def trailing_pT(self, other):
+        """
+        Returns the pT of the "trailaing particle" = particle with second highest pT
+        Used for calculating the pT of the "trailing muon" with both muons as input
+        """
+        return max(self.fourmomentum.abs_2d(), other.fourmomentum.abs_2d())
+    
     def mass(self):
         """Returns the Particle's mass as given by its FourMomentum"""
         return self.fourmomentum.mass()
     
+    def inv_pT(self, other):
+        return (self.fourmomentum+other.fourmomentum).abs_2d()
+
     def inv_mass(self, other):
         """Returns the invariant mass between this and another Particle"""
         return (self.fourmomentum+other.fourmomentum).mass()
@@ -245,11 +309,14 @@ class Particle:
         """Returns the Particle's pseudorapidity"""
         return math.atanh(self.fourmomentum[3]/self.fourmomentum.abs_3d())
 
+    def dphi(self, other):
+        return self.fourmomentum.phi() - other.fourmomentum.phi()
+
     def delta_r(self, other):
         deta = self.pseudorapidity() - other.pseudorapidity()
         dphi = abs(self.fourmomentum.phi() - other.fourmomentum.phi())
-        if dphi > math.pi:
-            dphi -= 2*math.pi
+        if dphi > 180:
+            dphi -= 360
         return math.sqrt(deta*deta + dphi*dphi)
 
     def boost(self):
@@ -513,7 +580,9 @@ class Dataset:
             "phi": "fourmomentum.phi",
             "y": "rapidity",
             "eta": "pseudorapidity",
-            "deltaR": "delta_r"
+            "deltaR": "delta_r",
+            "dphi": "dphi",
+            "dphi_pi": "dphi_pi"
         }
         self.cross_section = cross_sec
         self.int_luminosity = int_lumi
@@ -522,6 +591,9 @@ class Dataset:
     def __str__(self):
         return f"This Dataset contains {len(self.events)} events."
     
+    def __len__(self):
+        return len(self.events)
+
     def __repr__(self):
         return self.__str__()
 
@@ -633,6 +705,8 @@ class Dataset:
                         event_num += 1
                         in_event = True
                         particle_list = []
+                        n_mu = 0
+                        n_amu = 0
                 elif in_event:
                     if not line.startswith('</event>'):
                         line_list = line.strip('\n')
@@ -658,8 +732,10 @@ class Dataset:
                                     antitop = Particle(fourmom, "\bar{t}")
                                 elif pdg_id == 13:
                                     muon = Particle(fourmom, "\mu")
+                                    n_mu += 1
                                 elif pdg_id == -13:
                                     antimuon = Particle(fourmom, "\bar\mu")
+                                    n_amu += 1
                                 else:
                                     raise InputError(f"Unexpected Particle"
                                           +f" with PDG-ID {pdg_id} found.")
@@ -700,6 +776,8 @@ class Dataset:
                                               +f" last was case {case}.")
                             elif muon is not None and antimuon is not None:
                                 event = Event([top, antitop, muon, antimuon])
+                                if n_mu > 1 or n_amu > 1:
+                                    print("n_mu: ", n_mu, " n_amu: ", n_amu)
                                 if case == None or case == 4:
                                     case = 4
                                 else:
@@ -753,7 +831,7 @@ class Dataset:
         
         return cls(events, particle_translator)
 
-    def get_closest_muons(muons, amuons, muon_list, particles):
+    def get_closest_muons(muons, amuons, muon_list, particles,muon_mother_list=None):
         index_mu = -1
         index_amu = -1
         angle_max = 0.0
@@ -775,6 +853,9 @@ class Dataset:
             if (index_mu >= 0 and index_amu >= 0):
                 particles.append(muon_list[index_mu])
                 particles.append(muon_list[index_amu])
+                if muon_mother_list is not None:
+                    particles.append(muon_mother_list[index_mu])
+                    particles.append(muon_mother_list[index_amu])
             # else:
                 # print("Muon mass error, event ignored")
         return particles
@@ -821,13 +902,16 @@ class Dataset:
             particles.append(muon_list[index_amu])
         return particles
 
-    def get_muon_pairs(muon_pair_list, particles):
+    def get_muon_pairs(muon_pair_list, particles, muon_mother_list=None):
         if (len(muon_pair_list)%2 != 0):
             print("Error: unexpected number of muons in pairs: ", len(muon_pair_list))
         elif len(muon_pair_list) == 2:
             if ((muon_pair_list[0].fourmomentum+muon_pair_list[1].fourmomentum)*(muon_pair_list[0].fourmomentum+muon_pair_list[1].fourmomentum)) >= 0:
                 particles.append(muon_pair_list[0])
                 particles.append(muon_pair_list[1])
+                if muon_mother_list is not None:
+                    particles.append(muon_mother_list[0])
+                    particles.append(muon_mother_list[1])
         else:
             i = 0
             index_pair = -1
@@ -842,10 +926,14 @@ class Dataset:
             if index_pair >= 0:
                 particles.append(muon_pair_list[index_pair])
                 particles.append(muon_pair_list[index_pair+1])
+                if muon_mother_list is not None:
+                    particles.append(muon_mother_list[index_pair])
+                    particles.append(muon_mother_list[index_pair+1])
+
         return particles
 
     @classmethod
-    def from_txt_bkg(cls, filename, event_num_max=-1, charge_req=1):
+    def from_txt_bkg(cls, filename, event_num_max=-1, option_req=1):
         """Reads in an .txt file and outputs a new Dataset object from it
         
         This .txt file has to be of the form:
@@ -854,9 +942,17 @@ class Dataset:
             and data of several such particles are appended by \t as well
             muon pairs are of the order anti-muon muon
 
-        For now, this method chooses the first muon and antimuon, respectively
-        for each Event object's muon and antimuon Particle.
-        This should be reconsidered in the future. (WIP)"""
+        Different options for reading muon information if given by option_req:
+        option_req: different ints as input will give options of requirements 
+        on the input ttj backround:
+            1 = selects the 1 muon and 1 antimuon closest together (3D angle) (default)
+            -1 = selections two muons closest together (3D angle) without any 
+            muon charge requirements
+            0 = selects 1 muon and 1 antimuon in events where E^2 - |p|^2 < 0
+            2 = selects events with muon pairs (1 muon and 1 antimuon with the 
+            same mother)
+            -2 = selects 1 muon and 1 antimuon with different mothers only
+        """
         events = []
         event_num = 0
         with open(filename, 'r') as file:
@@ -960,38 +1056,19 @@ class Dataset:
                 particles = [final_top, final_atop]
                 if mus_no>=2:
                     muon_list = particle_lists[2]+particle_lists[3]
-                    if charge_req == 1:
+                    if option_req == 1:
                         particles = Dataset.get_closest_muons(muons, amuons, muon_list, particles)
-                    elif charge_req == -1:
+                    elif option_req == -1:
                         particles = Dataset.get_closest_muons_no_charge_req(muon_list, particles)
-                    elif charge_req == 0:
+                    elif option_req == 0:
                         particles = Dataset.get_mass_error_muons(muons, amuons, muon_list, particles)
-                    elif charge_req == -2:
+                    elif option_req == 2:
                         particles = Dataset.get_muon_pairs(particle_lists[2], particles)
+                    elif option_req == -2:
+                        if len(particle_lists[2]) == 0:
+                            particles = Dataset.get_closest_muons(muons, amuons, muon_list, particles)
                     else:
                         print("Error: invalid requirement option")
-                    # index_mu = -1
-                    # index_amu = -1
-                    # angle_max = 0.0
-                    # if len(muons)>0 and len(amuons)>0:
-                    #     for muon_i in muons:
-                    #         # if muon_list[muon_i].pseudorapidity() < 2.5:
-                    #         for amuon_i in amuons:
-                    #             # if muon_list[muon_i].pseudorapidity() < 2.5:
-                    #             angle = muon_list[muon_i].fourmomentum.angle_to(muon_list[amuon_i].fourmomentum)
-                    #             if angle>angle_max:
-                    #                 if ((muon_list[muon_i].fourmomentum+muon_list[amuon_i].fourmomentum)*(muon_list[muon_i].fourmomentum+muon_list[amuon_i].fourmomentum)) >= 0:
-                    #                     index_mu = muon_i
-                    #                     index_amu = amuon_i
-                    #     if (index_mu != muons[-1]):
-                    #         print(index_mu)
-                    #     if (index_amu != amuons[-1]):
-                    #         print(index_amu)
-                    #     if (index_mu >= 0 and index_amu >= 0):
-                    #         particles.append(muon_list[index_mu])
-                    #         particles.append(muon_list[index_amu])
-                    #     else:
-                    #         print("Muon mass error, event ignored")
                     if len(particles)==4:
                         events.append(Event(particles))
                         event_num += 1
@@ -1014,3 +1091,226 @@ class Dataset:
                   +" in " + str(len(events)) + " Events.")
             
         return cls(events, particle_translator)
+    
+    def get_max_vertex(ancestors):
+        # Iterate over each ancestor in the set
+        vertex_max = FourVector([0,0,0,0])
+        for j in range(len(ancestors)):
+            if ancestors[j].vertex is not None:
+                if ancestors[j].vertex.abs_3d() > vertex_max.abs_3d():
+                    vertex_max = ancestors[j].vertex
+        return vertex_max
+
+    @classmethod
+    def from_txt_ancestors(cls, filename, event_num_max=-1, option_req=1):
+        """Reads in an .txt file and outputs a new Dataset object from it
+        
+        This .txt file has two options of information, depending on the input 
+        includes event muon pairs (same muon mothers) or muon non-pairs.
+        - For muon pairs:
+            muon-data anti-muon-data muon-mother-data
+            length depends on how many mothers the muon/anitmuon have.
+        - For muon non-pairs:
+            muon-data muon-mother-data | anti-muon-data anti-muon-mother-data
+            
+        The data of each particle should be updated to include tau as:
+        data: id\t tau\t x\t y\t z\t px\t py\t pz
+        such that div=9 in the code
+        Older versions without tau as before:
+        data: id\t x\t y\t z\t px\t py\t pz
+        such that div=8 in the code
+
+        Different options for reading muon non-pair information if given by option_req:
+        option_req: different ints as input will give options of requirements 
+        on the input ttj backround:
+            -1 = selections two muons closest together (3D angle) without any 
+            muon charge requirements
+        """
+        events = []
+        event_num = 0
+        with open(filename, 'r') as file:
+            for line in file:
+                if line[0] == "|":
+                    continue
+
+                muon_nonpairs = "|" in line
+                if muon_nonpairs:
+                    m_list, am_list = line.split('|')
+                    m_list = m_list.split('\t')
+                    am_list = am_list.split('\t')
+                    particle_str_lists = [m_list, am_list]
+                else:
+                    m_list = line.split('\t')
+                    particle_str_lists = [m_list]
+                particle_labels = ["\mu", "\bar\mu", "ancestor"]
+                particle_lists = []
+                ancestor_lists = []
+
+                mus_no = 0
+                muons = []
+                amuons = []
+                new_muon = False
+
+                for i in range(len(particle_str_lists)):
+                    p_list = particle_str_lists[i]
+                    tmp_p_list = []
+                    tmp_a_list = []
+                    if p_list[0] == '':
+                        p_list = p_list[1:]
+                    if p_list[-1] == '' or p_list[-1]=='\n':
+                        p_list = p_list[:-1]
+
+                    div = 9
+                    if len(p_list)%div != 0:
+                        print("There is an unexpected number of data: ", particle_labels[i])
+                    else:
+                        for j in range(len(p_list)//div):
+                            # tmp_mom_list = [float(p_list[j*div+k]) for k in [4,5,6,7]]
+                            tmp_mom_list = [float(p_list[j*div+k]) for k in [5,6,7,8]]
+                            tmp_4mom = FourMomentum(tmp_mom_list)
+                            id = int(p_list[j*div])
+                            if id == 13:
+                                label = particle_labels[0]
+                                muons.append(mus_no)
+                                mus_no += 1
+                                new_muon = True
+                            elif id == -13:
+                                label = particle_labels[1]
+                                amuons.append(mus_no)
+                                mus_no += 1
+                                new_muon = True
+                            else:
+                                label = particle_labels[2]
+                                new_muon = False
+                            
+                            tmp_v_list = [float(p_list[j*div+k])
+                                            for k in [1,2,3,4]]
+                            tmp_4v = FourVector(tmp_v_list)
+
+                            if tmp_4v.abs_3d() > 10**-10:
+                                tmp_p = Particle(tmp_4mom, label, tmp_4v, pdgid=id)
+                                #print("FourVector used")
+                            else:
+                                tmp_p = Particle(tmp_4mom, label, pdgid=id)
+                            if new_muon:
+                                tmp_p_list.append(tmp_p)
+                                if len(tmp_a_list) > 0:
+                                    ancestor_lists.append(tmp_a_list)
+                                    tmp_a_list = []
+                            else:
+                                tmp_a_list.append(tmp_p)
+                            
+                    particle_lists.append(tmp_p_list)
+                    ancestor_lists.append(tmp_a_list)
+                
+                particle_translator = {"Muon": 0, "Muon1": 0, "muon": 0, 
+                                "mu": 0, "mu1": 0,
+                                "AntiMuon": 1, "Muon2": 1, 
+                                "antimuon": 1, "amu": 1, "mu2": 1}
+                
+                particles = []
+                if mus_no>=2:
+                    if muon_nonpairs:
+                        muon_list = particle_lists[0]+particle_lists[1]
+
+                        index_mu = -1
+                        index_amu = -1
+                        angle_max = 0.0
+
+                        if option_req == -1: #Finding events with same sign muons
+                            indices = []
+                            if len(amuons)==0:  
+                                indices = muons
+                            if len(muons)==0:
+                                indices = amuons
+                            for i in indices:
+                                for j in indices:
+                                    if j != i:
+                                        angle = muon_list[i].fourmomentum.angle_to(muon_list[j].fourmomentum)
+                                        if angle>angle_max:
+                                            if ((muon_list[i].fourmomentum+muon_list[j].fourmomentum)*(muon_list[i].fourmomentum+muon_list[j].fourmomentum)) >= 0:
+                                                index_mu = i
+                                                index_amu = j
+                                                angle_max = angle
+                            if (index_mu>= 0 and index_amu >= 0):
+                                particles.append(muon_list[index_mu])
+                                particles.append(muon_list[index_amu])
+                        elif len(amuons) != 0:
+                            if len(muons)>0 and len(amuons)>0:
+                                for muon_i in muons:
+                                    for amuon_i in amuons:
+                                        angle = muon_list[muon_i].fourmomentum.angle_to(muon_list[amuon_i].fourmomentum)
+                                        if angle>angle_max:
+                                            if ((muon_list[muon_i].fourmomentum+muon_list[amuon_i].fourmomentum)*(muon_list[muon_i].fourmomentum+muon_list[amuon_i].fourmomentum)) >= 0:
+                                                index_mu = muon_i
+                                                index_amu = amuon_i
+                                                angle_max = angle
+                                if (index_mu >= 0 and index_amu >= 0):
+                                    particles.append(muon_list[index_mu])
+                                    particles.append(muon_list[index_amu])
+                    else:
+                        muon_list = particle_lists[0]
+                        if (len(muon_list)%2 != 0):
+                            print("Error: unexpected number of muons in pairs: ", len(muon_list))
+                        elif len(muon_list) == 2:
+                            if ((muon_list[0].fourmomentum+muon_list[1].fourmomentum)*(muon_list[0].fourmomentum+muon_list[1].fourmomentum)) >= 0:
+                                particles.append(muon_list[0])
+                                particles.append(muon_list[1])
+                                index_mu = 0
+                                index_amu = 0
+                        else:
+                            i = 0
+                            index_pair = -1
+                            angle_max = 0.0
+                            while i < len(muon_list):
+                                angle = muon_list[i].fourmomentum.angle_to(muon_list[i+1].fourmomentum)
+                                if angle>angle_max:
+                                    if ((muon_list[i].fourmomentum+muon_list[i+1].fourmomentum)*(muon_list[i].fourmomentum+muon_list[i+1].fourmomentum)) >= 0:
+                                        index_pair = i
+                                        angle_max = angle
+                                i += 2
+                            if index_pair >= 0:
+                                particles.append(muon_list[index_pair])
+                                particles.append(muon_list[index_pair+1])
+                                index_mu = int(index_pair/2)
+                                index_amu = int(index_pair/2)
+                    if (len(particles) == 2):
+                        # Assigning the vertex position of the muons from ancestor information:
+                        vertex_mu = Dataset.get_max_vertex(ancestor_lists[index_mu])
+                        particles[0].vertex = vertex_mu
+                        vertex_amu = Dataset.get_max_vertex(ancestor_lists[index_amu])
+                        particles[1].vertex = vertex_amu
+                        for ancestor in ancestor_lists[index_mu]:
+                            particles.append(ancestor)
+                        for ancestor in ancestor_lists[index_amu]:
+                            particles.append(ancestor)
+                    # else:
+                        # print(f"Event not included: {len(particles)} number of particles, {len(particle_lists[2])} number of muons, {len(particle_lists[3])} number of antimuons,")
+                elif (mus_no == 1): # Getting single muon events
+                    muon_list = particle_lists[0]
+                    particles.append(muon_list[0])
+                    vertex_mu = Dataset.get_max_vertex(ancestor_lists[0])
+                    particles[0].vertex = vertex_mu
+                    for ancestor in ancestor_lists[0]:
+                        particles.append(ancestor)
+                else:
+                    print(f"Event not included: {mus_no} number of muons.")
+                if len(particles) >=2:
+                    events.append(Event(particles))
+                    event_num += 1
+                if event_num>=event_num_max and not event_num_max<0:
+                    print(f"Too many events: {event_num}")
+                    break
+        
+        print(filename+" read with [muon, antimuon, muonmother0, ..., amuonmother0, ...]"
+                  +" in " + str(len(events)) + " Events.")
+            
+        return cls(events, particle_translator)
+
+    @classmethod
+    def concaternate_datasets(cls,dataset1,dataset2):
+        if dataset1.particle_translator != dataset2.particle_translator:
+            raise TypeError("Cannot concaternate two datasets with different particle translators dicts.")
+            return None
+        new_events = dataset1.events + dataset2.events
+        return cls(new_events, dataset1.particle_translator)
