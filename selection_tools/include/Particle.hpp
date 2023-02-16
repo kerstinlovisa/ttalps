@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include <TLorentzVector.h>
+
 class Particle
 {
 public:
@@ -17,14 +19,22 @@ public:
   void print();
   
   bool is_muon(){return abs(pdgid)==13;}
+  bool is_good_non_top_muon(const std::vector<Particle*> &particles);
+  bool is_motherless();
   
   bool has_top_ancestor(const std::vector<Particle*> &other_particles);
   bool is_final();
+  
+  double eta();
+  double momentum();
+  
   
   float x, y, z, px, py, pz, energy, mass, ctau;
   std::vector<int> mothers, daughters;
   int pdgid, status, index, barcode;
   bool is_selfmother;
+  
+  TLorentzVector four_vector;
 };
 
 
