@@ -1,0 +1,10 @@
+Main:numberOfEvents      = -1
+#HEPMCoutput:file         = dummy_value
+HEPMCoutput:file         = hepmc.gz
+JetMatching:qCut         = -1.0
+JetMatching:doShowerKt   = off
+JetMatching:nJetMax      = -1
+Merging:TMS              = -1.0
+Merging:Process          = <set_by_user>
+Merging:nJetMax  		 = -1
+SysCalc:fullCutVariation = off

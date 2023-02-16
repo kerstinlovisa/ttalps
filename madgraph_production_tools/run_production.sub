@@ -1,0 +1,12 @@
+Universe              = vanilla
+executable            = run_production.sh
+#			process		part	  n_events	alp_mass (GeV)
+arguments             = tta 		$(ProcId) 10000		10
+GetEnv                = True
+output                = output/$(ClusterId).$(ProcId).out
+error                 = error/$(ClusterId).$(ProcId).err
+log                   = log/$(ClusterId).log
+requirements 	      = (OpSysAndVer =?= "CentOS7")
++JobFlavour           = "longlunch"
+
+queue 10
