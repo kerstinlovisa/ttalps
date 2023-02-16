@@ -114,24 +114,19 @@ vector<int> Event::get_sisters_indices(Particle *mother, int i_particle)
   return sister_indices;
 }
 
-tuple<bool, bool> Event::check_sister(int sister_index, Particle *particle, vector<Particle*> particles)
+int Event::check_sister(int sister_index, Particle *particle, vector<Particle*> particles)
 {
-  if(sister_index < 0) return {false, false};
+  // 0: bad particle, -1: opposite sign, +1: same sign
+  if(sister_index < 0) return 0;
   
   auto sister = particles[sister_index];
+  if(!sister->is_good_non_top_muon(particles)) return 0;
   
-  if(abs(sister->pdgid) != 13) return {false, false};
-  
-  bool same_sign_sister = false;
-  bool opposite_sign_sister = false;
-  
-  if(particle->pdgid == sister->pdgid)  same_sign_sister = true;
-  else                                  opposite_sign_sister = true;
-  
-  return {same_sign_sister, opposite_sign_sister};
+  if(particle->pdgid == sister->pdgid)  return 1;
+  else                                  return -1;
 }
 
-bool Event::are_non_top_muons_siblings()
+int Event::passes_preselection()
 {
   int n_non_top_muons = 0;
   int n_opposite_sign_pairs = 0;
@@ -146,51 +141,47 @@ bool Event::are_non_top_muons_siblings()
   for(auto particle : particles){
     i_particle++;
     
-    if(!particle->is_final()) continue;
-    if(abs(particle->pdgid) != 13) continue;
-    if(particle->has_top_ancestor(particles)) continue;
+    if(!particle->is_good_non_top_muon(particles)) continue;
+    
+    if(particle->is_motherless()){
+      cout<<"Found weird particle with no mothers... skipping."<<endl;
+      particle->print();
+      n_motherless_muons++;
+      continue;
+    }
     
     n_non_top_muons++;
     muon_status.push_back(particle->status);
     
     if(find(already_accounted_for.begin(), already_accounted_for.end(), i_particle) != already_accounted_for.end()) continue;
     
-//    check for motherless muons
-    if(particle->mothers.size() == 0){
-      cout<<"Found weird particle with no mothers... skipping."<<endl;
-      particle->print();
-      n_motherless_muons++;
-      continue;
-    }
-    int mother_index = particle->mothers[0];
-    if(mother_index < 0){
-      n_motherless_muons++;
-      continue;
-    }
-    
+    // look for sisters
     auto mother = particles[particle->mothers[0]];
     vector<int> sister_indices = get_sisters_indices(mother, i_particle);
     
     for(int sister_index : sister_indices){
       already_accounted_for.push_back(sister_index);
       
-      auto [same_sign, opposite_sign] = check_sister(sister_index, particle, particles);
-      n_same_sign_pairs += same_sign;
-      n_opposite_sign_pairs += opposite_sign;
+      int sister_code = check_sister(sister_index, particle, particles);
+      
+      if(sister_code == -1) n_opposite_sign_pairs++;
+      else if(sister_code == 1) n_same_sign_pairs++;
     }
-    
-    
   }
   
-  cout<<"n_muons: "<<n_non_top_muons<<" (";
-  for(int status : muon_status) cout<<status<<",";
-  cout<<"), ";
-  cout<<"N motherless muons: "<<n_motherless_muons<<", ";
-  cout<<"N same sign pairs: "<<n_same_sign_pairs<<", ";
-  cout<<"N opposite sign pairs: "<<n_opposite_sign_pairs<<endl;
+  if(n_same_sign_pairs != 0){
+    // should never happen
+    cout<<"\n\nWARNING -- found same sign siblings\n\n"<<endl;
+  }
   
-  return n_opposite_sign_pairs > 0;
-  
+  // single muon category
+  if(n_non_top_muons == 1) return 1;
+  // pair category
+  if(n_opposite_sign_pairs >= 1) return 2;
+  // non-pair category
+  if(n_non_top_muons >= 2) return 3;
+  // doesn't pass preselection
+  return 0;
 }
 
 
