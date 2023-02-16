@@ -2,3 +2,4 @@ matplotlib
 scipy
 typing
 ckmutil
+jupyter

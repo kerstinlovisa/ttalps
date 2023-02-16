@@ -2,3 +2,10 @@ node_modules/*
 yarn.lock
 .ipynb_checkpoints/*
 __pycache__/*
+lib/
+lib64
+bin/
+share/
+*.cfg
+*.json
+etc/
