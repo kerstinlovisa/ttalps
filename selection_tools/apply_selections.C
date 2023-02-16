@@ -12,7 +12,7 @@
 using namespace std;
 
 int max_events = 10000;
-int n_daughters = 40;
+int n_daughters = 100;
 
 TFile *input_file, *output_file_siblings, *output_file_non_siblings;
 
@@ -65,13 +65,10 @@ int main(int argc, char *argv[])
 // fill output tree and cut flow
   map<string, int> cut_flow = {
     {"0_initial", 0},
-//    {"1_no_orphant_muons", 0},
-    
     {"1_tt_pair", 0},
     {"2_n_muons_ge_2", 0},
     {"3_n_non_top_muons_ge_2", 0},
-    {"4_os_muons", 0},
-    {"5_sibling_muons", 0}
+    {"4_has_os_muon_siblins", 0}
   };
   
   int i_event=0;
@@ -80,11 +77,8 @@ int main(int argc, char *argv[])
     output_tree_siblings->GetEntry(i_event);
     output_tree_non_siblings->GetEntry(i_event);
     
-//    cout<<"Event "<<i_event<<endl;
     i_event++;
-    
-//    event->print_all_particles();
-    
+
     cut_flow["0_initial"]++;
     
     // top-antitop
@@ -99,22 +93,13 @@ int main(int argc, char *argv[])
     if(event->get_n_non_top_muons() < 2) continue;
     cut_flow["3_n_non_top_muons_ge_2"]++;
     
-    
-    // count in 4 categories (ss, os x siblins, non-siblings)
-    //
-    
-    if(!event->has_two_opposite_sign_muons()) continue;
-    cut_flow["3_os_muons"]++;
-    
-    
-    
-    
+    // check if has opposite-sign muon siblings
     if(!event->are_non_top_muons_siblings()){
       output_file_non_siblings->cd();
       output_tree_non_siblings->Fill();
       continue;
     }
-    cut_flow["4_sibling_muons"]++;
+    cut_flow["4_has_os_muon_siblins"]++;
     
     output_file_siblings->cd();
     output_tree_siblings->Fill();

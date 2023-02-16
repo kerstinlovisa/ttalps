@@ -13,8 +13,8 @@ using namespace std;
 
 std::vector<Event*> EventReader::read_events(TTree *tree)
 {
-  double cross_section;
-  double cross_section_err;
+  float cross_section;
+  float cross_section_err;
 
   int n_particles;
 
@@ -73,9 +73,6 @@ std::vector<Event*> EventReader::read_events(TTree *tree)
   vector<Event*> events;
   
   for(int i_event = 0; i_event < tree->GetEntries(); i_event++){
-    
-//    if(i_event!=38) continue;
-    
     if(i_event % 100 == 0)
       cout<<"Event: "<<i_event<<endl;
     if(max_events >= 0 && i_event>=max_events) break;
@@ -86,10 +83,11 @@ std::vector<Event*> EventReader::read_events(TTree *tree)
     
     for(int i_particle=0; i_particle<n_particles; i_particle++){
       
-//      cout<<i_particle<<"\t"<<particle_pid[i_particle]<<"\t"<<particle_daughter[i_particle]<<"\t"<<particle_daughter2[i_particle]<<endl;
-      
-      vector<int> daughters;
-      for(int i=0; i<n_daughters; i++) daughters.push_back(particle_daughter[i][i_particle]);
+      vector<int> daughters = {-1};
+      for(int i=0; i<n_daughters; i++){
+        daughters.push_back(particle_daughter[i][i_particle]);
+        if(particle_daughter[i][i_particle] == -1) break;
+      }
       
       auto particle = new Particle(particle_x[i_particle], particle_y[i_particle], particle_z[i_particle],
                                    particle_px[i_particle], particle_py[i_particle], particle_pz[i_particle],

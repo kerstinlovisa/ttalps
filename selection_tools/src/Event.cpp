@@ -105,9 +105,6 @@ bool Event::has_ttbar_pair()
 
 vector<int> Event::get_sisters_indices(Particle *mother, int i_particle)
 {
-  int sister_1_index = -1;
-  int sister_2_index = -1;
-  
   vector<int> sister_indices;
   
   for(int daughter_index : mother->daughters){
