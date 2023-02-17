@@ -17,6 +17,16 @@ madgraph_production_tools/py.py
 madgraph_production_tools/tmp_cards/*
 
 selection_tools/xApplySelections.xcodeproj/
+selection_tools/CMakeCache.txt
+selection_tools/CMakeFiles/*
+selection_tools/Makefile
+selection_tools/cmake_install.cmake
+selection_tools/libAnalysis.a
+selection_tools/apply_selections
+selection_tools/error/*
+selection_tools/output/*
+selection_tools/log/*
+selection_tools/prepare_histograms
 
 external_tools/hepmc2root/__pycache__/*
 

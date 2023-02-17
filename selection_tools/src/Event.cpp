@@ -184,4 +184,72 @@ int Event::passes_preselection()
   return 0;
 }
 
+Particle* Event::get_single_muon()
+{
+  for(auto particle : particles){
+    if(!particle->is_good_non_top_muon(particles)) continue;
+    return particle;
+  }
+  
+  return nullptr;
+}
 
+
+vector<tuple<Particle*, Particle*>> Event::get_muon_pair()
+{
+  vector<int> already_accounted_for;
+  
+  vector<tuple<Particle*, Particle*>> muons;
+  
+  int i_particle = -1;
+  
+  for(auto particle : particles){
+    i_particle++;
+    
+    if(!particle->is_good_non_top_muon(particles)) continue;
+    
+    if(find(already_accounted_for.begin(), already_accounted_for.end(), i_particle) != already_accounted_for.end()) continue;
+    
+    // look for sisters
+    auto mother = particles[particle->mothers[0]];
+    vector<int> sister_indices = get_sisters_indices(mother, i_particle);
+    
+    for(int sister_index : sister_indices){
+      already_accounted_for.push_back(sister_index);
+      
+      int sister_code = check_sister(sister_index, particle, particles);
+      
+      if(sister_code == -1){
+        muons.push_back({particle,particles[sister_index]});
+      }
+    }
+  }
+  
+  return muons;
+}
+
+tuple<Particle*, Particle*> Event::get_smallest_deltaR_same_sign_muon_non_pair()
+{
+  // TODO: implement that...
+  
+  tuple<Particle*, Particle*> muons;
+  
+  for(auto particle : particles){
+    //...
+  }
+  
+  return muons;
+}
+
+tuple<Particle*, Particle*> Event::get_smallest_deltaR_opposite_sign_muon_non_pair()
+{
+  // TODO: implement that...
+  
+  tuple<Particle*, Particle*> muons = {nullptr, nullptr};
+  
+  for(auto particle : particles){
+    //...
+  }
+  
+  return muons;
+}

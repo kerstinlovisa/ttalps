@@ -30,6 +30,11 @@ public:
   bool has_ttbar_pair();
   int passes_preselection();
   
+  Particle* get_single_muon();
+  std::vector<std::tuple<Particle*, Particle*>> get_muon_pair();
+  std::tuple<Particle*, Particle*> get_smallest_deltaR_same_sign_muon_non_pair();
+  std::tuple<Particle*, Particle*> get_smallest_deltaR_opposite_sign_muon_non_pair();
+  
   std::vector<Particle*> particles;
 
 private:

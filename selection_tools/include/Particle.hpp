@@ -26,7 +26,7 @@ public:
   bool is_final();
   
   double eta();
-  double momentum();
+  double momentum() const;
   
   
   float x, y, z, px, py, pz, energy, mass, ctau;

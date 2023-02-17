@@ -80,7 +80,7 @@ double Particle::eta()
   return four_vector.Eta();
 }
 
-double Particle::momentum()
+double Particle::momentum() const
 {
   return four_vector.P();
 }

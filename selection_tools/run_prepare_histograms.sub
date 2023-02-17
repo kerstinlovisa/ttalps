@@ -1,0 +1,14 @@
+Universe              = vanilla
+executable            = run_prepare_histograms.sh
+#			process			part	 
+arguments             = ttmumu 	$(ProcId)
+# example proceses: ttj, ttmumu, tta_mAlp-0p3GeV, tta_mAlp-0p5GeV, tta_mAlp-10GeV, tta_mAlp-1GeV
+GetEnv                = True
+output                = output/$(ClusterId).$(ProcId).out
+error                 = error/$(ClusterId).$(ProcId).err
+log                   = log/$(ClusterId).log
+requirements 	      = (OpSysAndVer =?= "CentOS7")
+Request_Memory	      = 4GB
++JobFlavour           = "espresso"
+
+queue 1100
