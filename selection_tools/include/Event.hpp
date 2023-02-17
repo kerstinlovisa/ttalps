@@ -30,6 +30,8 @@ public:
   bool has_ttbar_pair();
   int passes_preselection();
   
+  std::tuple<Particle*, Particle*> get_muon_pair();
+  
   std::vector<Particle*> particles;
 
 private:

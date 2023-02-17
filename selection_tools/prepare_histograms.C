@@ -4,6 +4,7 @@
 
 #include <TFile.h>
 #include <TTree.h>
+#include <TH1D.h>
 
 #include "Particle.hpp"
 #include "Event.hpp"
@@ -11,7 +12,7 @@
 
 using namespace std;
 
-int max_events = 10000;
+int max_events = 100;
 int n_daughters = 100;
 
 TFile *input_file, *output_file_single_muon, *output_file_siblings, *output_file_non_siblings;
@@ -53,86 +54,56 @@ tuple<TTree*, TTree*, TTree*> get_output_trees(TTree *input_tree, string file_na
 
 int main(int argc, char *argv[])
 {
-  if(argc != 7){
-    cout<<"Usage: ./apply_selections input_file_name input_path output_file_name output_path_single_muon";
-    cout<<" output_siblings_path output_non_siblings_path"<<endl;
+  if(argc != 3){
+    cout<<"Usage: ./apply_selections input_path output_path"<<endl;
     exit(0);
   }
   
-  string input_file_name = argv[1];
-  string input_path = argv[2];
+  string input_path = argv[1];
+  string output_path = argv[2];
   
-  auto input_tree = get_input_tree(input_path+input_file_name);
-  auto [output_tree_single_muon, output_tree_siblings, output_tree_non_siblings] =
-  get_output_trees(input_tree, argv[3], argv[4], argv[5], argv[6]);
+  auto input_tree = get_input_tree(input_path);
+  auto output_file = new TFile(output_path.c_str(), "recreate");
   
 // load events
   auto event_reader = EventReader(max_events, n_daughters);
   auto events = event_reader.read_events(input_tree);
   
-// fill output tree and cut flow
-  map<string, int> cut_flow = {
-    {"0_initial", 0},
-    {"1_tt_pair", 0},
-    {"2_n_muons_ge_2", 0},
-    {"3_n_non_top_muons_ge_2", 0},
-    {"4_single_muon", 0},
-    {"5_muon_pair", 0},
-    {"6_muon_non_pair", 0},
-  };
+  
+  auto hist = new TH1D("hist", "hist", 100, 0, 1000);
   
   int i_event=0;
   
   for(auto event : events){
-    input_tree->GetEntry(i_event);
-    
-    output_tree_single_muon->GetEntry(i_event);
-    output_tree_siblings->GetEntry(i_event);
-    output_tree_non_siblings->GetEntry(i_event);
     
     i_event++;
-
-    cut_flow["0_initial"]++;
     
-    // top-antitop
     if(!event->has_ttbar_pair()) continue;
-    cut_flow["1_tt_pair"]++;
-    
-    // check if has opposite-sign muon siblings
     int preselection_code = event->passes_preselection();
     
-    if(preselection_code == 0) continue;
+    if(preselection_code == 0){
+      continue;
+    }
     else if(preselection_code == 1){ // single muon tree
-      cut_flow["4_single_muon"]++;
-      output_file_single_muon->cd();
-      output_tree_single_muon->Fill();
+    
     }
     else if(preselection_code == 2){ // pair category
-      cut_flow["5_muon_pair"]++;
-      output_file_siblings->cd();
-      output_tree_siblings->Fill();
+      auto [muon_1, muon_2] = event->get_muon_pair();
+      
+      hist->Fill(muon_1->px);
+      hist->Fill(muon_2->px);
     }
     else if(preselection_code == 3){ // non-pair category
-      cut_flow["6_muon_non_pair"]++;
-      output_file_non_siblings->cd();
-      output_tree_non_siblings->Fill();
+    
     }
-  }
-  
-  cout<<"\n\nCut flow: "<<endl;
-  for(auto &[cut_name, n_events] : cut_flow){
-    cout<<cut_name<<": "<<n_events<<endl;
   }
   
   // close files
-  output_tree_single_muon->AutoSave();
-  output_tree_siblings->AutoSave();
-  output_tree_non_siblings->AutoSave();
-  
-  output_file_single_muon->Close();
-  output_file_siblings->Close();
-  output_file_non_siblings->Close();
+  output_file->cd();
+  hist->Write();
+
   input_file->Close();
+  output_file->Close();
   
   return 0;
 }
