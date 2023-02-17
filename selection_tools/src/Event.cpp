@@ -184,11 +184,22 @@ int Event::passes_preselection()
   return 0;
 }
 
+Particle* Event::get_single_muon()
+{
+  for(auto particle : particles){
+    if(!particle->is_good_non_top_muon(particles)) continue;
+    return particle;
+  }
+  
+  return nullptr;
+}
 
-tuple<Particle*, Particle*> Event::get_muon_pair()
+
+vector<tuple<Particle*, Particle*>> Event::get_muon_pair()
 {
   vector<int> already_accounted_for;
-  Particle *muon_1, *muon_2;
+  
+  vector<tuple<Particle*, Particle*>> muons;
   
   int i_particle = -1;
   
@@ -209,11 +220,36 @@ tuple<Particle*, Particle*> Event::get_muon_pair()
       int sister_code = check_sister(sister_index, particle, particles);
       
       if(sister_code == -1){
-        muon_1 = particle;
-        muon_2 = particles[sister_code];
+        muons.push_back({particle,particles[sister_index]});
       }
     }
   }
   
-  return {muon_1, muon_2};
+  return muons;
+}
+
+tuple<Particle*, Particle*> Event::get_smallest_deltaR_same_sign_muon_non_pair()
+{
+  // TODO: implement that...
+  
+  tuple<Particle*, Particle*> muons;
+  
+  for(auto particle : particles){
+    //...
+  }
+  
+  return muons;
+}
+
+tuple<Particle*, Particle*> Event::get_smallest_deltaR_opposite_sign_muon_non_pair()
+{
+  // TODO: implement that...
+  
+  tuple<Particle*, Particle*> muons = {nullptr, nullptr};
+  
+  for(auto particle : particles){
+    //...
+  }
+  
+  return muons;
 }

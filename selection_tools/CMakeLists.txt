@@ -12,8 +12,10 @@ SET(CMAKE_INSTALL_RPATH "/cvmfs/sft.cern.ch/lcg/releases/vdt/0.4.3-992df/x86_64-
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_executable(apply_selections apply_selections.C)
+add_executable(prepare_histograms prepare_histograms.C)
 
 set_property(TARGET apply_selections PROPERTY CXX_STANDARD 17)
+set_property(TARGET prepare_histograms PROPERTY CXX_STANDARD 17)
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
@@ -25,3 +27,4 @@ add_library(Analysis  src/Event.cpp
 set_property(TARGET Analysis PROPERTY CXX_STANDARD 17)
 
 target_link_libraries(apply_selections Analysis ${ROOT_LIBRARIES})
+target_link_libraries(prepare_histograms Analysis ${ROOT_LIBRARIES})
