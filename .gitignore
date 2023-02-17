@@ -19,6 +19,7 @@ selection_tools/apply_selections
 selection_tools/error/*
 selection_tools/output/*
 selection_tools/log/*
+selection_tools/prepare_histograms
 
 external_tools/hepmc2root/__pycache__/*
 
