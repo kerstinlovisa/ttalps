@@ -63,7 +63,7 @@ dirLabel["oA_muons"] = r"$\sphericalangle(\vec{p}_\mu,\vec{p}_{\bar{\mu}})$ [$^\
 dirLabel["dmumu"] = r"$d_{\mu,\bar{\mu}}$ [cm]"
 dirLabel["ma"] = r"$m_a$ [GeV]"
 dirLabel["ctt"] = r"$c_{tt}(\Lambda)$"
-dirLabel["ctau"] = r"$c_\tau$ [cm]"
+dirLabel["ctau"] = r"$c\tau$ [cm]"
 dirLabel["tau"] = r"$\tau$ [s]"
 dirLabel["L"] = r"$L$ [cm]"
 dirLabel["L_mu"] = r"$L^{\mu}$ [cm]"
@@ -196,7 +196,8 @@ def hist1d(data, labels, xlabel, filename=None,
         plt.title(title)
     if filename is not None:
         plt.savefig(filename)
-    plt.show()
+    else:
+        plt.show()
     
 def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None, 
                nbins=50, customXlim=None, customXlabels=None, title = None, log_scale = False, stacked3 = False, selLabel=None):
@@ -312,7 +313,8 @@ def hist1dcomp(data1, data2, data3, labels, xlabel, filename=None,
         plt.title(title)
     if filename is not None:
         plt.savefig(filename)
-    plt.show()
+    else:
+        plt.show()
 
 def hist1dcomp2(data1, data2, data3, labels, xlabel, filename=None, 
                nbins=50, customXlim=None, customXlabels=None, title = None, 
@@ -440,7 +442,8 @@ def hist1dcomp2(data1, data2, data3, labels, xlabel, filename=None,
         plt.title(title)
     if filename is not None:
         plt.savefig(filename)
-    plt.show()
+    else:
+        plt.show()
 
 def hist1dcross(data1, data2, data3, crosssec1, crosssec2, crosssec3, N1, N2, N3, 
                 intlumi, labels, xlabel, filename=None, nbins=50, customXlim=None, 
@@ -582,7 +585,8 @@ def hist1dcross(data1, data2, data3, crosssec1, crosssec2, crosssec3, N1, N2, N3
         plt.title(title)
     if filename is not None:
         plt.savefig(filename)
-    plt.show()
+    else:
+        plt.show()
 
 def histloglog(data1, data2, crosssec1, crosssec2, N1, N2, intlumi, labels, 
                 xlabel, filename=None, nbins=50, customXlim=None, customXlabels=None, 
@@ -679,7 +683,8 @@ def histloglog(data1, data2, crosssec1, crosssec2, N1, N2, intlumi, labels,
         plt.title(title)
     if filename is not None:
         plt.savefig(filename)
-    plt.show()
+    else:
+        plt.show()
     
 def scatter(datax, datay, labels, xlabel, ylabel, filename=None,
             customXlim=None, customYlim=None, title=None):
@@ -712,7 +717,8 @@ def scatter(datax, datay, labels, xlabel, ylabel, filename=None,
         plt.title(title)
     if filename is not None:
         plt.savefig(filename)
-    plt.show()
+    else:
+        plt.show()
     
 def hist1d_part(ax, data, labels, xlabel, nbins=50,
                 customXlim=None, title=None):
@@ -813,7 +819,8 @@ def plotMatrix(data, labelKeys, labelDict, dataLabels, filename=None, title=None
         plt.title(title)
     if filename is not None:
         plt.savefig(filename)
-    plt.show()
+    else:
+        plt.show()
     
     
 def scatter_w_c(datax, datay, dataz, datas, xlabel, ylabel, zlabel, log: bool = False,
@@ -846,4 +853,5 @@ def scatter_w_c(datax, datay, dataz, datas, xlabel, ylabel, zlabel, log: bool = 
         plt.title(title)
     if filename is not None:
         plt.savefig(filename)
-    plt.show()
+    else:
+        plt.show()

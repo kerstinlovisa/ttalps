@@ -226,21 +226,10 @@ class Particle:
     def __repr__(self):
         return str(self)
     
-    def tau(self):
-        """
-        Returns tau of the particle in s
-        """
-        if self.vertex is None:
-            print("Error: no vertex information.")
-            return 0
-        if self.vertex.vt == 0:
-            # vertex information is given in mm and c is given as cm/s in physics.
-            return self.vertex.abs_3d()/(10*ph.sm["c"])
-        return self.vertex.vt
-    
     def ctau(self):
         """
-        Returns ctau of the particle in s
+        Returns ctau of the particle in cm
+        ctau from MadAnalysis is given in mm, so if assigned the value is divided by 10.
         """
         if self.vertex is None:
             print("Error: no vertex information.")
@@ -248,7 +237,7 @@ class Particle:
         if self.vertex.vt == 0:
             # vertex information is given in mm and c is given as cm/s in physics.
             return self.vertex.abs_3d()/10
-        return self.vertex.vt*ph.sm["c"]
+        return self.vertex.vt/10
     
     def vertex_3d(self):
         """
@@ -1125,8 +1114,13 @@ class Dataset:
         on the input ttj backround:
             -1 = selections two muons closest together (3D angle) without any 
             muon charge requirements
+            
+        This method returns 3 Datasets:
+        (Dataset with all muons and muon acestors, Dataset with muon acestors, Dataset with antimuon ancestors)
         """
         events = []
+        events_muonmothers = []
+        events_amuonmothers = []
         event_num = 0
         with open(filename, 'r') as file:
             for line in file:
@@ -1207,8 +1201,12 @@ class Dataset:
                                 "mu": 0, "mu1": 0,
                                 "AntiMuon": 1, "Muon2": 1, 
                                 "antimuon": 1, "amu": 1, "mu2": 1}
+                particle_translator_mothers = {"mother1": 0, "Mother1": 0, "mom1": 0,
+                                              "mother": 0, "Mother": 0, "mom": 0,}
                 
                 particles = []
+                particles_muonmothers = []
+                particles_amuonmothers = []
                 if mus_no>=2:
                     if muon_nonpairs:
                         muon_list = particle_lists[0]+particle_lists[1]
@@ -1282,8 +1280,10 @@ class Dataset:
                         particles[1].vertex = vertex_amu
                         for ancestor in ancestor_lists[index_mu]:
                             particles.append(ancestor)
+                            particles_muonmothers.append(ancestor)
                         for ancestor in ancestor_lists[index_amu]:
                             particles.append(ancestor)
+                            particles_amuonmothers.append(ancestor)
                     # else:
                         # print(f"Event not included: {len(particles)} number of particles, {len(particle_lists[2])} number of muons, {len(particle_lists[3])} number of antimuons,")
                 elif (mus_no == 1): # Getting single muon events
@@ -1293,11 +1293,14 @@ class Dataset:
                     particles[0].vertex = vertex_mu
                     for ancestor in ancestor_lists[0]:
                         particles.append(ancestor)
+                        particles_muonmothers.append(ancestor)
                 else:
                     print(f"Event not included: {mus_no} number of muons.")
                 if len(particles) >=2:
                     events.append(Event(particles))
                     event_num += 1
+                    events_muonmothers.append(Event(particles_muonmothers))
+                    events_amuonmothers.append(Event(particles_amuonmothers))
                 if event_num>=event_num_max and not event_num_max<0:
                     print(f"Too many events: {event_num}")
                     break
@@ -1305,7 +1308,7 @@ class Dataset:
         print(filename+" read with [muon, antimuon, muonmother0, ..., amuonmother0, ...]"
                   +" in " + str(len(events)) + " Events.")
             
-        return cls(events, particle_translator)
+        return (cls(events, particle_translator),cls(events_muonmothers, particle_translator_mothers),cls(events_amuonmothers, particle_translator_mothers))
 
     @classmethod
     def concaternate_datasets(cls,dataset1,dataset2):
