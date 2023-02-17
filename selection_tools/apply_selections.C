@@ -122,9 +122,11 @@ int main(int argc, char *argv[])
   }
   
   // close files
+  output_tree_single_muon->AutoSave();
   output_tree_siblings->AutoSave();
   output_tree_non_siblings->AutoSave();
   
+  output_file_single_muon->Close();
   output_file_siblings->Close();
   output_file_non_siblings->Close();
   input_file->Close();
