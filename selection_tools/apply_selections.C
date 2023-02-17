@@ -53,18 +53,18 @@ tuple<TTree*, TTree*, TTree*> get_output_trees(TTree *input_tree, string file_na
 
 int main(int argc, char *argv[])
 {
-  if(argc != 6){
-    cout<<"Usage: ./apply_selections file_name input_path output_path_single_muon";
+  if(argc != 7){
+    cout<<"Usage: ./apply_selections input_file_name input_path output_file_name output_path_single_muon";
     cout<<" output_siblings_path output_non_siblings_path"<<endl;
     exit(0);
   }
   
-  string file_name = argv[1];
+  string input_file_name = argv[1];
   string input_path = argv[2];
   
-  auto input_tree = get_input_tree(input_path+file_name);
+  auto input_tree = get_input_tree(input_path+input_file_name);
   auto [output_tree_single_muon, output_tree_siblings, output_tree_non_siblings] =
-  get_output_trees(input_tree, file_name, argv[3], argv[4], argv[5]);
+  get_output_trees(input_tree, argv[3], argv[4], argv[5], argv[6]);
   
 // load events
   auto event_reader = EventReader(max_events, n_daughters);
