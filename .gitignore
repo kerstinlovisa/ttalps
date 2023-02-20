@@ -15,6 +15,10 @@ madgraph_production_tools/error/*
 madgraph_production_tools/output/*
 madgraph_production_tools/py.py
 madgraph_production_tools/tmp_cards/*
+madgraph_production_tools/ME5_debug
+madgraph_production_tools/MG5_debug
+madgraph_production_tools/ME5_debug
+madgraph_production_tools/MG5_debug
 
 selection_tools/xApplySelections.xcodeproj/
 selection_tools/CMakeCache.txt
@@ -29,12 +33,10 @@ selection_tools/log/*
 selection_tools/prepare_histograms
 
 external_tools/hepmc2root/__pycache__/*
-
 external_tools/hepmc2root/hepmc2root
 external_tools/hepmc2root/xHepmcToRoot.xcodeproj/*
 external_tools/hepmc2root/test.root
 
-madgraph_production_tools/ME5_debug
-madgraph_production_tools/MG5_debug
-
 TdAlps/__pycache__/*
+
+plotting_tools/*.pdf
