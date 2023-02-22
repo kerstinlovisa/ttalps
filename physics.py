@@ -5,7 +5,7 @@ from collections import OrderedDict
 import sys
 # Use the sys.path.insert(1,'path/to/TdAlps') to include the package TdAlps to then import it
 import aux
-#sys.path.insert(1,aux.TDALPS_PATH)
+sys.path.insert(1,aux.TDALPS_PATH)
 import TdAlps
 
 # This dictionary contains the values for the physical constants we need
