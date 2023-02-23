@@ -8,7 +8,7 @@ __set_conda() {
 __set_pythonpath() {
     local svj_analysis_dir=$1
     export PYTHONPATH="${svj_analysis_dir}/"
-    export PYTHONPATH="${PYTHONPATH}:/afs/desy.de/user/l/lrygaard/ALPpheno/TdAlps/"
+    export PYTHONPATH="${PYTHONPATH}:${svj_analysis_dir}/TdAlps/"
 }
 
 
