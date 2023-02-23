@@ -38,7 +38,7 @@ set MT 172.
 # lepton cuts
 set ptl 5.0
 set etal 3.5
-set drll 0.2
+#set drll 0.2
 
 # other settings
 set use_syst False
