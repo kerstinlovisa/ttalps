@@ -179,7 +179,7 @@ def main():
     alp_mass = float(args.alp_mass)
     Lambda = 1000
     gamma_total = ph.Gammaa(alp_mass, 0.5, -0.5, Lambda)
-    gamma_mumu = ph.Gammaatoll(alp_mass, ph.readCmumu(lscs), ph.sm['mmu'], Lambda)
+    gamma_mumu = ph.Gammamumu(alp_mass, 0.5, -0.5, Lambda)
 
     to_change = {
         ("# ax", "dummy_value"): gamma_total,
