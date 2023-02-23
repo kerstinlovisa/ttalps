@@ -36,3 +36,5 @@ external_tools/hepmc2root/test.root
 
 madgraph_production_tools/ME5_debug
 madgraph_production_tools/MG5_debug
+
+TdAlps/__pycache__/*

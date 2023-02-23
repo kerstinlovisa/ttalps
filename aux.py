@@ -4,7 +4,7 @@ import sys
 # Defines input and putput paths to use in the rest of the project
 COMMON_OUTPUT_PATH = '/afs/desy.de/user/l/lrygaard/ALPpheno/output_ttalps/' 
 COMMON_INPUT_PATH = '/nfs/dust/cms/user/lrygaard/ttalps/inclusive_lhe/'
-TDALPS_PATH = '/afs/desy.de/user/l/lrygaard/ALPpheno/TdAlps/'
+TDALPS_PATH = './TdAlps/'
 MUON_DATA_PATH = '/nfs/dust/cms/user/lrygaard/ttalps/ttj_txt/'
 
 class HiddenPrints:
