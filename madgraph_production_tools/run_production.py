@@ -177,11 +177,13 @@ def main():
 
     # prepare param card
     alp_mass = float(args.alp_mass)
-    gamma = ph.Gammaa(alp_mass, 0.5, -0.5, 1000)
+    Lambda = 1000
+    gamma_total = ph.Gammaa(alp_mass, 0.5, -0.5, Lambda)
+    gamma_mumu = ph.Gammaatoll(alp_mass, ph.readCmumu(lscs), ph.sm['mmu'], Lambda)
 
     to_change = {
-        ("# ax", "dummy_value"): gamma,
-        ("1.0   2    13  -13 #", "dummy_value"): gamma,
+        ("# ax", "dummy_value"): gamma_total,
+        ("1.0   2    13  -13 #", "dummy_value"): gamma_mumu,
     }
 
     copy_and_update_config(base_pythia_card, new_pythia_card_path, to_change)
