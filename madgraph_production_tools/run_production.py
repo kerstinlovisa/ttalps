@@ -186,7 +186,7 @@ def main():
         ("1.0   2    13  -13 #", "dummy_value"): gamma_mumu,
     }
 
-    copy_and_update_config(base_pythia_card, new_pythia_card_path, to_change)
+    copy_and_update_config(base_param_card, new_param_card_path, to_change)
 
     # run production
     run_command(new_mg_card_path, output_path, file_name)
