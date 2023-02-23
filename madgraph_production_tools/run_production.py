@@ -7,15 +7,15 @@ import fileinput
 from math import sqrt, pi
 import random
 import subprocess
-#import physics as ph
+import physics as ph
 
 python_path = "/afs/desy.de/user/j/jniedzie/miniconda3/envs/tta/bin/python3"
 mg_path = "/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/bin/mg5_aMC"
-#hepmc_path = "/afs/desy.de/user/j/jniedzie/hepmc2root/bin/hepmc2root.py"
 hepmc_path = "/afs/desy.de/user/j/jniedzie/ttalps/ttalps/external_tools/hepmc2root/hepmc2root"
 pythia_path = "/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/HEPTools/pythia8/share/Pythia8/xmldoc"
 
 base_pythia_card = "pythia8_card.dat"
+base_param_card = "param_card.dat"
 
 keep_lhe = False
 
@@ -45,7 +45,6 @@ def convert_hepmc_to_root(output_path, file_name):
     os.system(command)
     
     command = f"cd {output_path}/{file_name}/Events/run_01/;"
-    #command += f"{python_path} {hepmc_path} {file_name}.hepmc"
     command += f"{hepmc_path} {file_name}.hepmc"
     os.system(command)
 
@@ -74,7 +73,7 @@ def run_command(config_path, output_path, file_name):
     remove_existing_files(output_path, file_name)
     run_madgraph(config_path)
     convert_hepmc_to_root(output_path, file_name)
-#    move_and_cleanup_files(output_path, file_name)
+    move_and_cleanup_files(output_path, file_name)
     
     
 def create_paths(paths):
@@ -126,124 +125,6 @@ def get_output_file_name(process, part, n_events, alp_mass):
     return file_name
 
 
-def getLSfromctt(ctL,ctR, Lambda, mu):
-    """Returns low-energy coefficient dictionary from UV ALP-top couplings
-    
-    Interface function to the TdAlps package
-    ctL - coupling of the lefthanded top-quark to the ALP in the UV
-    ctR - coupling of the righthanded top-quark to the ALP in the UV
-    Lambda - cutoff scale of the ALP-EFT where ctL and ctR are defines
-    mu - low-energy scale to which the couplings are run
-    the running is based on hep-ph: [2012.12272]"""
-    with aux.HiddenPrints():
-        HC = OrderedDict()
-        HC['Q'] = np.array([[0,0,0],[0,0,0],[0,0,-ctL]])
-        HC['u'] = np.array([[0,0,0],[0,0,0],[0,0,ctR]])
-        HC['d'] = np.array([[0,0,0],[0,0,0],[0,0,0]])
-        HC['L'] = np.array([[0,0,0],[0,0,0],[0,0,0]])
-        HC['e'] = np.array([[0,0,0],[0,0,0],[0,0,0]])
-        HC['GG'] = 0
-        HC['WW'] = 0
-        HC['BB'] = 0
-        if mu<1:
-            mu=1
-    return TdAlps.RunRotateMatchRun(HC, Lambda, mu, 3)
-
-
-sm={
-    'sw': math.sqrt(0.23121), # sin(theta_weak)
-    'hbar': 6.582119569*10**(-25), # h/2pi in GeVs
-    'c': 29979245800, # speed of light in cm/s
-    'me': 0.0005109989461, # eletron mass in GeV
-    'mmu': 0.1056583745, # muon mass in GeV
-    'mtau': 1.77686, # tauon mass in GeV
-    'mu': 0.00216, # up quark mass in GeV
-    'md': 0.00467, # down quark mass in GeV
-    'ms': 0.093, # strange quark mass in GeV
-    'mc': 1.27, #charm quark mass in GeV
-    'mb': 4.18, # bottom quark mass in GeV
-    'mt': 163.6, # top quark mass in GeV
-    'mZ': 91.1876, # Z boson mass in GeV
-    'mB+': 5.27934, # charged B meson mass in GeV
-    'mK+': 0.493677, # charged kaon mass in GeV
-    'mpi+': 0.13957039, # charged pion mass in GeV
-    'mpi0': 0.1349768, # neutral pion mass in GeV
-    'fpi': 0.130, # pion decay constant
-    'tauB+': 1.638*10**(-12), # charged B meson lifetime in s
-    'GF': 1.166*10**(-5), # Fermi constant
-    'alpha': 1/137, # electromagnetic coupling 
-    'Vtb': 0.999, # absolute value of CKM element tb
-    'Vts': 0.0404, # absolute value of CKM element ts
-    'Xt': 1.462, # effective B->Knunu vertex coupling from [1409.4557]
-    'BrBtoKnunu+': 4.5*10**(-6), # Branching ratio of B->K nu nu decay
-    'NBBBaBar': 471*10**6, # number of BB pairs produced at BaBar
-    'NBBBelleII': 5*10**10, # number of BB pairs produced at Belle II
-    'mp': 0.9383, # proton mass in GeV
-    'mn': 0.9396 # neutron mass in GeV
-}
-
-
-def Gammaatoll(ma, cll, ml, Lambda):
-    """decay rate of an ALP to a pair of leptons
-    
-    ma - ALP mass
-    cll - coupling of ALP to leptons
-    ml - mass of leptons
-    Lambda - cutoff scale of the ALP-EFT
-    following hep-ph: [2012.12272]"""
-    if ma <= 2 * ml:
-        return 0
-    gamma = ml**2 * abs(cll)**2 * math.sqrt(ma**2 - 4 * ml**2) * 2 * math.pi / (Lambda**2) 
-    if gamma.imag  != 0:
-        if gamma.imag/gamma.real > 10**-10:
-            print("The Decay rate to leptons with mass " + str(ml) + " is complex: " + str(gamma))
-    return float(gamma)
-
-def Gammaatoqq(ma, cqq, mq, Lambda):
-    """decay rate of an ALP to a pair of quarks
-    
-    ma - ALP mass
-    cqq - coupling of ALP to quarks
-    mq - mass of leptons
-    Lambda - cutoff scale of the ALP-EFT
-    following hep-ph: [2012.12272]"""
-    if ma <= 2 * mq:
-        return 0
-    gamma = 3 * mq**2 * abs(cqq)**2 * math.sqrt(ma**2 - 4 * mq**2) * 2 * math.pi / (Lambda**2) 
-    if gamma.imag  != 0:
-        if gamma.imag/gamma.real > 10**-10:
-            print("The Decay rate to quarks with mass " + str(mq) + " is complex: " + str(gamma))
-    return float(gamma)
-
-
-def Gammaa(ma, ctL, ctR, Lambda):
-    """Decay rate of the ALP as induced only by top couplings
-    
-    ma - ALP mass
-    ctL - coupling of the lefthanded top-quark to the ALP in the UV
-    ctR - coupling of the righthanded top-quark to the ALP in the UV
-    Lambda - cutoff scale of the ALP-EFT
-    following hep-ph: [2012.12272]"""
-    lscs = getLSfromctt(ctL,ctR, Lambda, ma)
-    GammaTot = 0
-    if ma>2*sm['me']:
-        GammaTot += Gammaatoll(ma,readCee(lscs),sm['me'],Lambda)
-    if ma>2*sm['mmu']:
-        GammaTot += Gammaatoll(ma,readCmumu(lscs),sm['mmu'],Lambda)
-    if ma>2*sm['mtau']:
-        GammaTot += Gammaatoll(ma,readCtautau(lscs),sm['mtau'],Lambda)
-    if ma>2*sm['mc']:
-        GammaTot += Gammaatoqq(ma,readCcc(lscs),sm['mc'],Lambda)
-    if ma>2*sm['mb']:
-        GammaTot += Gammaatoqq(ma,readCbb(lscs),sm['mb'],Lambda)
-    if ma>1:
-        GammaTot += Gammaatohad(ma,lscs,Lambda)
-    if ma<2:
-        GammaTot += Gammaato3pi0pm(ma,lscs,Lambda)
-        GammaTot += Gammaato3pi000(ma,lscs,Lambda)
-    GammaTot += Gammaatogamgam(ma,lscs,Lambda)
-    
-
 def main():
     random.seed(None)
 
@@ -257,6 +138,7 @@ def main():
     file_hash = random.getrandbits(128)
     new_mg_card_path = f"tmp_cards/mg_card_{file_hash}.txt"
     new_pythia_card_path = f"tmp_cards/pythia8_card_{file_hash}.dat"
+    new_param_card_path = f"tmp_cards/param_card_{file_hash}.dat"
 
     process = args.process
 
@@ -265,6 +147,7 @@ def main():
     # prepare MG card
     to_change = {
         ("output", "dummy_value"): output_path+"/"+file_name,
+        ("param_card.dat", "param_card.dat"): new_param_card_path,
         ("pythia8_card.dat", "pythia8_card.dat"): new_pythia_card_path,
         ("set Ma", "dummy_value"): args.alp_mass,
         ("set nevents", "dummy_value"): args.n_events,
@@ -286,23 +169,19 @@ def main():
     copy_and_update_config(base_mg_card, new_mg_card_path, to_change)
 
     # prepare pythia card
-
-    alp_mass = float(args.alp_mass)
-#    ctau = ph.ctaua(alp_mass, 0.5, -0.5, 1000)
-#    tau = ctau / 29979245800
-#    gamma = 6.582119569*10**(-25) / tau
-
-    tau = 1e-5
-    gamma = 1e-20
-
     to_change = {
         ("HEPMCoutput:file", "dummy_value"): file_name+".hepmc.gz",
+    }
 
-	("ParticleData:addParticle", "dummy_mass"): alp_mass,
-	("ParticleData:addParticle", "dummy_width"): gamma,
-	("ParticleData:addParticle", "dummy_mMin"): alp_mass - gamma,
- 	("ParticleData:addParticle", "dummy_mMax"): alp_mass + gamma,
-	("ParticleData:addParticle", "dummy_tau"): tau,
+    copy_and_update_config(base_pythia_card, new_pythia_card_path, to_change)
+
+    # prepare param card
+    alp_mass = float(args.alp_mass)
+    gamma = ph.Gammaa(alp_mass, 0.5, -0.5, 1000)
+
+    to_change = {
+        ("# ax", "dummy_value"): gamma,
+        ("1.0   2    13  -13 #", "dummy_value"): gamma,
     }
 
     copy_and_update_config(base_pythia_card, new_pythia_card_path, to_change)
