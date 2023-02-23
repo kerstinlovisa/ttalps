@@ -220,7 +220,7 @@ vector<tuple<Particle*, Particle*>> Event::get_muon_pair()
       int sister_code = check_sister(sister_index, particle, particles);
       
       if(sister_code == -1){
-        muons.push_back({particle,particles[sister_index]});
+        muons.push_back(std::make_tuple(particle,particles[sister_index]));
       }
     }
   }
@@ -230,26 +230,63 @@ vector<tuple<Particle*, Particle*>> Event::get_muon_pair()
 
 tuple<Particle*, Particle*> Event::get_smallest_deltaR_same_sign_muon_non_pair()
 {
-  // TODO: implement that...
   
   tuple<Particle*, Particle*> muons;
   
-  for(auto particle : particles){
-    //...
+  int muon1_index = -1;
+  int muon2_index= -1;
+  double deltaR_max = 0.0;
+  for(int i=0; i<particles.size(); i++){
+    if(!particles[i]->is_good_non_top_muon(particles)) continue;
+    for(int j=0; j<particles.size(); j++)
+    {
+      if (j==i) continue;
+      if(!particles[j]->is_good_non_top_muon(particles)) continue;
+
+      double deltaR = particles[i]->four_vector.DeltaR(particles[j]->four_vector);
+      if (deltaR > deltaR_max)
+      {
+        muon1_index= i;
+        muon2_index= j;
+        deltaR_max = deltaR;
+      }
+    }
   }
-  
-  return muons;
+  if (muon1_index>0 && muon2_index>0) 
+  {
+    muons = std::make_tuple(particles[muon1_index],particles[muon2_index]);
+  }
+  return muons; 
 }
 
 tuple<Particle*, Particle*> Event::get_smallest_deltaR_opposite_sign_muon_non_pair()
 {
-  // TODO: implement that...
   
-  tuple<Particle*, Particle*> muons = {nullptr, nullptr};
-  
-  for(auto particle : particles){
-    //...
+  tuple<Particle*, Particle*> muons;
+
+  int muon1_index = -1;
+  int muon2_index= -1;
+  double deltaR_max = 0.0;
+  for(int i=0; i<particles.size(); i++){
+    if(!particles[i]->is_good_non_top_muon(particles)) continue;
+    for(int j=0; j<particles.size(); j++)
+    {
+      if (j==i) continue;
+      if (particles[i]->pdgid == particles[j]->pdgid) continue;
+      if(!particles[j]->is_good_non_top_muon(particles)) continue;
+
+      double deltaR = particles[i]->four_vector.DeltaR(particles[j]->four_vector);
+      if (deltaR > deltaR_max)
+      {
+        muon1_index= i;
+        muon2_index= j;
+        deltaR_max = deltaR;
+      }
+    }
   }
-  
-  return muons;
+  if (muon1_index>0 && muon2_index>0) 
+  {
+    muons = std::make_tuple(particles[muon1_index],particles[muon2_index]);
+  }
+  return muons; 
 }
