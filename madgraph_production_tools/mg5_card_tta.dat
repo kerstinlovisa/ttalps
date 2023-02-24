@@ -42,4 +42,5 @@ set Ma dummy_value
 # other settings
 set bwcutoff 15.0
 
+param_card.dat
 pythia8_card.dat
