@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 
     {"ss_dimuon_deltaR",  new TH1D("ss_dimuon_deltaR", "ss_dimuon_deltaR", 1000, 0, 100)},
     {"ss_dimuon_deltaPhi",  new TH1D("ss_dimuon_deltaPhi", "ss_dimuon_deltaPhi", 1000, -100, 100)},
-    
+
     {"dimuon_pt",  new TH1D("dimuon_pt", "dimuon_pt", 1000, 0, 1000)},
     {"dimuon_pz",  new TH1D("dimuon_pz", "dimuon_pz", 1000, -1000, 1000)},
     {"dimuon_mass",  new TH1D("dimuon_mass", "dimuon_mass", 1000, 0, 100)},
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     {"ss_dimuon_mass",  new TH1D("ss_dimuon_mass", "ss_dimuon_mass", 1000, 0, 100)},
     {"ss_dimuon_eta",  new TH1D("ss_dimuon_eta", "ss_dimuon_eta", 1000, -100, 100)},
     {"ss_dimuon_phi",  new TH1D("ss_dimuon_phi", "ss_dimuon_phi", 1000, -100, 100)},
-    
+
     {"first_mother_pt",  new TH1D("first_mother_pt", "first_mother_pt", 1000, 0, 1000)},
     {"first_mother_pz",  new TH1D("first_mother_pz", "first_mother_pz", 1000, -1000, 1000)},
     {"first_mother_mass",  new TH1D("first_mother_mass", "first_mother_mass", 1000, 0, 200)},
@@ -112,6 +112,73 @@ int main(int argc, char *argv[])
     {"ss_first_mother_lxyz",  new TH1D("ss_first_mother_lxyz", "ss_first_mother_lxyz", 1000, 0, 100)},
     {"ss_first_mother_ctau",  new TH1D("ss_first_mother_ctau", "ss_first_mother_ctau", 1000, 0, 100)},
     {"ss_first_mother_boost",  new TH1D("ss_first_mother_boost", "ss_first_mother_boost", 1000, 0, 100)},
+
+    // Selection histograms
+    {"sel_pT10_muon_pt",  new TH1D("sel_pT10_muon_pt", "sel_pT10_muon_pt", 1000, 0, 1000)},
+    {"sel_pT10_muon_pz",  new TH1D("sel_pT10_muon_pz", "sel_pT10_muon_pz", 1000, -1000, 1000)},
+    {"sel_pT10_muon_mass",  new TH1D("sel_pT10_muon_mass", "sel_pT10_muon_mass", 1000, 0, 10)},
+    {"sel_pT10_muon_eta",  new TH1D("sel_pT10_muon_eta", "sel_pT10_muon_eta", 1000, -100, 100)},
+    {"sel_pT10_muon_phi",  new TH1D("sel_pT10_muon_phi", "sel_pT10_muon_phi", 1000, -100, 100)},
+    {"sel_pT10_muon_y",  new TH1D("sel_pT10_muon_y", "sel_pT10_muon_y", 1000, -100, 100)},
+    {"sel_pT10_muon_theta",  new TH1D("sel_pT10_muon_theta", "sel_pT10_muon_theta", 1000, -100, 100)},
+    {"sel_pT10_muon_lxy",  new TH1D("sel_pT10_muon_lxy", "sel_pT10_muon_lxy", 1000, 0, 100)},
+    {"sel_pT10_muon_lz",  new TH1D("sel_pT10_muon_lz", "sel_pT10_muon_lz", 1000, 0, 100)},
+    {"sel_pT10_muon_lxyz",  new TH1D("sel_pT10_muon_lxyz", "sel_pT10_muon_lxyz", 1000, 0, 100)},
+    {"sel_pT10_muon_ctau",  new TH1D("sel_pT10_muon_ctau", "sel_pT10_muon_ctau", 1000, 0, 100)},
+    {"sel_pT10_muon_boost",  new TH1D("sel_pT10_muon_boost", "sel_pT10_muon_boost", 1000, 0, 1000)},
+
+    {"sel_pT10_dimuon_deltaR",  new TH1D("sel_pT10_dimuon_deltaR", "sel_pT10_dimuon_deltaR", 1000, 0, 100)},
+    {"sel_pT10_dimuon_deltaPhi",  new TH1D("sel_pT10_dimuon_deltaPhi", "sel_pT10_dimuon_deltaPhi", 1000, -100, 100)},
+
+    {"sel_pT10_dimuon_pt",  new TH1D("sel_pT10_dimuon_pt", "sel_pT10_dimuon_pt", 1000, 0, 1000)},
+    {"sel_pT10_dimuon_pz",  new TH1D("sel_pT10_dimuon_pz", "sel_pT10_dimuon_pz", 1000, -1000, 1000)},
+    {"sel_pT10_dimuon_mass",  new TH1D("sel_pT10_dimuon_mass", "sel_pT10_dimuon_mass", 1000, 0, 100)},
+    {"sel_pT10_dimuon_eta",  new TH1D("sel_pT10_dimuon_eta", "sel_pT10_dimuon_eta", 1000, -100, 100)},
+    {"sel_pT10_dimuon_phi",  new TH1D("sel_pT10_dimuon_phi", "sel_pT10_dimuon_phi", 1000, -100, 100)},
+
+    {"sel_pT10_first_mother_pt",  new TH1D("sel_pT10_first_mother_pt", "sel_pT10_first_mother_pt", 1000, 0, 1000)},
+    {"sel_pT10_first_mother_pz",  new TH1D("sel_pT10_first_mother_pz", "sel_pT10_first_mother_pz", 1000, -1000, 1000)},
+    {"sel_pT10_first_mother_mass",  new TH1D("sel_pT10_first_mother_mass", "sel_pT10_first_mother_mass", 1000, 0, 200)},
+    {"sel_pT10_first_mother_eta",  new TH1D("sel_pT10_first_mother_eta", "sel_pT10_first_mother_eta", 1000, -100, 100)},
+    {"sel_pT10_first_mother_phi",  new TH1D("sel_pT10_first_mother_phi", "sel_pT10_first_mother_phi", 1000, -100, 100)},
+    {"sel_pT10_first_mother_lxy",  new TH1D("sel_pT10_first_mother_lxy", "sel_pT10_first_mother_lxy", 1000, 0, 100)},
+    {"sel_pT10_first_mother_lz",  new TH1D("sel_pT10_first_mother_lz", "sel_pT10_first_mother_lz", 1000, 0, 100)},
+    {"sel_pT10_first_mother_lxyz",  new TH1D("sel_pT10_first_mother_lxyz", "sel_pT10_first_mother_lxyz", 1000, 0, 100)},
+    {"sel_pT10_first_mother_ctau",  new TH1D("sel_pT10_first_mother_ctau", "sel_pT10_first_mother_ctau", 1000, 0, 100)},
+    {"sel_pT10_first_mother_boost",  new TH1D("sel_pT10_first_mother_boost", "sel_pT10_first_mother_boost", 1000, 0, 100)},
+
+    {"sel_pT10_ss_muon_pt",  new TH1D("sel_pT10_ss_muon_pt", "sel_pT10_ss_muon_pt", 1000, 0, 1000)},
+    {"sel_pT10_ss_muon_pz",  new TH1D("sel_pT10_ss_muon_pz", "sel_pT10_ss_muon_pz", 1000, -1000, 1000)},
+    {"sel_pT10_ss_muon_mass",  new TH1D("sel_pT10_ss_muon_mass", "sel_pT10_ss_muon_mass", 1000, 0, 10)},
+    {"sel_pT10_ss_muon_eta",  new TH1D("sel_pT10_ss_muon_eta", "sel_pT10_ss_muon_eta", 1000, -100, 100)},
+    {"sel_pT10_ss_muon_phi",  new TH1D("sel_pT10_ss_muon_phi", "sel_pT10_ss_muon_phi", 1000, -100, 100)},
+    {"sel_pT10_ss_muon_y",  new TH1D("sel_pT10_ss_muon_y", "sel_pT10_ss_muon_y", 1000, -100, 100)},
+    {"sel_pT10_ss_muon_theta",  new TH1D("sel_pT10_ss_muon_theta", "sel_pT10_ss_muon_theta", 1000, -100, 100)},
+    {"sel_pT10_ss_muon_lxy",  new TH1D("sel_pT10_ss_muon_lxy", "sel_pT10_ss_muon_lxy", 1000, 0, 100)},
+    {"sel_pT10_ss_muon_lz",  new TH1D("sel_pT10_ss_muon_lz", "sel_pT10_ss_muon_lz", 1000, 0, 100)},
+    {"sel_pT10_ss_muon_lxyz",  new TH1D("sel_pT10_ss_muon_lxyz", "sel_pT10_ss_muon_lxyz", 1000, 0, 100)},
+    {"sel_pT10_ss_muon_ctau",  new TH1D("sel_pT10_ss_muon_ctau", "sel_pT10_ss_muon_ctau", 1000, 0, 100)},
+    {"sel_pT10_ss_muon_boost",  new TH1D("sel_pT10_ss_muon_boost", "sel_pT10_ss_muon_boost", 1000, 0, 1000)},
+
+    {"sel_pT10_ss_dimuon_deltaR",  new TH1D("sel_pT10_ss_dimuon_deltaR", "sel_pT10_ss_dimuon_deltaR", 1000, 0, 100)},
+    {"sel_pT10_ss_dimuon_deltaPhi",  new TH1D("sel_pT10_ss_dimuon_deltaPhi", "sel_pT10_ss_dimuon_deltaPhi", 1000, -100, 100)},
+
+    {"sel_pT10_ss_dimuon_pt",  new TH1D("sel_pT10_ss_dimuon_pt", "sel_pT10_ss_dimuon_pt", 1000, 0, 1000)},
+    {"sel_pT10_ss_dimuon_pz",  new TH1D("sel_pT10_ss_dimuon_pz", "sel_pT10_ss_dimuon_pz", 1000, -1000, 1000)},
+    {"sel_pT10_ss_dimuon_mass",  new TH1D("sel_pT10_ss_dimuon_mass", "sel_pT10_ss_dimuon_mass", 1000, 0, 100)},
+    {"sel_pT10_ss_dimuon_eta",  new TH1D("sel_pT10_ss_dimuon_eta", "sel_pT10_ss_dimuon_eta", 1000, -100, 100)},
+    {"sel_pT10_ss_dimuon_phi",  new TH1D("sel_pT10_ss_dimuon_phi", "sel_pT10_ss_dimuon_phi", 1000, -100, 100)},
+
+    {"sel_pT10_ss_first_mother_pt",  new TH1D("sel_pT10_ss_first_mother_pt", "sel_pT10_ss_first_mother_pt", 1000, 0, 1000)},
+    {"sel_pT10_ss_first_mother_pz",  new TH1D("sel_pT10_ss_first_mother_pz", "sel_pT10_ss_first_mother_pz", 1000, -1000, 1000)},
+    {"sel_pT10_ss_first_mother_mass",  new TH1D("sel_pT10_ss_first_mother_mass", "sel_pT10_ss_first_mother_mass", 1000, 0, 200)},
+    {"sel_pT10_ss_first_mother_eta",  new TH1D("sel_pT10_ss_first_mother_eta", "sel_pT10_ss_first_mother_eta", 1000, -100, 100)},
+    {"sel_pT10_ss_first_mother_phi",  new TH1D("sel_pT10_ss_first_mother_phi", "sel_pT10_ss_first_mother_phi", 1000, -100, 100)},
+    {"sel_pT10_ss_first_mother_lxy",  new TH1D("sel_pT10_ss_first_mother_lxy", "sel_pT10_ss_first_mother_lxy", 1000, 0, 100)},
+    {"sel_pT10_ss_first_mother_lz",  new TH1D("sel_pT10_ss_first_mother_lz", "sel_pT10_ss_first_mother_lz", 1000, 0, 100)},
+    {"sel_pT10_ss_first_mother_lxyz",  new TH1D("sel_pT10_ss_first_mother_lxyz", "sel_pT10_ss_first_mother_lxyz", 1000, 0, 100)},
+    {"sel_pT10_ss_first_mother_ctau",  new TH1D("sel_pT10_ss_first_mother_ctau", "sel_pT10_ss_first_mother_ctau", 1000, 0, 100)},
+    {"sel_pT10_ss_first_mother_boost",  new TH1D("sel_pT10_ss_first_mother_boost", "sel_pT10_ss_first_mother_boost", 1000, 0, 100)},
   };
   
   
@@ -197,6 +264,88 @@ int main(int argc, char *argv[])
     hists["ss_first_mother_boost"]->Fill(mother->momentum()/mother->mass);
   };
 
+  auto fill_sel_single_muon_hists = [&](const Particle *muon, const string sel)->void {
+    hists[sel + "muon_pt"]->Fill(muon->four_vector.Pt());
+    hists[sel + "muon_pz"]->Fill(muon->four_vector.Pt());
+    hists[sel + "muon_mass"]->Fill(muon->four_vector.M());
+    hists[sel + "muon_eta"]->Fill(muon->four_vector.Eta());
+    hists[sel + "muon_phi"]->Fill(muon->four_vector.Eta());
+    hists[sel + "muon_y"]->Fill(muon->four_vector.Eta());
+    hists[sel + "muon_theta"]->Fill(muon->four_vector.Eta());
+    hists[sel + "muon_lxy"]->Fill(muon->four_vector.Phi());
+    hists[sel + "muon_lz"]->Fill(muon->four_vector.Phi());
+    hists[sel + "muon_lxyz"]->Fill(muon->four_vector.Phi());
+    hists[sel + "muon_ctau"]->Fill(muon->four_vector.Rapidity());
+    hists[sel + "muon_boost"]->Fill(muon->four_vector.Theta());
+  };
+
+  auto fill_sel_double_muon_hists =  [&](const Particle *muon1,const Particle *muon2, const string sel)->void {
+    hists[sel + "dimuon_deltaPhi"]->Fill(muon1->four_vector.DeltaPhi(muon2->four_vector));
+    hists[sel + "dimuon_deltaR"]->Fill(muon1->four_vector.DeltaR(muon2->four_vector));
+  };
+  
+  auto fill_sel_dimuon_hists = [&](const TLorentzVector &dimuon, const string sel)->void {
+    hists[sel + "dimuon_pt"]->Fill(dimuon.Pt());
+    hists[sel + "dimuon_pz"]->Fill(dimuon.Pz());
+    hists[sel + "dimuon_mass"]->Fill(dimuon.M());
+    hists[sel + "dimuon_eta"]->Fill(dimuon.Eta());
+    hists[sel + "dimuon_phi"]->Fill(dimuon.Phi());
+  };
+  
+  auto fill_sel_first_mother_hists = [&](const Particle *mother, const string sel)->void {
+    hists[sel + "first_mother_pt"]->Fill(mother->four_vector.Pt());
+    hists[sel + "first_mother_pz"]->Fill(mother->four_vector.Pz());
+    hists[sel + "first_mother_mass"]->Fill(mother->four_vector.M());
+    hists[sel + "first_mother_eta"]->Fill(mother->four_vector.Eta());
+    hists[sel + "first_mother_phi"]->Fill(mother->four_vector.Phi());
+    hists[sel + "first_mother_lxy"]->Fill(sqrt(pow(mother->x, 2) + pow(mother->y, 2)));
+    hists[sel + "first_mother_lz"]->Fill(mother->z);
+    hists[sel + "first_mother_lxyz"]->Fill(sqrt(pow(mother->x, 2) + pow(mother->y, 2) + pow(mother->z, 2)));
+    hists[sel + "first_mother_ctau"]->Fill(mother->ctau);
+    hists[sel + "first_mother_boost"]->Fill(mother->momentum()/mother->mass);
+  };
+
+  auto fill_sel_ss_single_muon_hists = [&](const Particle *muon, const string sel)->void {
+    hists[sel + "ss_muon_pt"]->Fill(muon->four_vector.Pt());
+    hists[sel + "ss_muon_pz"]->Fill(muon->four_vector.Pt());
+    hists[sel + "ss_muon_mass"]->Fill(muon->four_vector.M());
+    hists[sel + "ss_muon_eta"]->Fill(muon->four_vector.Eta());
+    hists[sel + "ss_muon_phi"]->Fill(muon->four_vector.Eta());
+    hists[sel + "ss_muon_y"]->Fill(muon->four_vector.Eta());
+    hists[sel + "ss_muon_theta"]->Fill(muon->four_vector.Eta());
+    hists[sel + "ss_muon_lxy"]->Fill(muon->four_vector.Phi());
+    hists[sel + "ss_muon_lz"]->Fill(muon->four_vector.Phi());
+    hists[sel + "ss_muon_lxyz"]->Fill(muon->four_vector.Phi());
+    hists[sel + "ss_muon_ctau"]->Fill(muon->four_vector.Rapidity());
+    hists[sel + "ss_muon_boost"]->Fill(muon->four_vector.Theta());
+  };
+
+  auto fill_sel_ss_double_muon_hists =  [&](const Particle *muon1,const Particle *muon2, const string sel)->void {
+    hists[sel + "ss_dimuon_deltaPhi"]->Fill(muon1->four_vector.DeltaPhi(muon2->four_vector));
+    hists[sel + "ss_dimuon_deltaR"]->Fill(muon1->four_vector.DeltaR(muon2->four_vector));
+  };
+  
+  auto fill_sel_ss_dimuon_hists = [&](const TLorentzVector &dimuon, const string sel)->void {
+    hists[sel + "ss_dimuon_pt"]->Fill(dimuon.Pt());
+    hists[sel + "ss_dimuon_pz"]->Fill(dimuon.Pz());
+    hists[sel + "ss_dimuon_mass"]->Fill(dimuon.M());
+    hists[sel + "ss_dimuon_eta"]->Fill(dimuon.Eta());
+    hists[sel + "ss_dimuon_phi"]->Fill(dimuon.Phi());
+  };
+  
+  auto fill_sel_ss_first_mother_hists = [&](const Particle *mother, const string sel)->void {
+    hists[sel + "ss_first_mother_pt"]->Fill(mother->four_vector.Pt());
+    hists[sel + "ss_first_mother_pz"]->Fill(mother->four_vector.Pz());
+    hists[sel + "ss_first_mother_mass"]->Fill(mother->four_vector.M());
+    hists[sel + "ss_first_mother_eta"]->Fill(mother->four_vector.Eta());
+    hists[sel + "ss_first_mother_phi"]->Fill(mother->four_vector.Phi());
+    hists[sel + "ss_first_mother_lxy"]->Fill(sqrt(pow(mother->x, 2) + pow(mother->y, 2)));
+    hists[sel + "ss_first_mother_lz"]->Fill(mother->z);
+    hists[sel + "ss_first_mother_lxyz"]->Fill(sqrt(pow(mother->x, 2) + pow(mother->y, 2) + pow(mother->z, 2)));
+    hists[sel + "ss_first_mother_ctau"]->Fill(mother->ctau);
+    hists[sel + "ss_first_mother_boost"]->Fill(mother->momentum()/mother->mass);
+  };
+
   
   int i_event=0;
   
@@ -223,6 +372,13 @@ int main(int argc, char *argv[])
       // TODO: handle properly multiple mothers case
       auto mother = event->particles[muon->mothers[0]];
       fill_first_mother_hists(mother);
+
+      if (muon->four_vector.Pt() > 10)
+      {
+        string sel = "sel_pT10_";
+        fill_sel_single_muon_hists(muon,sel);
+        fill_sel_first_mother_hists(mother,sel);
+      }
     }
     else if(preselection_code == 2){ // pair category
       auto muons = event->get_muon_pair();
@@ -241,6 +397,15 @@ int main(int argc, char *argv[])
         // TODO: handle the full chain of mother (and multiple mothers) correctly
         auto mother = event->particles[muon_1->mothers[0]];
         fill_first_mother_hists(mother);
+
+        if (muon_1->four_vector.Pt() > 10 && muon_2->four_vector.Pt() > 10)
+        {
+          string sel = "sel_pT10_";
+          fill_sel_single_muon_hists(muon_1,sel);
+          fill_sel_single_muon_hists(muon_2,sel);
+          fill_sel_dimuon_hists(dimuon,sel);
+          fill_sel_first_mother_hists(mother,sel);
+        }
       }
     }
     else if(preselection_code == 3){ // non-pair category
@@ -260,6 +425,16 @@ int main(int argc, char *argv[])
         
         auto mother_2 = event->particles[opposite_sign_muon_2->mothers[0]];
         fill_first_mother_hists(mother_2);
+
+        if (opposite_sign_muon_1->four_vector.Pt() > 10 && opposite_sign_muon_2->four_vector.Pt() > 10)
+        {
+          string sel = "sel_pT10_";
+          fill_sel_single_muon_hists(opposite_sign_muon_1,sel);
+          fill_sel_single_muon_hists(opposite_sign_muon_2,sel);
+          fill_sel_dimuon_hists(dimuon,sel);
+          fill_sel_first_mother_hists(mother_1,sel);
+          fill_sel_first_mother_hists(mother_2,sel);
+        }
       }
       
       // Fill in hists for the opposite sign non-pair (if exists)
@@ -277,6 +452,16 @@ int main(int argc, char *argv[])
         
         auto mother_2 = event->particles[same_sign_muon_2->mothers[0]];
         fill_ss_first_mother_hists(mother_2);
+
+        if (opposite_sign_muon_1->four_vector.Pt() > 10 && opposite_sign_muon_2->four_vector.Pt() > 10)
+        {
+          string sel = "sel_pT10_";
+          fill_sel_ss_single_muon_hists(opposite_sign_muon_1,sel);
+          fill_sel_ss_single_muon_hists(opposite_sign_muon_2,sel);
+          fill_sel_ss_dimuon_hists(dimuon,sel);
+          fill_sel_ss_first_mother_hists(mother_1,sel);
+          fill_sel_ss_first_mother_hists(mother_2,sel);
+        }
       }
       
     }

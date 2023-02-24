@@ -27,6 +27,7 @@ public:
   
   double eta();
   double momentum() const;
+  double pt() const;
   
   
   float x, y, z, px, py, pz, energy, mass, ctau;
