@@ -3,9 +3,7 @@ import numpy as np
 import scipy.integrate
 from collections import OrderedDict
 import sys
-# Use the sys.path.insert(1,'path/to/TdAlps') to include the package TdAlps to then import it
 import aux
-sys.path.insert(1,aux.TDALPS_PATH)
 import TdAlps
 
 # This dictionary contains the values for the physical constants we need
@@ -313,6 +311,23 @@ def Gammaa(ma, ctL, ctR, Lambda):
     GammaTot += Gammaatogamgam(ma,lscs,Lambda)
     if GammaTot.imag  != 0:
         print("The Decay rate to hadrons is complex: " + str(GammaTot))
+    return float(GammaTot)
+
+
+def Gammamumu(ma, ctL, ctR, Lambda):
+    """Decay rate of the ALP to mu mu as induced only by top couplings
+
+    ma - ALP mass
+    ctL - coupling of the lefthanded top-quark to the ALP in the UV
+    ctR - coupling of the righthanded top-quark to the ALP in the UV
+    Lambda - cutoff scale of the ALP-EFT
+    following hep-ph: [2012.12272]"""
+    lscs = getLSfromctt(ctL, ctR, Lambda, ma)
+    GammaTot = 0
+    
+    if ma > 2 * sm['mmu']:
+        GammaTot += Gammaatoll(ma, readCmumu(lscs), sm['mmu'], Lambda)
+    
     return float(GammaTot)
 
 def ctaua(ma, ctL, ctR, Lambda):

@@ -1,4 +1,5 @@
 import os
+import math
 from pathlib import Path
 import shutil
 import argparse
@@ -6,14 +7,15 @@ import fileinput
 from math import sqrt, pi
 import random
 import subprocess
+import physics as ph
 
 python_path = "/afs/desy.de/user/j/jniedzie/miniconda3/envs/tta/bin/python3"
 mg_path = "/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/bin/mg5_aMC"
-#hepmc_path = "/afs/desy.de/user/j/jniedzie/hepmc2root/bin/hepmc2root.py"
 hepmc_path = "/afs/desy.de/user/j/jniedzie/ttalps/ttalps/external_tools/hepmc2root/hepmc2root"
 pythia_path = "/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/HEPTools/pythia8/share/Pythia8/xmldoc"
 
 base_pythia_card = "pythia8_card.dat"
+base_param_card = "param_card.dat"
 
 keep_lhe = False
 
@@ -43,7 +45,6 @@ def convert_hepmc_to_root(output_path, file_name):
     os.system(command)
     
     command = f"cd {output_path}/{file_name}/Events/run_01/;"
-    #command += f"{python_path} {hepmc_path} {file_name}.hepmc"
     command += f"{hepmc_path} {file_name}.hepmc"
     os.system(command)
 
@@ -137,6 +138,7 @@ def main():
     file_hash = random.getrandbits(128)
     new_mg_card_path = f"tmp_cards/mg_card_{file_hash}.txt"
     new_pythia_card_path = f"tmp_cards/pythia8_card_{file_hash}.dat"
+    new_param_card_path = f"tmp_cards/param_card_{file_hash}.dat"
 
     process = args.process
 
@@ -145,6 +147,7 @@ def main():
     # prepare MG card
     to_change = {
         ("output", "dummy_value"): output_path+"/"+file_name,
+        ("param_card.dat", "param_card.dat"): new_param_card_path,
         ("pythia8_card.dat", "pythia8_card.dat"): new_pythia_card_path,
         ("set Ma", "dummy_value"): args.alp_mass,
         ("set nevents", "dummy_value"): args.n_events,
@@ -171,6 +174,19 @@ def main():
     }
 
     copy_and_update_config(base_pythia_card, new_pythia_card_path, to_change)
+
+    # prepare param card
+    alp_mass = float(args.alp_mass)
+    Lambda = 1000
+    gamma_total = ph.Gammaa(alp_mass, 0.5, -0.5, Lambda)
+    gamma_mumu = ph.Gammamumu(alp_mass, 0.5, -0.5, Lambda)
+
+    to_change = {
+        ("# ax", "dummy_value"): gamma_total,
+        ("1.0   2    13  -13 #", "dummy_value"): gamma_mumu,
+    }
+
+    copy_and_update_config(base_param_card, new_param_card_path, to_change)
 
     # run production
     run_command(new_mg_card_path, output_path, file_name)
