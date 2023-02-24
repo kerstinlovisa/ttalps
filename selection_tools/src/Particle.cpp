@@ -34,6 +34,7 @@ bool Particle::is_good_non_top_muon(const vector<Particle*> &particles)
   if(!is_final()) return false;
   if(abs(pdgid) != 13) return false;
   if(fabs(eta()) > 2.5) return false;
+  if(pt() < 3) return false;
   if(has_top_ancestor(particles)) return false;
   
   if(pow(energy, 2) - pow(momentum(), 2) < 0){
@@ -83,4 +84,9 @@ double Particle::eta()
 double Particle::momentum() const
 {
   return four_vector.P();
+}
+
+double Particle::pt() const
+{
+  return four_vector.Pt();
 }
