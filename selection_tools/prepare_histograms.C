@@ -45,11 +45,18 @@ int main(int argc, char *argv[])
 // load events
   auto event_reader = EventReader(max_events, n_daughters);
   auto events = event_reader.read_events(input_tree);
+
+  float logBins[1000];
+  for (int i=0; i<1000;i++)
+  {
+    logBins[i] = (pow(10,log10(0)+((log10(100)-log10(0))/1000)*i));
+  }
   
   map<string, TH1D*> hists = {
     {"muon_pt",  new TH1D("muon_pt", "muon_pt", 1000, 0, 1000)},
     {"muon_pz",  new TH1D("muon_pz", "muon_pz", 1000, -1000, 1000)},
-    {"muon_mass",  new TH1D("muon_mass", "muon_mass", 1000, 0, 10)},
+    {"muon_mass",  new TH1D("muon_mass", "muon_mass", 1000, 0, 100)},
+    {"muon_mass_logx",  new TH1D("muon_mass_logx", "muon_mass_logx", 1000, logBins)},
     {"muon_eta",  new TH1D("muon_eta", "muon_eta", 1000, -100, 100)},
     {"muon_phi",  new TH1D("muon_phi", "muon_phi", 1000, -100, 100)},
     {"muon_y",  new TH1D("muon_y", "muon_y", 1000, -100, 100)},
@@ -62,7 +69,7 @@ int main(int argc, char *argv[])
 
     {"ss_muon_pt",  new TH1D("ss_muon_pt", "ss_muon_pt", 1000, 0, 1000)},
     {"ss_muon_pz",  new TH1D("ss_muon_pz", "ss_muon_pz", 1000, -1000, 1000)},
-    {"ss_muon_mass",  new TH1D("ss_muon_mass", "ss_muon_mass", 1000, 0, 10)},
+    {"ss_muon_mass",  new TH1D("ss_muon_mass", "ss_muon_mass", 1000, 0, 100)},
     {"ss_muon_eta",  new TH1D("ss_muon_eta", "ss_muon_eta", 1000, -100, 100)},
     {"ss_muon_phi",  new TH1D("ss_muon_phi", "ss_muon_phi", 1000, -100, 100)},
     {"ss_muon_y",  new TH1D("ss_muon_y", "ss_muon_y", 1000, -100, 100)},
@@ -116,7 +123,7 @@ int main(int argc, char *argv[])
     // Selection histograms
     {"sel_pT10_muon_pt",  new TH1D("sel_pT10_muon_pt", "sel_pT10_muon_pt", 1000, 0, 1000)},
     {"sel_pT10_muon_pz",  new TH1D("sel_pT10_muon_pz", "sel_pT10_muon_pz", 1000, -1000, 1000)},
-    {"sel_pT10_muon_mass",  new TH1D("sel_pT10_muon_mass", "sel_pT10_muon_mass", 1000, 0, 10)},
+    {"sel_pT10_muon_mass",  new TH1D("sel_pT10_muon_mass", "sel_pT10_muon_mass", 1000, 0, 100)},
     {"sel_pT10_muon_eta",  new TH1D("sel_pT10_muon_eta", "sel_pT10_muon_eta", 1000, -100, 100)},
     {"sel_pT10_muon_phi",  new TH1D("sel_pT10_muon_phi", "sel_pT10_muon_phi", 1000, -100, 100)},
     {"sel_pT10_muon_y",  new TH1D("sel_pT10_muon_y", "sel_pT10_muon_y", 1000, -100, 100)},
@@ -149,7 +156,7 @@ int main(int argc, char *argv[])
 
     {"sel_pT10_ss_muon_pt",  new TH1D("sel_pT10_ss_muon_pt", "sel_pT10_ss_muon_pt", 1000, 0, 1000)},
     {"sel_pT10_ss_muon_pz",  new TH1D("sel_pT10_ss_muon_pz", "sel_pT10_ss_muon_pz", 1000, -1000, 1000)},
-    {"sel_pT10_ss_muon_mass",  new TH1D("sel_pT10_ss_muon_mass", "sel_pT10_ss_muon_mass", 1000, 0, 10)},
+    {"sel_pT10_ss_muon_mass",  new TH1D("sel_pT10_ss_muon_mass", "sel_pT10_ss_muon_mass", 1000, 0, 100)},
     {"sel_pT10_ss_muon_eta",  new TH1D("sel_pT10_ss_muon_eta", "sel_pT10_ss_muon_eta", 1000, -100, 100)},
     {"sel_pT10_ss_muon_phi",  new TH1D("sel_pT10_ss_muon_phi", "sel_pT10_ss_muon_phi", 1000, -100, 100)},
     {"sel_pT10_ss_muon_y",  new TH1D("sel_pT10_ss_muon_y", "sel_pT10_ss_muon_y", 1000, -100, 100)},
@@ -179,12 +186,79 @@ int main(int argc, char *argv[])
     {"sel_pT10_ss_first_mother_lxyz",  new TH1D("sel_pT10_ss_first_mother_lxyz", "sel_pT10_ss_first_mother_lxyz", 1000, 0, 100)},
     {"sel_pT10_ss_first_mother_ctau",  new TH1D("sel_pT10_ss_first_mother_ctau", "sel_pT10_ss_first_mother_ctau", 1000, 0, 100)},
     {"sel_pT10_ss_first_mother_boost",  new TH1D("sel_pT10_ss_first_mother_boost", "sel_pT10_ss_first_mother_boost", 1000, 0, 100)},
+
+    {"sel_pT10_Jpsimass_muon_pt",  new TH1D("sel_pT10_Jpsimass_muon_pt", "sel_pT10_Jpsimass_muon_pt", 1000, 0, 1000)},
+    {"sel_pT10_Jpsimass_muon_pz",  new TH1D("sel_pT10_Jpsimass_muon_pz", "sel_pT10_Jpsimass_muon_pz", 1000, -1000, 1000)},
+    {"sel_pT10_Jpsimass_muon_mass",  new TH1D("sel_pT10_Jpsimass_muon_mass", "sel_pT10_Jpsimass_muon_mass", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_muon_eta",  new TH1D("sel_pT10_Jpsimass_muon_eta", "sel_pT10_Jpsimass_muon_eta", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_muon_phi",  new TH1D("sel_pT10_Jpsimass_muon_phi", "sel_pT10_Jpsimass_muon_phi", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_muon_y",  new TH1D("sel_pT10_Jpsimass_muon_y", "sel_pT10_Jpsimass_muon_y", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_muon_theta",  new TH1D("sel_pT10_Jpsimass_muon_theta", "sel_pT10_Jpsimass_muon_theta", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_muon_lxy",  new TH1D("sel_pT10_Jpsimass_muon_lxy", "sel_pT10_Jpsimass_muon_lxy", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_muon_lz",  new TH1D("sel_pT10_Jpsimass_muon_lz", "sel_pT10_Jpsimass_muon_lz", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_muon_lxyz",  new TH1D("sel_pT10_Jpsimass_muon_lxyz", "sel_pT10_Jpsimass_muon_lxyz", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_muon_ctau",  new TH1D("sel_pT10_Jpsimass_muon_ctau", "sel_pT10_Jpsimass_muon_ctau", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_muon_boost",  new TH1D("sel_pT10_Jpsimass_muon_boost", "sel_pT10_Jpsimass_muon_boost", 1000, 0, 1000)},
+
+    {"sel_pT10_Jpsimass_dimuon_deltaR",  new TH1D("sel_pT10_Jpsimass_dimuon_deltaR", "sel_pT10_Jpsimass_dimuon_deltaR", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_dimuon_deltaPhi",  new TH1D("sel_pT10_Jpsimass_dimuon_deltaPhi", "sel_pT10_Jpsimass_dimuon_deltaPhi", 1000, -100, 100)},
+
+    {"sel_pT10_Jpsimass_dimuon_pt",  new TH1D("sel_pT10_Jpsimass_dimuon_pt", "sel_pT10_Jpsimass_dimuon_pt", 1000, 0, 1000)},
+    {"sel_pT10_Jpsimass_dimuon_pz",  new TH1D("sel_pT10_Jpsimass_dimuon_pz", "sel_pT10_Jpsimass_dimuon_pz", 1000, -1000, 1000)},
+    {"sel_pT10_Jpsimass_dimuon_mass",  new TH1D("sel_pT10_Jpsimass_dimuon_mass", "sel_pT10_Jpsimass_dimuon_mass", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_dimuon_eta",  new TH1D("sel_pT10_Jpsimass_dimuon_eta", "sel_pT10_Jpsimass_dimuon_eta", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_dimuon_phi",  new TH1D("sel_pT10_Jpsimass_dimuon_phi", "sel_pT10_Jpsimass_dimuon_phi", 1000, -100, 100)},
+
+    {"sel_pT10_Jpsimass_first_mother_pt",  new TH1D("sel_pT10_Jpsimass_first_mother_pt", "sel_pT10_Jpsimass_first_mother_pt", 1000, 0, 1000)},
+    {"sel_pT10_Jpsimass_first_mother_pz",  new TH1D("sel_pT10_Jpsimass_first_mother_pz", "sel_pT10_Jpsimass_first_mother_pz", 1000, -1000, 1000)},
+    {"sel_pT10_Jpsimass_first_mother_mass",  new TH1D("sel_pT10_Jpsimass_first_mother_mass", "sel_pT10_Jpsimass_first_mother_mass", 1000, 0, 200)},
+    {"sel_pT10_Jpsimass_first_mother_eta",  new TH1D("sel_pT10_Jpsimass_first_mother_eta", "sel_pT10_Jpsimass_first_mother_eta", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_first_mother_phi",  new TH1D("sel_pT10_Jpsimass_first_mother_phi", "sel_pT10_Jpsimass_first_mother_phi", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_first_mother_lxy",  new TH1D("sel_pT10_Jpsimass_first_mother_lxy", "sel_pT10_Jpsimass_first_mother_lxy", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_first_mother_lz",  new TH1D("sel_pT10_Jpsimass_first_mother_lz", "sel_pT10_Jpsimass_first_mother_lz", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_first_mother_lxyz",  new TH1D("sel_pT10_Jpsimass_first_mother_lxyz", "sel_pT10_Jpsimass_first_mother_lxyz", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_first_mother_ctau",  new TH1D("sel_pT10_Jpsimass_first_mother_ctau", "sel_pT10_Jpsimass_first_mother_ctau", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_first_mother_boost",  new TH1D("sel_pT10_Jpsimass_first_mother_boost", "sel_pT10_Jpsimass_first_mother_boost", 1000, 0, 100)},
+
+    {"sel_pT10_Jpsimass_ss_muon_pt",  new TH1D("sel_pT10_Jpsimass_ss_muon_pt", "sel_pT10_Jpsimass_ss_muon_pt", 1000, 0, 1000)},
+    {"sel_pT10_Jpsimass_ss_muon_pz",  new TH1D("sel_pT10_Jpsimass_ss_muon_pz", "sel_pT10_Jpsimass_ss_muon_pz", 1000, -1000, 1000)},
+    {"sel_pT10_Jpsimass_ss_muon_mass",  new TH1D("sel_pT10_Jpsimass_ss_muon_mass", "sel_pT10_Jpsimass_ss_muon_mass", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_ss_muon_eta",  new TH1D("sel_pT10_Jpsimass_ss_muon_eta", "sel_pT10_Jpsimass_ss_muon_eta", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_ss_muon_phi",  new TH1D("sel_pT10_Jpsimass_ss_muon_phi", "sel_pT10_Jpsimass_ss_muon_phi", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_ss_muon_y",  new TH1D("sel_pT10_Jpsimass_ss_muon_y", "sel_pT10_Jpsimass_ss_muon_y", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_ss_muon_theta",  new TH1D("sel_pT10_Jpsimass_ss_muon_theta", "sel_pT10_Jpsimass_ss_muon_theta", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_ss_muon_lxy",  new TH1D("sel_pT10_Jpsimass_ss_muon_lxy", "sel_pT10_Jpsimass_ss_muon_lxy", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_ss_muon_lz",  new TH1D("sel_pT10_Jpsimass_ss_muon_lz", "sel_pT10_Jpsimass_ss_muon_lz", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_ss_muon_lxyz",  new TH1D("sel_pT10_Jpsimass_ss_muon_lxyz", "sel_pT10_Jpsimass_ss_muon_lxyz", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_ss_muon_ctau",  new TH1D("sel_pT10_Jpsimass_ss_muon_ctau", "sel_pT10_Jpsimass_ss_muon_ctau", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_ss_muon_boost",  new TH1D("sel_pT10_Jpsimass_ss_muon_boost", "sel_pT10_Jpsimass_ss_muon_boost", 1000, 0, 1000)},
+
+    {"sel_pT10_Jpsimass_ss_dimuon_deltaR",  new TH1D("sel_pT10_Jpsimass_ss_dimuon_deltaR", "sel_pT10_Jpsimass_ss_dimuon_deltaR", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_ss_dimuon_deltaPhi",  new TH1D("sel_pT10_Jpsimass_ss_dimuon_deltaPhi", "sel_pT10_Jpsimass_ss_dimuon_deltaPhi", 1000, -100, 100)},
+
+    {"sel_pT10_Jpsimass_ss_dimuon_pt",  new TH1D("sel_pT10_Jpsimass_ss_dimuon_pt", "sel_pT10_Jpsimass_ss_dimuon_pt", 1000, 0, 1000)},
+    {"sel_pT10_Jpsimass_ss_dimuon_pz",  new TH1D("sel_pT10_Jpsimass_ss_dimuon_pz", "sel_pT10_Jpsimass_ss_dimuon_pz", 1000, -1000, 1000)},
+    {"sel_pT10_Jpsimass_ss_dimuon_mass",  new TH1D("sel_pT10_Jpsimass_ss_dimuon_mass", "sel_pT10_Jpsimass_ss_dimuon_mass", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_ss_dimuon_eta",  new TH1D("sel_pT10_Jpsimass_ss_dimuon_eta", "sel_pT10_Jpsimass_ss_dimuon_eta", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_ss_dimuon_phi",  new TH1D("sel_pT10_Jpsimass_ss_dimuon_phi", "sel_pT10_Jpsimass_ss_dimuon_phi", 1000, -100, 100)},
+
+    {"sel_pT10_Jpsimass_ss_first_mother_pt",  new TH1D("sel_pT10_Jpsimass_ss_first_mother_pt", "sel_pT10_Jpsimass_ss_first_mother_pt", 1000, 0, 1000)},
+    {"sel_pT10_Jpsimass_ss_first_mother_pz",  new TH1D("sel_pT10_Jpsimass_ss_first_mother_pz", "sel_pT10_Jpsimass_ss_first_mother_pz", 1000, -1000, 1000)},
+    {"sel_pT10_Jpsimass_ss_first_mother_mass",  new TH1D("sel_pT10_Jpsimass_ss_first_mother_mass", "sel_pT10_Jpsimass_ss_first_mother_mass", 1000, 0, 200)},
+    {"sel_pT10_Jpsimass_ss_first_mother_eta",  new TH1D("sel_pT10_Jpsimass_ss_first_mother_eta", "sel_pT10_Jpsimass_ss_first_mother_eta", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_ss_first_mother_phi",  new TH1D("sel_pT10_Jpsimass_ss_first_mother_phi", "sel_pT10_Jpsimass_ss_first_mother_phi", 1000, -100, 100)},
+    {"sel_pT10_Jpsimass_ss_first_mother_lxy",  new TH1D("sel_pT10_Jpsimass_ss_first_mother_lxy", "sel_pT10_Jpsimass_ss_first_mother_lxy", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_ss_first_mother_lz",  new TH1D("sel_pT10_Jpsimass_ss_first_mother_lz", "sel_pT10_Jpsimass_ss_first_mother_lz", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_ss_first_mother_lxyz",  new TH1D("sel_pT10_Jpsimass_ss_first_mother_lxyz", "sel_pT10_Jpsimass_ss_first_mother_lxyz", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_ss_first_mother_ctau",  new TH1D("sel_pT10_Jpsimass_ss_first_mother_ctau", "sel_pT10_Jpsimass_ss_first_mother_ctau", 1000, 0, 100)},
+    {"sel_pT10_Jpsimass_ss_first_mother_boost",  new TH1D("sel_pT10_Jpsimass_ss_first_mother_boost", "sel_pT10_Jpsimass_ss_first_mother_boost", 1000, 0, 100)},
   };
   
   
   auto fill_single_muon_hists = [&](const Particle *muon)->void {
     hists["muon_pt"]->Fill(muon->four_vector.Pt());
     hists["muon_pz"]->Fill(muon->four_vector.Pz());
+    hists["muon_mass_logx"]->Fill(muon->four_vector.M());
     hists["muon_mass"]->Fill(muon->four_vector.M());
     hists["muon_eta"]->Fill(muon->four_vector.Eta());
     hists["muon_phi"]->Fill(muon->four_vector.Phi());
@@ -345,7 +419,6 @@ int main(int argc, char *argv[])
     hists[sel + "ss_first_mother_ctau"]->Fill(mother->ctau);
     hists[sel + "ss_first_mother_boost"]->Fill(mother->momentum()/mother->mass);
   };
-
   
   int i_event=0;
   
@@ -405,6 +478,17 @@ int main(int argc, char *argv[])
           fill_sel_single_muon_hists(muon_2,sel);
           fill_sel_dimuon_hists(dimuon,sel);
           fill_sel_first_mother_hists(mother,sel);
+          if (muon_1->four_vector.M() <= 2900 || muon_1->four_vector.M() <= 3300)
+          {
+            if (muon_2->four_vector.M() <= 2900 || muon_2->four_vector.M() <= 3300)
+            {
+              string sel = "sel_pT10_Jpsimass_";
+              fill_sel_single_muon_hists(muon_1,sel);
+              fill_sel_single_muon_hists(muon_2,sel);
+              fill_sel_dimuon_hists(dimuon,sel);
+              fill_sel_first_mother_hists(mother,sel);
+            }
+          }
         }
       }
     }
@@ -434,6 +518,18 @@ int main(int argc, char *argv[])
           fill_sel_dimuon_hists(dimuon,sel);
           fill_sel_first_mother_hists(mother_1,sel);
           fill_sel_first_mother_hists(mother_2,sel);
+          if (opposite_sign_muon_1->four_vector.M() <= 2900 || opposite_sign_muon_1->four_vector.M() <= 3300)
+          {
+            if (opposite_sign_muon_2->four_vector.M() <= 2900 || opposite_sign_muon_2->four_vector.M() <= 3300)
+            {
+              string sel = "sel_pT10_Jpsimass_";
+              fill_sel_single_muon_hists(opposite_sign_muon_1,sel);
+              fill_sel_single_muon_hists(opposite_sign_muon_2,sel);
+              fill_sel_dimuon_hists(dimuon,sel);
+              fill_sel_first_mother_hists(mother_1,sel);
+              fill_sel_first_mother_hists(mother_2,sel);
+            }
+          }
         }
       }
       
@@ -453,14 +549,26 @@ int main(int argc, char *argv[])
         auto mother_2 = event->particles[same_sign_muon_2->mothers[0]];
         fill_ss_first_mother_hists(mother_2);
 
-        if (opposite_sign_muon_1->four_vector.Pt() > 10 && opposite_sign_muon_2->four_vector.Pt() > 10)
+        if (same_sign_muon_1->four_vector.Pt() > 10 && same_sign_muon_2->four_vector.Pt() > 10)
         {
           string sel = "sel_pT10_";
-          fill_sel_ss_single_muon_hists(opposite_sign_muon_1,sel);
-          fill_sel_ss_single_muon_hists(opposite_sign_muon_2,sel);
+          fill_sel_ss_single_muon_hists(same_sign_muon_1,sel);
+          fill_sel_ss_single_muon_hists(same_sign_muon_1,sel);
           fill_sel_ss_dimuon_hists(dimuon,sel);
           fill_sel_ss_first_mother_hists(mother_1,sel);
           fill_sel_ss_first_mother_hists(mother_2,sel);
+          if (same_sign_muon_1->four_vector.M() <= 2900 || same_sign_muon_1->four_vector.M() <= 3300)
+          {
+            if (same_sign_muon_2->four_vector.M() <= 2900 || same_sign_muon_2->four_vector.M() <= 3300)
+            {
+              string sel = "sel_pT10_Jpsimass_";
+              fill_sel_ss_single_muon_hists(same_sign_muon_1,sel);
+              fill_sel_ss_single_muon_hists(same_sign_muon_1,sel);
+              fill_sel_ss_dimuon_hists(dimuon,sel);
+              fill_sel_ss_first_mother_hists(mother_1,sel);
+              fill_sel_ss_first_mother_hists(mother_2,sel);
+            }
+          }
         }
       }
       
