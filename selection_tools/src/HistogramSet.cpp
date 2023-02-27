@@ -6,7 +6,6 @@
 //
 
 #include "HistogramSet.hpp"
-#include <iostream>
 
 using namespace std;
 
@@ -14,8 +13,8 @@ HistogramSet::HistogramSet(string prefix)
 {
   hists["pt"]       = new TH1D((prefix+"_pt").c_str(),    (prefix+"_pt").c_str(),           1000, 0,      100   );
   hists["pz"]       = new TH1D((prefix+"_pz").c_str(),    (prefix+"_pz").c_str(),           1000, 0,      100   );
-  hists["mass"]     = new TH1D((prefix+"_mass").c_str(),  (prefix+"_mass").c_str(),         1000, 0,      100   );
-  hists["mass_logx"]= new TH1D((prefix+"_mass_logx").c_str(),  (prefix+"_mass_logx").c_str(), 1000, logxBins(1000,0.1,100));
+  // hists["mass"]     = new TH1D((prefix+"_mass").c_str(),  (prefix+"_mass").c_str(),         1000, 0,      100   );
+  hists["mass"]     = new TH1D((prefix+"_mass").c_str(),  (prefix+"_mass").c_str(),         1000,         logxBins(1000,0.1,100));
   hists["eta"]      = new TH1D((prefix+"_eta").c_str(),   (prefix+"_eta").c_str(),          1000, -5,     5     );
   hists["phi"]      = new TH1D((prefix+"_phi").c_str(),   (prefix+"_phi").c_str(),          1000, -4,     4     );
   hists["y"]        = new TH1D((prefix+"_y").c_str(),     (prefix+"_y").c_str(),            1000, -10,    10    );
@@ -34,7 +33,6 @@ void HistogramSet::fill(const Particle *particle)
   hists["pt"]->Fill(particle->four_vector.Pt());
   hists["pz"]->Fill(particle->four_vector.Pz());
   hists["mass"]->Fill(particle->four_vector.M());
-  hists["mass_logx"]->Fill(particle->four_vector.M());
   hists["eta"]->Fill(particle->four_vector.Eta());
   hists["phi"]->Fill(particle->four_vector.Phi());
   hists["y"]->Fill(particle->four_vector.Rapidity());
@@ -56,7 +54,6 @@ void HistogramSet::fill(const Particle* particle_1, const Particle* particle_2)
   hists["pt"]->Fill(diparticle.Pt());
   hists["pz"]->Fill(diparticle.Pz());
   hists["mass"]->Fill(diparticle.M());
-  hists["mass_logx"]->Fill(diparticle.M());
   hists["eta"]->Fill(diparticle.Eta());
   hists["phi"]->Fill(diparticle.Phi());
 }

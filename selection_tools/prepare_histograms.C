@@ -64,7 +64,61 @@ int main(int argc, char *argv[])
     "sel_pt-10GeV_ss_dimuon",
     "sel_pt-10GeV_os_first_mother",
     "sel_pt-10GeV_ss_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_os_muon",
+    "sel_pt-10GeV_mass-Jpsi_ss_muon",
+    "sel_pt-10GeV_mass-Jpsi_os_dimuon",
+    "sel_pt-10GeV_mass-Jpsi_ss_dimuon",
+    "sel_pt-10GeV_mass-Jpsi_os_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_ss_first_mother",
+
+    "sel_pt-10GeV_lxy-2p4cm_single_muon",
+    "sel_pt-10GeV_lxy-2p4cm_single_muon_first_mother",
+    "sel_pt-10GeV_lxy-2p4cm_os_muon",
+    "sel_pt-10GeV_lxy-2p4cm_ss_muon",
+    "sel_pt-10GeV_lxy-2p4cm_os_first_mother",
+    "sel_pt-10GeV_lxy-2p4cm_ss_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_lxy-2p4cm_os_muon",
+    "sel_pt-10GeV_mass-Jpsi_lxy-2p4cm_ss_muon",
+    "sel_pt-10GeV_mass-Jpsi_lxy-2p4cm_os_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_lxy-2p4cm_ss_first_mother",
+
+    "sel_pt-10GeV_lxy-3p1cm_single_muon",
+    "sel_pt-10GeV_lxy-3p1cm_single_muon_first_mother",
+    "sel_pt-10GeV_lxy-3p1cm_os_muon",
+    "sel_pt-10GeV_lxy-3p1cm_ss_muon",
+    "sel_pt-10GeV_lxy-3p1cm_os_first_mother",
+    "sel_pt-10GeV_lxy-3p1cm_ss_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_lxy-3p1cm_os_muon",
+    "sel_pt-10GeV_mass-Jpsi_lxy-3p1cm_ss_muon",
+    "sel_pt-10GeV_mass-Jpsi_lxy-3p1cm_os_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_lxy-3p1cm_ss_first_mother",
+    
+    "sel_pt-10GeV_lxy-7p0cm_single_muon",
+    "sel_pt-10GeV_lxy-7p0cm_single_muon_first_mother",
+    "sel_pt-10GeV_lxy-7p0cm_os_muon",
+    "sel_pt-10GeV_lxy-7p0cm_ss_muon",
+    "sel_pt-10GeV_lxy-7p0cm_os_first_mother",
+    "sel_pt-10GeV_lxy-7p0cm_ss_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_lxy-7p0cm_os_muon",
+    "sel_pt-10GeV_mass-Jpsi_lxy-7p0cm_ss_muon",
+    "sel_pt-10GeV_mass-Jpsi_lxy-7p0cm_os_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_lxy-7p0cm_ss_first_mother",
+
+    "sel_pt-10GeV_lxy-11p0cm_single_muon",
+    "sel_pt-10GeV_lxy-11p0cm_single_muon_first_mother",
+    "sel_pt-10GeV_lxy-11p0cm_os_muon",
+    "sel_pt-10GeV_lxy-11p0cm_ss_muon",
+    "sel_pt-10GeV_lxy-11p0cm_os_first_mother",
+    "sel_pt-10GeV_lxy-11p0cm_ss_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_os_muon",
+    "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_ss_muon",
+    "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_os_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_ss_first_mother",
+   
   };
+
+  vector<double> lxy_regions = {2.4, 3.1, 7.0, 11.0};
+  vector<string> lxy_str = {"2p4", "3p1", "7p0", "11p0"};
   
   map<string, HistogramSet*> histSets;
   for(string name : hist_names) histSets[name] = new HistogramSet(name);
@@ -79,6 +133,14 @@ int main(int argc, char *argv[])
     if(particle->four_vector.Pt() > 10){
       histSets["sel_pt-10GeV_single_muon"]->fill(particle);
       histSets["sel_pt-10GeV_single_muon_first_mother"]->fill(mother);
+      double lxy = sqrt(pow(particle->x, 2) + pow(particle->y, 2));
+      for(int i=0; i<lxy_regions.size(); i++){
+        if(lxy<=lxy_regions[i]){
+          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_single_muon"]->fill(particle);
+          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_single_muon_first_mother"]->fill(mother);
+          break;
+        }
+      }
     }
   };
   
@@ -91,11 +153,48 @@ int main(int argc, char *argv[])
     histSets["os_dimuon"]->fill(particle_1, particle_2);
     histSets["os_first_mother"]->fill(mother);
     
+    TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
     if(particle_1->four_vector.Pt() > 10 && particle_2->four_vector.Pt() > 10){
       histSets["sel_pt-10GeV_os_muon"]->fill(particle_1);
       histSets["sel_pt-10GeV_os_muon"]->fill(particle_2);
       histSets["sel_pt-10GeV_os_dimuon"]->fill(particle_1, particle_2);
       histSets["sel_pt-10GeV_os_first_mother"]->fill(mother);
+      double lxy_1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
+      double lxy_2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
+      for(int i=0; i<lxy_regions.size(); i++){
+        if(lxy_1<=lxy_regions[i]){
+          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_os_muon"]->fill(particle_1);
+          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_os_first_mother"]->fill(mother);
+          break;
+        }
+      }    
+      for(int i=0; i<lxy_regions.size(); i++){
+        if(lxy_2<=lxy_regions[i]){
+          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_os_muon"]->fill(particle_2);
+          // histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_os_first_mother"]->fill(mother);
+          break;
+        }
+      }
+      if(diparticle.M() < 2.8 || diparticle.M() > 3.3){
+        histSets["sel_pt-10GeV_mass-Jpsi_os_muon"]->fill(particle_1);
+        histSets["sel_pt-10GeV_mass-Jpsi_os_muon"]->fill(particle_2);
+        histSets["sel_pt-10GeV_mass-Jpsi_os_dimuon"]->fill(particle_1, particle_2);
+        histSets["sel_pt-10GeV_mass-Jpsi_os_first_mother"]->fill(mother);
+        for(int i=0; i<lxy_regions.size(); i++){
+          if(lxy_1<=lxy_regions[i]){
+            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_os_muon"]->fill(particle_1);
+            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_os_first_mother"]->fill(mother);
+            break;
+          }
+        }    
+        for(int i=0; i<lxy_regions.size(); i++){
+          if(lxy_2<=lxy_regions[i]){
+            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_os_muon"]->fill(particle_2);
+            // histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_os_first_mother"]->fill(mother);
+            break;
+          }
+        }
+      }
     }
   };
   
@@ -111,12 +210,50 @@ int main(int argc, char *argv[])
     histSets[sign+"_first_mother"]->fill(mother_1);
     histSets[sign+"_first_mother"]->fill(mother_2);
     
+    TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
     if(particle_1->four_vector.Pt() > 10 && particle_2->four_vector.Pt() > 10){
       histSets["sel_pt-10GeV_"+sign+"_muon"]->fill(particle_1);
       histSets["sel_pt-10GeV_"+sign+"_muon"]->fill(particle_2);
       histSets["sel_pt-10GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
       histSets["sel_pt-10GeV_"+sign+"_first_mother"]->fill(mother_1);
       histSets["sel_pt-10GeV_"+sign+"_first_mother"]->fill(mother_2);
+      double lxy_1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
+      double lxy_2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
+      for(int i=0; i<lxy_regions.size(); i++){
+        if(lxy_1<=lxy_regions[i]){
+          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_"+sign+"_muon"]->fill(particle_1);
+          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_"+sign+"_first_mother"]->fill(mother_1);
+          break;
+        }
+      }    
+      for(int i=0; i<lxy_regions.size(); i++){
+        if(lxy_2<=lxy_regions[i]){
+          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_"+sign+"_muon"]->fill(particle_2);
+          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_"+sign+"_first_mother"]->fill(mother_2);
+          break;
+        }
+      }
+      if(diparticle.M() < 2.8 || diparticle.M() > 3.3){
+        histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_muon"]->fill(particle_1);
+        histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_muon"]->fill(particle_2);
+        histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+        histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_first_mother"]->fill(mother_1);
+        histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_first_mother"]->fill(mother_2);
+        for(int i=0; i<lxy_regions.size(); i++){
+          if(lxy_1<=lxy_regions[i]){
+            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_"+sign+"_muon"]->fill(particle_1);
+            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_"+sign+"_first_mother"]->fill(mother_1);
+            break;
+          }
+        }    
+        for(int i=0; i<lxy_regions.size(); i++){
+          if(lxy_2<=lxy_regions[i]){
+            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_"+sign+"_muon"]->fill(particle_2);
+            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_"+sign+"_first_mother"]->fill(mother_2);
+            break;
+          }
+        }
+      }
     }
   };
   
