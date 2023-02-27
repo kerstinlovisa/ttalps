@@ -23,6 +23,8 @@ public:
   void fill(const Particle* particle_1, const Particle* particle_2);
   
   std::map<std::string, TH1D*> hists;
+
+  float* logxBins(const int n_bins, const float min, const float max);
 };
 
 #endif /* HistogramSet_hpp */

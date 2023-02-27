@@ -66,25 +66,6 @@ int main(int argc, char *argv[])
     "sel_pt-10GeV_ss_first_mother",
   };
   
-  vector<string> hist_names = {
-    "single_muon",
-    "single_muon_first_mother",
-    "os_muon",
-    "ss_muon",
-    "os_dimuon",
-    "ss_dimuon",
-    "os_first_mother",
-    "ss_first_mother",
-    "sel_pt-10GeV_single_muon",
-    "sel_pt-10GeV_single_muon_first_mother",
-    "sel_pt-10GeV_os_muon",
-    "sel_pt-10GeV_ss_muon",
-    "sel_pt-10GeV_os_dimuon",
-    "sel_pt-10GeV_ss_dimuon",
-    "sel_pt-10GeV_os_first_mother",
-    "sel_pt-10GeV_ss_first_mother",
-  };
-  
   map<string, HistogramSet*> histSets;
   for(string name : hist_names) histSets[name] = new HistogramSet(name);
   
