@@ -3,8 +3,8 @@
 process=$1
 part=$2
 
-base_output_path="/nfs/dust/cms/user/lrygaard/ttalps"
 base_input_path="/nfs/dust/cms/user/jniedzie/ttalps"
+base_output_path="/nfs/dust/cms/user/jniedzie/ttalps"
 output_file_name="${process}_part-${part}.root"
 
 category="single_muon"
