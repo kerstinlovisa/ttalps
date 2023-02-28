@@ -15,6 +15,10 @@ using namespace std;
 
 int max_events = -1;
 int n_daughters = 100;
+float Jpsi_mass = 3096.900e-3; // GeV
+float Jpsi_width = 92.6e-6; // GeV
+float Jpsi_mass_min = Jpsi_mass - 5*Jpsi_width;
+float Jpsi_mass_max = Jpsi_mass + 5*Jpsi_width;
 
 TFile *input_file;
 
@@ -114,7 +118,16 @@ int main(int argc, char *argv[])
     "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_ss_muon",
     "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_os_first_mother",
     "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_ss_first_mother",
-   
+
+    "final_selection_muon",
+    "final_selection_dimuon",
+    "final_selection_first_mother",
+    "final_selection_mass-Jpsi_muon",
+    "final_selection_mass-Jpsi_dimuon",
+    "final_selection_mass-Jpsi_first_mother",
+    "final_selection_mass-max20GeV_muon",
+    "final_selection_mass-max20GeV_dimuon",
+    "final_selection_mass-max20GeV_first_mother",
   };
 
   vector<double> lxy_regions = {2.4, 3.1, 7.0, 11.0};
@@ -175,7 +188,7 @@ int main(int argc, char *argv[])
           break;
         }
       }
-      if(diparticle.M() < 2.8 || diparticle.M() > 3.3){
+      if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
         histSets["sel_pt-10GeV_mass-Jpsi_os_muon"]->fill(particle_1);
         histSets["sel_pt-10GeV_mass-Jpsi_os_muon"]->fill(particle_2);
         histSets["sel_pt-10GeV_mass-Jpsi_os_dimuon"]->fill(particle_1, particle_2);
@@ -233,7 +246,7 @@ int main(int argc, char *argv[])
           break;
         }
       }
-      if(diparticle.M() < 2.8 || diparticle.M() > 3.3){
+      if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
         histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_muon"]->fill(particle_1);
         histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_muon"]->fill(particle_2);
         histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_dimuon"]->fill(particle_1, particle_2);
@@ -256,7 +269,74 @@ int main(int argc, char *argv[])
       }
     }
   };
+
+  auto fill_final_selection_pair_hists = [&](const Particle* particle_1, const Particle* particle_2, const Event *event){
+
+    auto mother = event->particles[particle_1->mothers[0]];
+    TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
+
+    if(particle_1->four_vector.Pt() > 10 && particle_2->four_vector.Pt() > 10){
+
+      float delta_lxy = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2));
+
+      if(delta_lxy <= 0.1){
+        histSets["final_selection_muon"]->fill(particle_1);
+        histSets["final_selection_muon"]->fill(particle_2);
+        histSets["final_selection_dimuon"]->fill(particle_1, particle_2);
+        histSets["final_selection_first_mother"]->fill(mother);
+        if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
+          histSets["final_selection_mass-Jpsi_muon"]->fill(particle_1);
+          histSets["final_selection_mass-Jpsi_muon"]->fill(particle_2);
+          histSets["final_selection_mass-Jpsi_dimuon"]->fill(particle_1, particle_2);
+          histSets["final_selection_mass-Jpsi_first_mother"]->fill(mother);
+
+          if(diparticle.M() < 20){
+            histSets["final_selection_mass-max20GeV_muon"]->fill(particle_1);
+            histSets["final_selection_mass-max20GeV_muon"]->fill(particle_2);
+            histSets["final_selection_mass-max20GeV_dimuon"]->fill(particle_1, particle_2);
+            histSets["final_selection_mass-max20GeV_first_mother"]->fill(mother);
+          }
+        }
+      }
+    }
+  };
   
+  auto fill_final_selection_non_pair_hists = [&](const Particle* particle_1, const Particle* particle_2, const Event *event){
+    if(!particle_1 || !particle_2) return;
+    
+    auto mother_1 = event->particles[particle_1->mothers[0]];
+    auto mother_2 = event->particles[particle_2->mothers[0]];
+    
+    TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
+
+    if(particle_1->four_vector.Pt() > 10 && particle_2->four_vector.Pt() > 10){
+      float delta_lxy = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2));
+
+      if(delta_lxy <= 0.1){
+        histSets["final_selection_muon"]->fill(particle_1);
+        histSets["final_selection_muon"]->fill(particle_2);
+        histSets["final_selection_dimuon"]->fill(particle_1, particle_2);
+        histSets["final_selection_first_mother"]->fill(mother_1);
+        histSets["final_selection_first_mother"]->fill(mother_2);
+        if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
+          histSets["final_selection_mass-Jpsi_muon"]->fill(particle_1);
+          histSets["final_selection_mass-Jpsi_muon"]->fill(particle_2);
+          histSets["final_selection_mass-Jpsi_dimuon"]->fill(particle_1, particle_2);
+          histSets["final_selection_mass-Jpsi_first_mother"]->fill(mother_1);
+          histSets["final_selection_mass-Jpsi_first_mother"]->fill(mother_2);
+
+          if(diparticle.M() < 20){
+            histSets["final_selection_mass-max20GeV_muon"]->fill(particle_1);
+            histSets["final_selection_mass-max20GeV_muon"]->fill(particle_2);
+            histSets["final_selection_mass-max20GeV_dimuon"]->fill(particle_1, particle_2);
+            histSets["final_selection_mass-max20GeV_first_mother"]->fill(mother_1);
+            histSets["final_selection_mass-max20GeV_first_mother"]->fill(mother_2);
+          }
+        }
+      }
+    }
+  };
+
   for(auto event : events){
     
     if(!event->has_ttbar_pair()) continue;
@@ -276,6 +356,7 @@ int main(int argc, char *argv[])
         auto muon_1 = get<0>(muon_pair);
         auto muon_2 = get<1>(muon_pair);
         fill_pair_hists(muon_1, muon_2, event);
+        fill_final_selection_pair_hists(muon_1, muon_2, event);
       }
     }
     else if(preselection_code == 3){ // non-pair category
@@ -284,15 +365,25 @@ int main(int argc, char *argv[])
       
       fill_non_pair_hists(opposite_sign_muon_1, opposite_sign_muon_2, event, "os");
       fill_non_pair_hists(same_sign_muon_1, same_sign_muon_2, event, "ss");
+      fill_final_selection_non_pair_hists(opposite_sign_muon_1, opposite_sign_muon_2, event);
     }
   }
   
   // close files
   output_file->cd();
-  for(auto &[tmp_1, hist_set] : histSets){
+  output_file->mkdir("final_selection");
+  output_file->mkdir("intermediate_selections");
+  for(auto &[hist_name, hist_set] : histSets){
+    if(hist_name.substr(0,15) == "final_selection"){
+      output_file->cd("final_selection");
+    }
+    if(hist_name.substr(0,3) == "sel"){
+      output_file->cd("intermediate_selections");
+    }
     for(auto &[tmp_2, hist] : hist_set->hists){
       hist->Write();
     }
+    output_file->cd();
   }
   
   input_file->Close();
