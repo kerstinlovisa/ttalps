@@ -211,6 +211,8 @@ vector<tuple<Particle*, Particle*>> Event::get_muon_pair()
     if(find(already_accounted_for.begin(), already_accounted_for.end(), i_particle) != already_accounted_for.end()) continue;
     
     // look for sisters
+    if(particle->mothers.size() == 0) continue;
+    
     auto mother = particles[particle->mothers[0]];
     vector<int> sister_indices = get_sisters_indices(mother, i_particle);
     
