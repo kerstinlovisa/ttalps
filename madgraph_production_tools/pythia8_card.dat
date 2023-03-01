@@ -1,3 +1,6 @@
+ParticleDecays:limitTau0 = off
+ResonanceWidths:minWidth = 1e-30
+
 Main:numberOfEvents      = -1
 #HEPMCoutput:file         = dummy_value
 HEPMCoutput:file         = hepmc.gz

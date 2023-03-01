@@ -182,6 +182,7 @@ def main():
     gamma_mumu = ph.Gammamumu(alp_mass, 0.5, -0.5, Lambda)
 
     to_change = {
+        ("# ma", "dummy_value"): alp_mass,
         ("# ax", "dummy_value"): gamma_total,
         ("1.0   2    13  -13 #", "dummy_value"): gamma_mumu,
     }
