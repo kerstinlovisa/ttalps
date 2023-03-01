@@ -19,6 +19,7 @@ float Jpsi_mass = 3096.900e-3; // GeV
 float Jpsi_width = 92.6e-6; // GeV
 float Jpsi_mass_min = Jpsi_mass - 5*Jpsi_width;
 float Jpsi_mass_max = Jpsi_mass + 5*Jpsi_width;
+float dlxy_max = 0.1; // cm
 
 TFile *input_file;
 
@@ -37,7 +38,7 @@ TTree* get_input_tree(string input_path)
 int main(int argc, char *argv[])
 {
   if(argc != 3){
-    cout<<"Usage: ./apply_selections input_path output_path"<<endl;
+    cout<<"Usage: ./prepare_histograms input_path output_path"<<endl;
     exit(0);
   }
   
@@ -75,47 +76,36 @@ int main(int argc, char *argv[])
     "sel_pt-10GeV_mass-Jpsi_os_first_mother",
     "sel_pt-10GeV_mass-Jpsi_ss_first_mother",
 
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_os_muon",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_ss_muon",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_os_dimuon",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_ss_dimuon",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_os_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_ss_first_mother",
+
     "sel_pt-10GeV_lxy-2p4cm_single_muon",
     "sel_pt-10GeV_lxy-2p4cm_single_muon_first_mother",
-    "sel_pt-10GeV_lxy-2p4cm_os_muon",
-    "sel_pt-10GeV_lxy-2p4cm_ss_muon",
-    "sel_pt-10GeV_lxy-2p4cm_os_first_mother",
-    "sel_pt-10GeV_lxy-2p4cm_ss_first_mother",
-    "sel_pt-10GeV_mass-Jpsi_lxy-2p4cm_os_muon",
-    "sel_pt-10GeV_mass-Jpsi_lxy-2p4cm_ss_muon",
-    "sel_pt-10GeV_mass-Jpsi_lxy-2p4cm_os_first_mother",
-    "sel_pt-10GeV_mass-Jpsi_lxy-2p4cm_ss_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-2p4cm_os_muon",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-2p4cm_ss_muon",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-2p4cm_os_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-2p4cm_ss_first_mother",
 
     "sel_pt-10GeV_lxy-3p1cm_single_muon",
     "sel_pt-10GeV_lxy-3p1cm_single_muon_first_mother",
-    "sel_pt-10GeV_lxy-3p1cm_os_muon",
-    "sel_pt-10GeV_lxy-3p1cm_ss_muon",
-    "sel_pt-10GeV_lxy-3p1cm_os_first_mother",
-    "sel_pt-10GeV_lxy-3p1cm_ss_first_mother",
-    "sel_pt-10GeV_mass-Jpsi_lxy-3p1cm_os_muon",
-    "sel_pt-10GeV_mass-Jpsi_lxy-3p1cm_ss_muon",
-    "sel_pt-10GeV_mass-Jpsi_lxy-3p1cm_os_first_mother",
-    "sel_pt-10GeV_mass-Jpsi_lxy-3p1cm_ss_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-3p1cm_os_muon",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-3p1cm_ss_muon",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-3p1cm_os_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-3p1cm_ss_first_mother",
     
     "sel_pt-10GeV_lxy-7p0cm_single_muon",
     "sel_pt-10GeV_lxy-7p0cm_single_muon_first_mother",
-    "sel_pt-10GeV_lxy-7p0cm_os_muon",
-    "sel_pt-10GeV_lxy-7p0cm_ss_muon",
-    "sel_pt-10GeV_lxy-7p0cm_os_first_mother",
-    "sel_pt-10GeV_lxy-7p0cm_ss_first_mother",
-    "sel_pt-10GeV_mass-Jpsi_lxy-7p0cm_os_muon",
-    "sel_pt-10GeV_mass-Jpsi_lxy-7p0cm_ss_muon",
-    "sel_pt-10GeV_mass-Jpsi_lxy-7p0cm_os_first_mother",
-    "sel_pt-10GeV_mass-Jpsi_lxy-7p0cm_ss_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-7p0cm_os_muon",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-7p0cm_ss_muon",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-7p0cm_os_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-7p0cm_ss_first_mother",
 
     "sel_pt-10GeV_lxy-11p0cm_single_muon",
     "sel_pt-10GeV_lxy-11p0cm_single_muon_first_mother",
-    "sel_pt-10GeV_lxy-11p0cm_os_muon",
-    "sel_pt-10GeV_lxy-11p0cm_ss_muon",
-    "sel_pt-10GeV_lxy-11p0cm_os_first_mother",
-    "sel_pt-10GeV_lxy-11p0cm_ss_first_mother",
-    "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_os_muon",
-    "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_ss_muon",
     "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_os_first_mother",
     "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_ss_first_mother",
 
@@ -172,37 +162,33 @@ int main(int argc, char *argv[])
       histSets["sel_pt-10GeV_os_muon"]->fill(particle_2);
       histSets["sel_pt-10GeV_os_dimuon"]->fill(particle_1, particle_2);
       histSets["sel_pt-10GeV_os_first_mother"]->fill(mother);
-      double lxy_1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
-      double lxy_2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
-      for(int i=0; i<lxy_regions.size(); i++){
-        if(lxy_1<=lxy_regions[i]){
-          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_os_muon"]->fill(particle_1);
-          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_os_first_mother"]->fill(mother);
-          break;
-        }
-      }    
-      for(int i=0; i<lxy_regions.size(); i++){
-        if(lxy_2<=lxy_regions[i]){
-          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_os_muon"]->fill(particle_2);
-          // histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_os_first_mother"]->fill(mother);
-          break;
-        }
-      }
+
       if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
         histSets["sel_pt-10GeV_mass-Jpsi_os_muon"]->fill(particle_1);
         histSets["sel_pt-10GeV_mass-Jpsi_os_muon"]->fill(particle_2);
         histSets["sel_pt-10GeV_mass-Jpsi_os_dimuon"]->fill(particle_1, particle_2);
         histSets["sel_pt-10GeV_mass-Jpsi_os_first_mother"]->fill(mother);
+
+        float delta_lxy = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2));
+        if(delta_lxy <= dlxy_max){
+          histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_os_muon"]->fill(particle_1);
+          histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_os_muon"]->fill(particle_2);
+          histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_os_dimuon"]->fill(particle_1, particle_2);
+          histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_os_first_mother"]->fill(mother);
+        }
+
+        double lxy_1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
+        double lxy_2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
         for(int i=0; i<lxy_regions.size(); i++){
           if(lxy_1<=lxy_regions[i]){
-            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_os_muon"]->fill(particle_1);
-            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_os_first_mother"]->fill(mother);
+            histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-"+lxy_str[i]+"cm_os_muon"]->fill(particle_1);
+            histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-"+lxy_str[i]+"cm_os_first_mother"]->fill(mother);
             break;
           }
         }    
         for(int i=0; i<lxy_regions.size(); i++){
           if(lxy_2<=lxy_regions[i]){
-            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_os_muon"]->fill(particle_2);
+            histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-"+lxy_str[i]+"cm_os_muon"]->fill(particle_2);
             // histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_os_first_mother"]->fill(mother);
             break;
           }
@@ -230,28 +216,25 @@ int main(int argc, char *argv[])
       histSets["sel_pt-10GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
       histSets["sel_pt-10GeV_"+sign+"_first_mother"]->fill(mother_1);
       histSets["sel_pt-10GeV_"+sign+"_first_mother"]->fill(mother_2);
-      double lxy_1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
-      double lxy_2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
-      for(int i=0; i<lxy_regions.size(); i++){
-        if(lxy_1<=lxy_regions[i]){
-          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_"+sign+"_muon"]->fill(particle_1);
-          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_"+sign+"_first_mother"]->fill(mother_1);
-          break;
-        }
-      }    
-      for(int i=0; i<lxy_regions.size(); i++){
-        if(lxy_2<=lxy_regions[i]){
-          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_"+sign+"_muon"]->fill(particle_2);
-          histSets["sel_pt-10GeV_lxy-"+lxy_str[i]+"cm_"+sign+"_first_mother"]->fill(mother_2);
-          break;
-        }
-      }
+      
       if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
         histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_muon"]->fill(particle_1);
         histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_muon"]->fill(particle_2);
         histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_dimuon"]->fill(particle_1, particle_2);
         histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_first_mother"]->fill(mother_1);
         histSets["sel_pt-10GeV_mass-Jpsi_"+sign+"_first_mother"]->fill(mother_2);
+
+        float delta_lxy = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2));
+        if(delta_lxy <= dlxy_max){
+          histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_"+sign+"_muon"]->fill(particle_1);
+          histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_"+sign+"_muon"]->fill(particle_2);
+          histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+          histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_"+sign+"_first_mother"]->fill(mother_1);
+          histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_"+sign+"_first_mother"]->fill(mother_2);
+        }
+
+        double lxy_1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
+        double lxy_2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
         for(int i=0; i<lxy_regions.size(); i++){
           if(lxy_1<=lxy_regions[i]){
             histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_"+sign+"_muon"]->fill(particle_1);
@@ -279,7 +262,7 @@ int main(int argc, char *argv[])
 
       float delta_lxy = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2));
 
-      if(delta_lxy <= 0.1){
+      if(delta_lxy <= dlxy_max){
         histSets["final_selection_muon"]->fill(particle_1);
         histSets["final_selection_muon"]->fill(particle_2);
         histSets["final_selection_dimuon"]->fill(particle_1, particle_2);
@@ -312,7 +295,7 @@ int main(int argc, char *argv[])
     if(particle_1->four_vector.Pt() > 10 && particle_2->four_vector.Pt() > 10){
       float delta_lxy = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2));
 
-      if(delta_lxy <= 0.1){
+      if(delta_lxy <= dlxy_max){
         histSets["final_selection_muon"]->fill(particle_1);
         histSets["final_selection_muon"]->fill(particle_2);
         histSets["final_selection_dimuon"]->fill(particle_1, particle_2);

@@ -1,7 +1,6 @@
 void plot_histograms()
 {
   // Options for plotting:
-  bool include_selections = false;
   bool save_plots = false;
   bool one_canvas = true;
 
@@ -29,7 +28,7 @@ void plot_histograms()
 //                          logy  logx    rebin   xMin    xMax
     {"muon_pt",             {true, false,  1,      0,      100   }},
     {"muon_pz",             {true, false,  10,     0,      100   }},
-    {"muon_mass",           {true, false,  1,      0.1,    100   }},
+    {"muon_mass",           {true, false,  10,     0.1,    100   }},
     {"muon_lxy",            {true, false,  1,      0,      20    }},
     {"muon_lxy_rebinned",   {true, false,  1,      0,      11    }},
     {"muon_lz",             {true, false,  1,      0,      20    }},
@@ -38,10 +37,10 @@ void plot_histograms()
     {"muon_boost",          {true, false,  20,     0,      120   }},
     {"dimuon_pt",           {true, false,  10,     0,      100   }},
     {"dimuon_pz",           {true, false,  10,     0,      100   }},
-    {"dimuon_mass",         {true, true ,  1,      0.1,    100   }},
+    {"dimuon_mass",         {true, true ,  10,     0.1,    100   }},
     {"first_mother_pt",     {true, false,  1,      0,      100   }},
     {"first_mother_pz",     {true, false,  10,     0,      100   }},
-    {"first_mother_mass",   {true, false,  1,      0.1,    100   }},
+    {"first_mother_mass",   {true, false,  10,     0.1,    100   }},
     {"first_mother_lxy",    {true, false,  1,      0,      10    }},
     {"first_mother_lz",     {true, false,  1,      0,      10    }},
     {"first_mother_lxyz",   {true, false,  1,      0,      10    }},
@@ -51,37 +50,26 @@ void plot_histograms()
 
   vector<string> prefixes = {
     "os_",
-    "ss_",
+    // "ss_",
     // "single_",
+    "final_selection/final_selection_",
+    "intermediate_selections/sel_pt-10GeV_os_",
+    // "intermediate_selections/sel_pt-10GeV_ss_",
+    "intermediate_selections/sel_pt-10GeV_mass-Jpsi_os_",
+    // "intermediate_selections/sel_pt-10GeV_mass-Jpsi_ss_",
+    //  "intermediate_selections/sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_os",
+    //  "intermediate_selections/sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_ss",
   };
-
-  vector<string> selections = {""};
-  if(include_selections){
-    selections = {
-      "",
-      "sel_pt-10GeV_",
-      "sel_pt-10GeV_mass-Jpsi_",
-      // "sel_pt-10GeV_mass-Jpsi_lxy-2p4cm_",
-      // "sel_pt-10GeV_mass-Jpsi_lxy-3p1cm_",
-      // "sel_pt-10GeV_mass-Jpsi_lxy-7p0cm_",
-      // "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_",
-    };
-  }
   
   map<string, THStack*> stacks;
   for(auto &[hist_name, tmp] : hist_names){
     for(auto prefix : prefixes){
-      for(auto sel : selections){
-        string full_hist_name = sel + prefix + hist_name;
-        stacks[full_hist_name] = new THStack();
-      }
+      string full_hist_name =  prefix + hist_name;
+      stacks[full_hist_name] = new THStack();
     }
   }
   
-  auto canvas = new TCanvas("canvas", "canvas", 2000, 4000);
-  canvas->Divide(4, 4);
-  
-  auto legend = new TLegend(0.6, 0.6, 0.9, 0.9);
+  auto legend = new TLegend(0.75, 0.75, 0.9, 0.9);
   vector<string> in_legend;
   
   for(auto &[file_name, params] : file_names){
@@ -93,49 +81,49 @@ void plot_histograms()
     
     for(auto &[hist_name, params] : hist_names){
       for (auto prefix : prefixes){
-        for(auto sel : selections){
-          string full_hist_name = sel + prefix + hist_name;
-          cout << full_hist_name << endl;
-          auto hist = (TH1D*)input_file->Get(full_hist_name.c_str());
-          auto [logy, logx, rebin, xMin, xMax] = params;
-          
-          if(hist->GetEntries() == 0) continue;
-          
-          hist->SetLineColor(color);
-          hist->Rebin(rebin);
-          hist->Scale(rebin/hist->GetEntries());
-          hist->Sumw2(false);
-          
-          stacks[full_hist_name]->Add(hist);
-          stacks[full_hist_name]->SetTitle(hist->GetTitle());
+        string full_hist_name = prefix + hist_name;
+
+        auto hist = (TH1D*)input_file->Get(full_hist_name.c_str());
+        auto [logy, logx, rebin, xMin, xMax] = params;
         
-          if(find(in_legend.begin(), in_legend.end(), file_name) == in_legend.end()){
-            legend->AddEntry(hist, title.c_str(), "l");
-            in_legend.push_back(file_name);
-          }
-        } 
+        if(hist->GetEntries() == 0) continue;
+        
+        hist->SetLineColor(color);
+        hist->Rebin(rebin);
+        hist->Scale(rebin/hist->GetEntries());
+        hist->Sumw2(false);
+        
+        stacks[full_hist_name]->Add(hist);
+        stacks[full_hist_name]->SetTitle(hist->GetTitle());
+      
+        if(find(in_legend.begin(), in_legend.end(), file_name) == in_legend.end()){
+          legend->AddEntry(hist, title.c_str(), "l");
+          in_legend.push_back(file_name);
+        }
+        input_file->cd();
       }
     }
   }
   
   if(one_canvas){
+    auto canvas = new TCanvas("canvas", "canvas", 2000, 4000);
+    canvas->Divide(4, 4);
+
     int i_pad = 1;
     for(auto &[hist_name, params] : hist_names){
       for(auto prefix : prefixes){
-        for(auto sel : selections){
-          string full_hist_name = sel + prefix + hist_name;
-        
-          auto [logy, logx, rebin, xMin, xMax] = params;
-        
-          canvas->cd(i_pad++);
-          if(logy) gPad->SetLogy();
-          if(logx) gPad->SetLogx();
-          stacks[full_hist_name]->Draw();
+        string full_hist_name =  prefix + hist_name;
+      
+        auto [logy, logx, rebin, xMin, xMax] = params;
+      
+        canvas->cd(i_pad++);
+        if(logy) gPad->SetLogy();
+        if(logx) gPad->SetLogx();
+        stacks[full_hist_name]->Draw();
 
-          stacks[full_hist_name]->GetXaxis()->SetLimits(xMin, xMax);
-          
-          legend->Draw(); 
-        }
+        stacks[full_hist_name]->GetXaxis()->SetLimits(xMin, xMax);
+        
+        legend->Draw(); 
       }
     }
     
@@ -148,25 +136,23 @@ void plot_histograms()
     gROOT->SetBatch(kTRUE);
     for(auto &[hist_name, params] : hist_names){
       for(auto prefix : prefixes){
-        for(auto sel : selections){
-          string full_hist_name = sel + prefix + hist_name;
+        string full_hist_name = prefix + hist_name;
+    
+        auto [logy, logx, rebin, xMin, xMax] = params;
+
+        auto c = new TCanvas("c", "c");
+        c->cd();
+        if(logy) c->SetLogy();
+        if(logx) c->SetLogx();
+        stacks[full_hist_name]->Draw();
+        stacks[full_hist_name]->GetXaxis()->SetLimits(xMin, xMax);
       
-          auto [logy, logx, rebin, xMin, xMax] = params;
+        legend->Draw(); 
 
-          auto c = new TCanvas("c", "c");
-          c->cd();
-          if(logy) c->SetLogy();
-          if(logx) c->SetLogx();
-          stacks[full_hist_name]->Draw();
-          stacks[full_hist_name]->GetXaxis()->SetLimits(xMin, xMax);
+        c->Update();
         
-          legend->Draw(); 
-
-          c->Update();
-          
-          string file_name = output_path + full_hist_name + ".pdf";
-          c->SaveAs(file_name.c_str());
-        }
+        string file_name = output_path + full_hist_name + ".pdf";
+        c->SaveAs(file_name.c_str());
       }
     }
   }
