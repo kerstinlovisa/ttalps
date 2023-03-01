@@ -178,13 +178,11 @@ def main():
     # prepare param card
     alp_mass = float(args.alp_mass)
     Lambda = 1000
-    gamma_total = ph.Gammaa(alp_mass, 0.5, -0.5, Lambda)
-    gamma_mumu = ph.Gammamumu(alp_mass, 0.5, -0.5, Lambda)
-
+    gamma_total = ph.Gammaa(alp_mass, 0.5, 0.5, Lambda)
+    
     to_change = {
         ("# ma", "dummy_value"): alp_mass,
         ("# ax", "dummy_value"): gamma_total,
-        ("1.0   2    13  -13 #", "dummy_value"): gamma_mumu,
     }
 
     copy_and_update_config(base_param_card, new_param_card_path, to_change)
