@@ -44,7 +44,7 @@ BLOCK MASS #
       15 1.777000e+00 # mta
       23 9.118760e+01 # mz
       25 1.250000e+02 # mh
-      9000005 3.000000e-01 # ma
+      9000005 dummy_value # ma
       12 0.000000e+00 # ve : 0.0
       14 0.000000e+00 # vm : 0.0
       16 0.000000e+00 # vt : 0.0
@@ -93,7 +93,8 @@ DECAY 21 0.000000e+00 # g : 0.0
 DECAY 22 0.000000e+00 # a : 0.0
 DECAY 9000005 dummy_value # ax : 0.0
 #  BR    NDA  ID1    ID2   ...
-   1.0   2    13  -13 # dummy_value
+   1.0   2    13  -13
+
 ###################################
 ## INFORMATION FOR QNUMBERS 9000005
 ###################################
@@ -102,4 +103,3 @@ BLOCK QNUMBERS 9000005 #  ax
       2 1 # number of spin states (2s+1)
       3 1 # colour rep (1: singlet, 3: triplet, 8: octet)
       4 0 # particle/antiparticle distinction (0=own anti)
-
