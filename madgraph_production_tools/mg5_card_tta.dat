@@ -39,8 +39,12 @@ set nevents dummy_value
 set pt_min_pdg {9000005:20}
 set Ma dummy_value
 
+set time_of_flight 0
+
 # other settings
 set bwcutoff 15.0
+
+set iseed dummy_value
 
 param_card.dat
 pythia8_card.dat
