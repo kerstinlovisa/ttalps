@@ -106,8 +106,10 @@ int main(int argc, char *argv[])
 
     "sel_pt-10GeV_lxy-11p0cm_single_muon",
     "sel_pt-10GeV_lxy-11p0cm_single_muon_first_mother",
-    "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_os_first_mother",
-    "sel_pt-10GeV_mass-Jpsi_lxy-11p0cm_ss_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-11p0cm_os_muon",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-11p0cm_ss_muon",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-11p0cm_os_first_mother",
+    "sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-11p0cm_ss_first_mother",
 
     "final_selection_muon",
     "final_selection_dimuon",
@@ -202,7 +204,7 @@ int main(int argc, char *argv[])
     
     auto mother_1 = event->particles[particle_1->mothers[0]];
     auto mother_2 = event->particles[particle_2->mothers[0]];
-    
+      
     histSets[sign+"_muon"]->fill(particle_1);
     histSets[sign+"_muon"]->fill(particle_2);
     histSets[sign+"_dimuon"]->fill(particle_1, particle_2);
@@ -237,15 +239,15 @@ int main(int argc, char *argv[])
         double lxy_2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
         for(int i=0; i<lxy_regions.size(); i++){
           if(lxy_1<=lxy_regions[i]){
-            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_"+sign+"_muon"]->fill(particle_1);
-            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_"+sign+"_first_mother"]->fill(mother_1);
+            histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-"+lxy_str[i]+"cm_"+sign+"_muon"]->fill(particle_1);
+            histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-"+lxy_str[i]+"cm_"+sign+"_first_mother"]->fill(mother_1);
             break;
           }
         }    
         for(int i=0; i<lxy_regions.size(); i++){
           if(lxy_2<=lxy_regions[i]){
-            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_"+sign+"_muon"]->fill(particle_2);
-            histSets["sel_pt-10GeV_mass-Jpsi_lxy-"+lxy_str[i]+"cm_"+sign+"_first_mother"]->fill(mother_2);
+            histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-"+lxy_str[i]+"cm_"+sign+"_muon"]->fill(particle_2);
+            histSets["sel_pt-10GeV_mass-Jpsi_dlxy-max0p1cm_lxy-"+lxy_str[i]+"cm_"+sign+"_first_mother"]->fill(mother_2);
             break;
           }
         }
