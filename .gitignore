@@ -40,3 +40,5 @@ external_tools/hepmc2root/test.root
 TdAlps/__pycache__/*
 
 plotting_tools/*.pdf
+
+limits_tools/*.pdf
