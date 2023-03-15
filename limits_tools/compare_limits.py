@@ -3,24 +3,10 @@ from ROOT import TFile, kGreen, kYellow, TCanvas, gPad, TGraph, kRed, kViolet, k
 
 limits_variants = [
     ("mass-cuts", kViolet, 1, "mass cuts"),
-    
     ("pt-5GeV_mass-cuts", kBlue, 1, "mass cuts, p_{T, #mu} > 5 GeV"),
     ("pt-10GeV_mass-cuts", kBlue, 2, "mass cuts, p_{T, #mu} > 10 GeV"),
-    
-    
-    # ("mass-cuts_dR-0p1", kCyan+1, 1),
-    # ("mass-cuts_dR-0p2", kCyan+1, 2),
-    
-    # ("pt-10GeV_dR-0p1", kCyan+1, 1),
-    # ("pt-10GeV_dR-0p2", kCyan+1, 2),
-    # ("pt-5GeV_dR-0p1", kGreen+1, 1),
-    # ("pt-5GeV_dR-0p2", kGreen+1, 2),
-    
-    
-    #
     ("pt-10GeV_mass-cuts_dR-0p1", kGreen+1, 2, "mass cuts, p_{T, #mu} > 10 GeV, #Delta R < 0.1"),
     ("pt-10GeV_mass-cuts_dR-0p2", kGreen+1, 1, "mass cuts, p_{T, #mu} > 10 GeV, #Delta R < 0.2"),
-    # ("pt-5GeV_mass-cuts_dR-0p1", kOrange, 1),
     ("pt-5GeV_mass-cuts_dR-0p2", kOrange, 1, "mass cuts, p_{T, #mu} > 5 GeV, #Delta R < 0.2"),
 ]
 

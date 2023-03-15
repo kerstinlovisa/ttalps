@@ -25,17 +25,17 @@ cross_section_ttj = 395.296031
 cross_section_ttmumu = 0.02091178
 
 signals = {
-#                           mass    file                    n_gen       ref. x_sec (pb)
-	"tta_mAlp-0p1GeV":  (0.1, ("tta_mAlp-0p1GeV.root", 2087780.0, 1e-1)),
-	"tta_mAlp-0p2GeV":  (0.2, ("tta_mAlp-0p2GeV.root", 2385275.0, 1e-1)),
-        "tta_mAlp-0p3GeV":  (0.3, ("tta_mAlp-0p3GeV.root", 1950000.0, 1e-3)),
-	"tta_mAlp-0p315GeV":  (0.315, ("tta_mAlp-0p315GeV.root", 2978471.0, 1e-3)),
-        "tta_mAlp-0p5GeV":  (0.5, ("tta_mAlp-0p5GeV.root", 1659356.0, 1e-3)),
-        "tta_mAlp-1GeV":    (1.0, ("tta_mAlp-1GeV.root", 1158318.0, 1e-3)),
-	"tta_mAlp-4GeV":    (4.0, ("tta_mAlp-4GeV.root", 2307648.0, 1e-3)),
-	"tta_mAlp-8GeV":    (8.0, ("tta_mAlp-8GeV.root", 2018449.0, 1e-3)),
-	"tta_mAlp-8p5GeV":    (8.5, ("tta_mAlp-8p5GeV.root", 2128905.0, 1e-3)),
-        "tta_mAlp-10GeV":   (10, ("tta_mAlp-10GeV.root", 1127443.0, 1e-1)),
+#                           mass     file                       n_gen      ref. x_sec (pb)
+	"tta_mAlp-0p1GeV":      (0.1,   ("tta_mAlp-0p1GeV.root",    2087780.0, 1e-1)),
+	"tta_mAlp-0p2GeV":      (0.2,   ("tta_mAlp-0p2GeV.root",    2385275.0, 1e-1)),
+    "tta_mAlp-0p3GeV":      (0.3,   ("tta_mAlp-0p3GeV.root",    1950000.0, 1e-3)),
+	"tta_mAlp-0p315GeV":    (0.315, ("tta_mAlp-0p315GeV.root",  2978471.0, 1e-3)),
+    "tta_mAlp-0p5GeV":      (0.5,   ("tta_mAlp-0p5GeV.root",    1659356.0, 1e-3)),
+    "tta_mAlp-1GeV":        (1.0,   ("tta_mAlp-1GeV.root",      1158318.0, 1e-3)),
+	"tta_mAlp-4GeV":        (4.0,   ("tta_mAlp-4GeV.root",      2307648.0, 1e-3)),
+	"tta_mAlp-8GeV":        (8.0,   ("tta_mAlp-8GeV.root",      2018449.0, 1e-3)),
+	"tta_mAlp-8p5GeV":      (8.5,   ("tta_mAlp-8p5GeV.root",    2128905.0, 1e-3)),
+    "tta_mAlp-10GeV":       (10,    ("tta_mAlp-10GeV.root",     1127443.0, 1e-1)),
     }
 
 base_path = "/nfs/dust/cms/user/lrygaard/ttalps/hists/"
@@ -53,10 +53,6 @@ base_path = "/nfs/dust/cms/user/lrygaard/ttalps/hists/"
 #cuts = "pt-5GeV_mass-cuts_dR-0p1"
 #cuts = "pt-5GeV_mass-cuts_dR-0p2"
 cuts = "pt-5GeV_mass-cuts"
-
-
-
-
 
 hist_name = f"final_selection/final_selection_{cuts}_os_muon_lxy_rebinned"
 output_file_name = f"limits_{cuts}.root"
