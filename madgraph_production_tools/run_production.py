@@ -179,10 +179,14 @@ def main():
     alp_mass = float(args.alp_mass)
     Lambda = 1000
     gamma_total = ph.Gammaa(alp_mass, 0.5, 0.5, Lambda)
+
+    lscs = ph.getLSfromctt(0.5, 0.5, Lambda, alp_mass)
+    gamma_mumu = ph.Gammaatoll(alp_mass, ph.readCmumu(lscs), ph.sm['mmu'], Lambda)
     
     to_change = {
         ("# ma", "dummy_value"): alp_mass,
-        ("# ax", "dummy_value"): gamma_total,
+        # ("# ax", "dummy_value"): gamma_total,
+        ("# ax", "dummy_value"): gamma_mumu,
     }
 
     copy_and_update_config(base_param_card, new_param_card_path, to_change)
