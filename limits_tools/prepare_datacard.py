@@ -14,31 +14,55 @@ addDatacardParserOptions(parser)
 options,args = parser.parse_args()
 options.bin = True # make a binary workspace
 
-lumi = 138.0 # fb-1
+lumi = 138.0 * 1000.0 # pb-1
 lumi_syst = 1.1
 
 n_generated_ttj = 12540000.0
 n_generated_ttmumu = 9940000.0
 
-# x_sec in fb
-cross_section_ttj = 1.0
-cross_section_ttmumu = 1.0
+# x_sec in pb
+cross_section_ttj = 395.296031
+cross_section_ttmumu = 0.02091178
 
 signals = {
-#                           mass    file                    n_gen       ref. x_sec (fb)
-        "tta_mAlp-0p3GeV":  (0.3, ("tta_mAlp-0p3GeV.root", 1950000.0, 1.0)),
-        "tta_mAlp-0p5GeV":  (0.5, ("tta_mAlp-0p5GeV.root", 1659356.0, 1.0)),
-        "tta_mAlp-1GeV":    (1.0, ("tta_mAlp-1GeV.root", 1158318.0, 1.0)),
-        "tta_mAlp-10GeV":   (10, ("tta_mAlp-10GeV.root", 1127443.0, 1.0)),
+#                           mass    file                    n_gen       ref. x_sec (pb)
+	"tta_mAlp-0p1GeV":  (0.1, ("tta_mAlp-0p1GeV.root", 2087780.0, 1e-1)),
+	"tta_mAlp-0p2GeV":  (0.2, ("tta_mAlp-0p2GeV.root", 2385275.0, 1e-1)),
+        "tta_mAlp-0p3GeV":  (0.3, ("tta_mAlp-0p3GeV.root", 1950000.0, 1e-3)),
+	"tta_mAlp-0p315GeV":  (0.315, ("tta_mAlp-0p315GeV.root", 2978471.0, 1e-3)),
+        "tta_mAlp-0p5GeV":  (0.5, ("tta_mAlp-0p5GeV.root", 1659356.0, 1e-3)),
+        "tta_mAlp-1GeV":    (1.0, ("tta_mAlp-1GeV.root", 1158318.0, 1e-3)),
+	"tta_mAlp-4GeV":    (4.0, ("tta_mAlp-4GeV.root", 2307648.0, 1e-3)),
+	"tta_mAlp-8GeV":    (8.0, ("tta_mAlp-8GeV.root", 2018449.0, 1e-3)),
+	"tta_mAlp-8p5GeV":    (8.5, ("tta_mAlp-8p5GeV.root", 2128905.0, 1e-3)),
+        "tta_mAlp-10GeV":   (10, ("tta_mAlp-10GeV.root", 1127443.0, 1e-1)),
     }
 
-base_path = "/nfs/dust/cms/user/lrygaard/ttalps/hists/muon_siblings/"
-hist_name = "final_selection/final_selection_mass-max20GeV_muon_lxy_rebinned"
+base_path = "/nfs/dust/cms/user/lrygaard/ttalps/hists/"
+
+#cuts = "mass-cuts"
+#cuts = "mass-cuts_dR-0p1"
+#cuts = "mass-cuts_dR-0p2"
+#cuts = "pt-10GeV_dR-0p1"
+#cuts = "pt-10GeV_dR-0p2"
+#cuts = "pt-10GeV_mass-cuts_dR-0p1"
+#cuts = "pt-10GeV_mass-cuts_dR-0p2"
+#cuts = "pt-10GeV_mass-cuts"
+#cuts = "pt-5GeV_dR-0p1"
+#cuts = "pt-5GeV_dR-0p2"
+#cuts = "pt-5GeV_mass-cuts_dR-0p1"
+#cuts = "pt-5GeV_mass-cuts_dR-0p2"
+cuts = "pt-5GeV_mass-cuts"
+
+
+
+
+
+hist_name = f"final_selection/final_selection_{cuts}_os_muon_lxy_rebinned"
+output_file_name = f"limits_{cuts}.root"
 
 tmp_combine_file_name = "tmp_combine_workspace.root"
 tmp_output_file_name = "tmp_output.txt"
-
-output_file_name = "limits.root"
 
 def init_datacard():
     data_card = Datacard()
@@ -103,6 +127,10 @@ def save_datacard(processes):
         bin_dict = {}
         for name, (_, n_generated_events, cross_section) in processes.items():
             bin_dict[name] = float(hists[name].GetBinContent(i_bin + 1)) * lumi * cross_section / n_generated_events
+            
+        if bin_dict["tta"] == 0:
+            bin_dict["tta"] = 1e-50
+            
         expected.append(bin_dict)
         
         print(f"Adding bin: {expected[-1]})")
@@ -163,11 +191,19 @@ def main():
     for name, (mass, signal) in signals.items():
         limits_per_signal[name] = get_limits_for_signal(signal)
         
+        reference_x_sec = signal[-1]
+        
         value = limits_per_signal[name]["50.0%:"]
         up_1_sigma = abs(limits_per_signal[name]["84.0%:"] - value)
         up_2_sigma = abs(limits_per_signal[name]["97.5%:"] - value)
         down_1_sigma = abs(limits_per_signal[name]["16.0%:"] - value)
         down_2_sigma = abs(limits_per_signal[name][""] - value)
+
+        value *= reference_x_sec
+        up_1_sigma *= reference_x_sec
+        up_2_sigma *= reference_x_sec
+        down_1_sigma *= reference_x_sec
+        down_2_sigma *= reference_x_sec
         
         graph_mean.SetPoint(i_point, mass, value)
         graph_1sigma.SetPoint(i_point, mass, value)
@@ -176,7 +212,10 @@ def main():
         graph_2sigma.SetPointError(i_point, 0, 0, down_2_sigma, up_2_sigma)
         
         i_point += 1
+        
+        print(f"Central limit for {name}: {value}")
 
+    print("\n\nSaving limits\n\n")
     output_file = TFile(output_file_name, "recreate")
     output_file.cd()
 
@@ -186,9 +225,6 @@ def main():
 
     output_file.Close()
 
-    print("\n\nSaving limits\n\n")
-    print(f"{limits_per_signal=}")
-    
     
 if __name__ == "__main__":
     main()
