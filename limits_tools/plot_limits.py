@@ -54,7 +54,7 @@ graph_2sigma.SetMinimum(2e-4)
 graph_2sigma.SetMaximum(1e2)
 graph_2sigma.GetXaxis().SetRangeUser(0, 10)
 
-graph_2sigma.GetYaxis().SetTitle("#sigma(pp#rightarrow t#bar{t}a) #times #Gamma(a#rightarrow #mu#mu) (pb)")
+graph_2sigma.GetYaxis().SetTitle("#sigma(pp#rightarrow t#bar{t}a) #times BR(a#rightarrow #mu#mu) (pb)")
 graph_2sigma.GetXaxis().SetTitle("m_{a} (GeV)")
 
 

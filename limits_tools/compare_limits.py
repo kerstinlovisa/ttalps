@@ -61,7 +61,7 @@ theory_line.SetMinimum(2e-4)
 theory_line.SetMaximum(2e3)
 theory_line.GetXaxis().SetRangeUser(0, 10)
 
-theory_line.GetYaxis().SetTitle("#sigma(pp#rightarrow t#bar{t}a) #times #Gamma(a#rightarrow #mu#mu) (pb)")
+theory_line.GetYaxis().SetTitle("#sigma(pp#rightarrow t#bar{t}a) #times BR(a#rightarrow #mu#mu) (pb)")
 theory_line.GetXaxis().SetTitle("m_{a} (GeV)")
 
 
