@@ -18,7 +18,9 @@ base_pythia_card = "pythia8_card.dat"
 base_param_card = "param_card.dat"
 
 keep_lhe = False
-
+use_gamma_total = False
+Lambda = 1000
+coupling = 0.5
 
 def remove_existing_files(output_path, file_name):
     command = f"rm -rf {output_path}/{file_name}/"
@@ -177,12 +179,16 @@ def main():
 
     # prepare param card
     alp_mass = float(args.alp_mass)
-    Lambda = 1000
-    gamma_total = ph.Gammaa(alp_mass, 0.5, 0.5, Lambda)
+    
+    if use_gamma_total:
+        gamma = ph.Gammaa(alp_mass, coupling, coupling, Lambda)
+    else:
+        lscs = ph.getLSfromctt(coupling, coupling, Lambda, alp_mass)
+        gamma = ph.Gammaatoll(alp_mass, ph.readCmumu(lscs), ph.sm['mmu'], Lambda)
     
     to_change = {
         ("# ma", "dummy_value"): alp_mass,
-        ("# ax", "dummy_value"): gamma_total,
+        ("# ax", "dummy_value"): gamma,
     }
 
     copy_and_update_config(base_param_card, new_param_card_path, to_change)
