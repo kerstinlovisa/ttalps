@@ -22,6 +22,7 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 add_library(Analysis  src/Event.cpp
                       src/EventReader.cpp
                       src/Particle.cpp
+                      src/HistogramSet.cpp
 )
 
 set_property(TARGET Analysis PROPERTY CXX_STANDARD 17)
