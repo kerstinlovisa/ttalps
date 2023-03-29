@@ -263,8 +263,8 @@ void plot_histograms()
     
         auto [logy, logx, rebinned, rebin, xMin, xMax, yMin, yMax, xlabel] = params;
 
-        auto c = new TCanvas("c", "c");
-        c->cd();
+        auto canvas = new TCanvas("canvas", "canvas");
+        canvas->cd();
 
         if(hist_name == "dimuon_mass" || hist_name == "dimuon_mass_log")
         {
@@ -303,17 +303,17 @@ void plot_histograms()
         stacks_background[full_hist_name]->GetYaxis()->SetTitle("number of events [a.u.]");
         stacks_background[full_hist_name]->GetXaxis()->SetRangeUser(xMin, xMax);
         gPad->Modified();
-        if(logy) c->SetLogy();
-        if(logx) c->SetLogx();
+        if(logy) canvas->SetLogy();
+        if(logx) canvas->SetLogx();
 
         legend->Draw();
 
-        c->Update();
+        canvas->Update();
         
         string file_name = output_path + full_hist_name + ".pdf";
-        c->SaveAs(file_name.c_str());
+        canvas->SaveAs(file_name.c_str());
 
-        delete c;
+        delete canvas;
         if(hist_name == "dimuon_mass" || hist_name == "dimuon_mass_log")
         {
           delete ghost_hist;
