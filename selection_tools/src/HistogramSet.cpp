@@ -64,7 +64,7 @@ void HistogramSet::fill(const Particle *particle)
 
 void HistogramSet::fill(const Particle* particle_1, const Particle* particle_2)
 {
-  float epsilon = 0.02;
+  float epsilon = 1e-10;
   float x1 = particle_1->x;
   float y1 = particle_1->y;
   float x2 = particle_2->x + epsilon;
