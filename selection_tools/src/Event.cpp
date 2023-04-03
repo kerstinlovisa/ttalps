@@ -230,6 +230,23 @@ vector<tuple<Particle*, Particle*>> Event::get_muon_pair()
   return muons;
 }
 
+tuple<Particle*, Particle*> Event::get_smallest_deltaR_muon_pair(vector<tuple<Particle*, Particle*>> muon_pairs)
+{
+  tuple<Particle*, Particle*> muons;
+  int index = -1;
+  double deltaR_min = 1000.0;
+  for(auto muon_pair : muon_pairs){
+    auto muon_1 = get<0>(muon_pair);
+    auto muon_2 = get<1>(muon_pair);
+    double deltaR = muon_1->four_vector.DeltaR(muon_2->four_vector);
+    if(deltaR < deltaR_min){
+      muons = {muon_1, muon_2};
+      deltaR_min = deltaR;
+    }
+  }
+  return muons;
+}
+
 tuple<Particle*, Particle*> Event::get_smallest_deltaR_same_sign_muon_non_pair()
 {  
   int muon1_index = -1;
@@ -262,7 +279,9 @@ tuple<Particle*, Particle*> Event::get_smallest_deltaR_opposite_sign_muon_non_pa
   int muon2_index= -1;
   double deltaR_min = 1000.0;
   for(int i=0; i<particles.size(); i++){
-    if(!particles[i]->is_good_non_top_muon(particles)) continue;
+    if(!particles[i]->is_good_non_top_muon(particles)) {
+      continue;
+    }
     for(int j=i+1; j<particles.size(); j++)
     {
       if (j==i) continue;
@@ -278,6 +297,48 @@ tuple<Particle*, Particle*> Event::get_smallest_deltaR_opposite_sign_muon_non_pa
       }
     }
   }
-  if (muon1_index>0 && muon2_index>0) return {particles[muon1_index],particles[muon2_index]};
+  if (muon1_index>0 && muon2_index>0) {
+    return {particles[muon1_index],particles[muon2_index]};
+  }
+  return {nullptr, nullptr};
+}
+
+std::tuple<Particle*, Particle*> Event::get_smallest_deltaLxyRatio_opposite_sign_muons()
+{
+  int muon1_index = -1;
+  int muon2_index= -1;
+  double ratio_min = 1000.0;
+  float epsilon = 1e-10;
+  float x1, x2, y1, y2;
+  for(int i=0; i<particles.size(); i++){
+    if(!particles[i]->is_good_non_top_muon(particles)) {
+      continue;
+    }
+    for(int j=i+1; j<particles.size(); j++)
+    {
+      if (j==i) continue;
+      if (particles[i]->pdgid == particles[j]->pdgid) continue;
+      if(!particles[j]->is_good_non_top_muon(particles)) continue;
+
+      x1 = particles[i]->x;
+      y1 = particles[i]->y;
+      x2 = particles[j]->x + epsilon;
+      y2 = particles[j]->y + epsilon;
+
+      // sqrt((x1-x2)^2 +(y1-y2)^2) / sqrt((x1+x2)^2 + (y1+y2)^2)
+      float delta_lxy_ratio = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))/sqrt(pow(x1 + x2, 2) + pow(y1 + y2, 2));
+
+      double Ratio = particles[i]->four_vector.DeltaR(particles[j]->four_vector);
+      if (delta_lxy_ratio < ratio_min)
+      {
+        muon1_index= i;
+        muon2_index= j;
+        ratio_min = delta_lxy_ratio;
+      }
+    }
+  }
+  if (muon1_index>0 && muon2_index>0) {
+    return {particles[muon1_index],particles[muon2_index]};
+  }
   return {nullptr, nullptr};
 }
