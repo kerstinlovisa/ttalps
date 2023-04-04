@@ -14,6 +14,11 @@ mg_path = "/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/bin/mg5_aMC"
 hepmc_path = "/afs/desy.de/user/j/jniedzie/ttalps/ttalps/external_tools/hepmc2root/hepmc2root"
 pythia_path = "/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/HEPTools/pythia8/share/Pythia8/xmldoc"
 
+# python_path = "/afs/desy.de/user/l/lrygaard/tools/miniconda3/envs/tta/bin/python3"
+# mg_path = "/afs/desy.de/user/l/lrygaard/tools/MG5_aMC_v3_4_2/bin/mg5_aMC"
+# hepmc_path = "/afs/desy.de/user/l/lrygaard/ALPpheno/ttalps/external_tools/hepmc2root/hepmc2root"
+# pythia_path = "/afs/desy.de/user/l/lrygaard/tools/MG5_aMC_v3_4_2/HEPTools/pythia8/share/Pythia8/xmldoc"
+
 base_pythia_card = "pythia8_card.dat"
 base_param_card = "param_card.dat"
 
