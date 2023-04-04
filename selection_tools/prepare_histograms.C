@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
     "sel_deltalxy_ratio_abs-max0p05_",
     "sel_deltalxy_ratio_abs-max0p1_",
     "sel_deltalxy_ratio_abs-max0p5_",
+    "alp_selection_pt-min0p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_",
   };
   
   vector<double> ptCuts = {0, 5, 10, 15};
@@ -87,7 +88,6 @@ int main(int argc, char *argv[])
     hist_names.push_back("final_selection_pt-min"+ptName+"GeV_deltalxy_ratio_abs-max0p05_");
     hist_names.push_back("final_selection_pt-min"+ptName+"GeV_deltalxy_ratio_abs-max0p1_");
     hist_names.push_back("final_selection_pt-min"+ptName+"GeV_deltalxy_ratio_abs-max0p5_");
-    
   }
   
   map<string, HistogramSet*> histSets;
@@ -212,6 +212,27 @@ int main(int argc, char *argv[])
       }
     }
   };
+  
+  auto fill_alp_selection_hists = [&](const Particle* particle_1, const Particle* particle_2, const Event *event, string sign){
+    if(!particle_1 || !particle_2) return;
+    
+    TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
+    if(!cutsManager.passes_mass_cuts(diparticle)) return;
+    
+    float epsilon = 1e-10;
+    float x1 = particle_1->x;
+    float y1 = particle_1->y;
+    float x2 = particle_2->x + epsilon;
+    float y2 = particle_2->y + epsilon;
+    float delta_lxy_ratio_abs = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))/sqrt(pow(abs(x1) + abs(x2), 2) + pow(abs(y1) + abs(y2), 2));
+    if(delta_lxy_ratio_abs > 0.1) return;
+    
+    float lxy1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
+    float lxy2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
+    const Particle* particle_maxlxy = (lxy1 >= lxy2) ? particle_1 : particle_2;
+    
+    histSets["alp_selection_pt-min0p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_os_maxlxy-muon"]->fill(particle_maxlxy);
+  };
 
   for(auto event : events){
     
@@ -226,6 +247,10 @@ int main(int argc, char *argv[])
       
       fill_hists(muon_1, muon_2, event, "os");
       fill_final_selection_hists(muon_1, muon_2, event, "os");
+      
+      if(muon_1->has_alp_ancestor(event->particles) && muon_2->has_alp_ancestor(event->particles)){
+        fill_alp_selection_hists(muon_1, muon_2, event, "os");
+      }
     }
   }
   
@@ -233,12 +258,16 @@ int main(int argc, char *argv[])
   output_file->cd();
   output_file->mkdir("final_selection");
   output_file->mkdir("intermediate_selections");
+  output_file->mkdir("alp_selections");
   for(auto &[hist_name, hist_set] : histSets){
     if(hist_name.substr(0,15) == "final_selection"){
       output_file->cd("final_selection");
     }
     if(hist_name.substr(0,3) == "sel"){
       output_file->cd("intermediate_selections");
+    }
+    if(hist_name.substr(0,3) == "alp"){
+      output_file->cd("alp_selections");
     }
     for(auto &[tmp_2, hist] : hist_set->hists){
       hist->Write();
