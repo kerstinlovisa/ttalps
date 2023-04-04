@@ -31,6 +31,8 @@ selection_tools/error/*
 selection_tools/output/*
 selection_tools/log/*
 selection_tools/prepare_histograms
+selection_tools/test.pdf
+selection_tools/test.root
 
 external_tools/hepmc2root/__pycache__/*
 external_tools/hepmc2root/hepmc2root
