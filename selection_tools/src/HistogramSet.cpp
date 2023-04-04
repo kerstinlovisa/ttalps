@@ -30,6 +30,7 @@ HistogramSet::HistogramSet(string prefix)
   hists["lz"]       = new TH1D((prefix+"_lz").c_str(),    (prefix+"_lz").c_str(),           10000,0,      1000  );
   hists["lxyz"]     = new TH1D((prefix+"_lxyz").c_str(),  (prefix+"_lxyz").c_str(),         10000,0,      1000  );
   hists["ctau"]     = new TH1D((prefix+"_ctau").c_str(),  (prefix+"_ctau").c_str(),         1000, 0,      1000  );
+  hists["proper_ctau"]     = new TH1D((prefix+"_proper_ctau").c_str(),  (prefix+"_proper_ctau").c_str(),         1000, 0,      1  );
   hists["boost"]    = new TH1D((prefix+"_boost").c_str(), (prefix+"_boost").c_str(),        1000, 0,      500   );
   hists["deltaR"]   = new TH1D((prefix+"_deltaR").c_str(),   (prefix+"_deltaR").c_str(),    1000, 0,      10    );
   // hists["deltaPhi"] = new TH1D((prefix+"_deltaPhi").c_str(), (prefix+"_deltaPhi").c_str(),  1000, -5,     5     );
@@ -59,6 +60,7 @@ void HistogramSet::fill(const Particle *particle)
   hists["lz"]->Fill(particle->z);
   hists["lxyz"]->Fill(sqrt(pow(particle->x, 2) + pow(particle->y, 2) + pow(particle->z, 2)));
   hists["ctau"]->Fill(particle->ctau);
+  hists["proper_ctau"]->Fill(particle->ctau/(particle->momentum()/particle->mass));
   hists["boost"]->Fill(particle->momentum()/particle->mass);
 }
 
