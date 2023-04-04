@@ -1,4 +1,4 @@
-from ROOT import TGraph, TF1, kGreen, TCanvas, gPad
+from ROOT import TGraph, TF1, kGreen, TCanvas, gPad, TGraphErrors
 
 masses = (0.1, 0.2, 0.3, 0.315, 0.5, 1, 2, 4, 8, 8.5, 10, 20, 40, 50, 70, 80)
 # cu3x3	σ (pb)
@@ -69,13 +69,21 @@ a_vs_mass = TGraphErrors()
 for i_point, (mass, coefficient) in enumerate(coefficients.items()):
     print(f"{mass}: {coefficient}")
     a_vs_mass.SetPoint(i_point, mass, coefficient)
+    a_vs_mass.SetPointError(i_point, 0, coefficients_err[mass])
+    
+
+a_of_m_fun = TF1("a_of_m_fun", "[0]*x+[1]", 0, 100)
+a_of_m_fun.SetParameter(0, 1)
+a_of_m_fun.SetParameter(1, 0)
+
+a_vs_mass.Fit(a_of_m_fun)
     
 a_vs_mass.SetMarkerColor(kGreen)
 a_vs_mass.SetMarkerStyle(20)
+a_vs_mass.Draw("APE")
 
-a_vs_mass.Draw("AP")
-
-
+a_vs_mass.GetXaxis().SetTitle("m_{a} (GeV)")
+a_vs_mass.GetYaxis().SetTitle("a")
 
 
 canvas.Update()

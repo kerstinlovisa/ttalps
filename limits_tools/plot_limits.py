@@ -25,7 +25,7 @@ reference_points = {
     50.: 2.799,
     70.: 2.622,
     80.: 2.518,
-    90.: 2.424,
+    # 90.: 2.424,
 }
 
 regions_to_mask = {
@@ -73,7 +73,27 @@ def mass_to_lifetime(input_graph):
 
 
 def find_coupling_for_cross_section(x_sec, mass):
-    couping = x_sec/(-0.0007*mass+0.1218)
+    
+    coeffs = {
+        0.1: 0.1177,
+        0.2: 0.1192,
+        0.3: 0.1173,
+        0.315: 0.1183,
+        0.5: 0.1186,
+        1: 0.1171,
+        2: 0.1180,
+        4: 0.1178,
+        8: 0.1165,
+        8.5: 0.1170,
+        10: 0.1143,
+        20: 0.1090,
+        40: 0.0923,
+        50: 0.0848,
+        70: 0.0715,
+        80: 0.0652,
+    }
+    
+    couping = x_sec/coeffs[mass]
     couping = sqrt(couping)
     return couping
 
@@ -102,17 +122,14 @@ def save_canvas(title, x_title, y_title, theory_line, graph_mean, graph_1sigma, 
     
     canvas.cd()
     
-    gPad.SetLogy()
-    gPad.SetLogx()
-    
     graph_2sigma.SetFillColor(kYellow)
     graph_2sigma.Draw("A3")
     
     graph_1sigma.SetFillColor(kGreen + 1)
-    graph_1sigma.Draw("3")
+    graph_1sigma.Draw("3same")
     
     graph_mean.SetLineStyle(2)
-    graph_mean.Draw("L")
+    graph_mean.Draw("Lsame")
     
     if mask_masses and not is_lifetime:
         boxes = []
@@ -129,8 +146,8 @@ def save_canvas(title, x_title, y_title, theory_line, graph_mean, graph_1sigma, 
             boxes[-1].SetLineColor(kWhite)
     
     theory_line.SetLineColor(kRed)
-    theory_line.Draw("L")
-    
+    theory_line.Draw("Lsame")
+
     if is_coupling:
         graph_2sigma.SetMinimum(2e-3)
         graph_2sigma.SetMaximum(1e2)
@@ -139,10 +156,12 @@ def save_canvas(title, x_title, y_title, theory_line, graph_mean, graph_1sigma, 
         graph_2sigma.SetMaximum(1e2)
     
     if is_lifetime:
-        graph_2sigma.GetXaxis().SetRangeUser(1e-5, 1e5)
-        gPad.SetLogx()
+        graph_2sigma.GetXaxis().SetLimits(1e-4, 1e5)
     else:
         graph_2sigma.GetXaxis().SetRangeUser(0, 90)
+
+    gPad.SetLogy()
+    gPad.SetLogx()
     
     graph_2sigma.GetYaxis().SetTitle(y_title)
     graph_2sigma.GetXaxis().SetTitle(x_title)
@@ -156,9 +175,6 @@ def save_canvas(title, x_title, y_title, theory_line, graph_mean, graph_1sigma, 
     
     canvas.Update()
     canvas.SaveAs(f"{title}.pdf")
-
-
-
 
 
 def main():

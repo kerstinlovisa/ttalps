@@ -69,6 +69,18 @@ bool Particle::has_top_ancestor(const vector<Particle*> &other_particles)
   return false;
 }
 
+bool Particle::has_alp_ancestor(const vector<Particle*> &other_particles)
+{
+  if(abs(pdgid) == 9000005) return true;
+  if(mothers.size()==0) return false;
+  
+  for(int mother_index : mothers){
+    auto mother = other_particles.at(mother_index);
+    if(mother->has_alp_ancestor(other_particles)) return true;
+  }
+  return false;
+}
+
 bool Particle::is_final()
 {
   if(abs(pdgid) == 6) return status == 62;

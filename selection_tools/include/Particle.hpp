@@ -23,6 +23,7 @@ public:
   bool is_motherless();
   
   bool has_top_ancestor(const std::vector<Particle*> &other_particles);
+  bool has_alp_ancestor(const std::vector<Particle*> &other_particles);
   bool is_final();
   
   double eta();
