@@ -11,6 +11,7 @@
 #include "EventReader.hpp"
 #include "HistogramSet.hpp"
 #include "CutsManager.hpp"
+#include "Helpers.hpp"
 
 using namespace std;
 
@@ -72,19 +73,20 @@ int main(int argc, char *argv[])
   vector<double> ptCuts = {0, 5, 10, 15};
   
   for(double ptCut : ptCuts){
+    string ptName = to_nice_string(ptCut);
     
-    hist_names.push_back("sel_pt-min"+to_string(ptCut)+"GeV_");
-    hist_names.push_back("final_selection_pt-min"+to_string(ptCut)+"GeV_mass-cuts_");
+    hist_names.push_back("sel_pt-min"+ptName+"GeV_");
+    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_mass-cuts_");
     
-    hist_names.push_back("final_selection_pt-min"+to_string(ptCut)+"GeV_mass-cuts_deltalxy-max0p3mm_");
-    hist_names.push_back("final_selection_pt-min"+to_string(ptCut)+"GeV_mass-cuts_deltalxy_ratio_abs-max0p05_");
-    hist_names.push_back("final_selection_pt-min"+to_string(ptCut)+"GeV_mass-cuts_deltalxy_ratio_abs-max0p1_");
-    hist_names.push_back("final_selection_pt-min"+to_string(ptCut)+"GeV_mass-cuts_deltalxy_ratio_abs-max0p5_");
+    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_mass-cuts_deltalxy-max0p3mm_");
+    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_mass-cuts_deltalxy_ratio_abs-max0p05_");
+    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_mass-cuts_deltalxy_ratio_abs-max0p1_");
+    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_mass-cuts_deltalxy_ratio_abs-max0p5_");
     
-    hist_names.push_back("final_selection_pt-min"+to_string(ptCut)+"GeV_deltalxy-max0p3mm_");
-    hist_names.push_back("final_selection_pt-min"+to_string(ptCut)+"GeV_deltalxy_ratio_abs-max0p05_");
-    hist_names.push_back("final_selection_pt-min"+to_string(ptCut)+"GeV_deltalxy_ratio_abs-max0p1_");
-    hist_names.push_back("final_selection_pt-min"+to_string(ptCut)+"GeV_deltalxy_ratio_abs-max0p5_");
+    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_deltalxy-max0p3mm_");
+    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_deltalxy_ratio_abs-max0p05_");
+    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_deltalxy_ratio_abs-max0p1_");
+    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_deltalxy_ratio_abs-max0p5_");
     
   }
   
@@ -158,9 +160,12 @@ int main(int argc, char *argv[])
     // Independent selections:
     for(double ptCut : ptCuts){
       if(particle_1->four_vector.Pt() < ptCut || particle_2->four_vector.Pt() < ptCut) continue;
-      histSets["sel_pt-min"+to_string(ptCut)+"GeV_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
-      histSets["sel_pt-min"+to_string(ptCut)+"GeV_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
-      histSets["sel_pt-min"+to_string(ptCut)+"GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+      
+      string ptName = to_nice_string(ptCut);
+      
+      histSets["sel_pt-min"+ptName+"GeV_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
+      histSets["sel_pt-min"+ptName+"GeV_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
+      histSets["sel_pt-min"+ptName+"GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
     }
     
     if(cutsManager.passes_mass_cuts(diparticle)){
@@ -193,15 +198,17 @@ int main(int argc, char *argv[])
     for(double ptCut : ptCuts){
       if(particle_1->four_vector.Pt() < ptCut || particle_2->four_vector.Pt() < ptCut) continue;
         
+      string ptName = to_nice_string(ptCut);
+      
       if(cutsManager.passes_mass_cuts(diparticle)){
-        histSets["final_selection_pt-min"+to_string(ptCut)+"GeV_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
-        histSets["final_selection_pt-min"+to_string(ptCut)+"GeV_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
-        histSets["final_selection_pt-min"+to_string(ptCut)+"GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+        histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
+        histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
+        histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
         
-        fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min"+to_string(ptCut)+"GeV_mass-cuts");
+        fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min"+ptName+"GeV_mass-cuts");
       }
       else{
-        fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min"+to_string(ptCut)+"GeV");
+        fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min"+ptName+"GeV");
       }
     }
   };

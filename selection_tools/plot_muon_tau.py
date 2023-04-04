@@ -1,9 +1,10 @@
 from ROOT import TFile, TCanvas, TF1, gPad, kGreen
 import physics as ph
 
-file = TFile.Open("/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/tta_mAlp-0p315GeV.root")
+# file = TFile.Open("/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/tta_mAlp-0p315GeV.root")
+file = TFile.Open("/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/tta_test.root")
 
-hist = file.Get("final_selection/final_selection_mass-cuts_deltalxy_ratio_abs-max0p02_os_maxlxy-muon_ctau")
+hist = file.Get("final_selection/final_selection_pt-min0p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_os_maxlxy-muon_proper_ctau")
 
 default_function = TF1("default_function", "[0]*exp(-x/[1])", 0, 100)
 default_function.SetParameter(0, 1)
@@ -20,7 +21,7 @@ hist.Sumw2()
 
 hist.Draw()
 
-hist.GetXaxis().SetRangeUser(0, 100)
+hist.GetXaxis().SetRangeUser(0, 0.1)
 
 
 def find_lifetime_for_mass(mass):
@@ -40,8 +41,8 @@ def find_lifetime_for_mass(mass):
     else:
         boost *= 296
     
-    return boost * ctau
-    # return ctau
+    # return boost * ctau
+    return ctau
 
 lifetime = find_lifetime_for_mass(0.3)
 print(f"expected lifetime: {lifetime} cm")
