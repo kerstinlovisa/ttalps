@@ -19,7 +19,7 @@ base_param_card = "param_card.dat"
 
 keep_lhe = False
 use_gamma_total = False
-Lambda = 1000
+Lambda = 4*math.pi*1000
 coupling = 0.5
 
 def remove_existing_files(output_path, file_name):
