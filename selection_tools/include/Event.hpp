@@ -32,8 +32,10 @@ public:
   
   Particle* get_single_muon();
   std::vector<std::tuple<Particle*, Particle*>> get_muon_pair();
+  std::tuple<Particle*, Particle*> get_smallest_deltaR_muon_pair(std::vector<std::tuple<Particle*, Particle*>> muon_pairs);
   std::tuple<Particle*, Particle*> get_smallest_deltaR_same_sign_muon_non_pair();
   std::tuple<Particle*, Particle*> get_smallest_deltaR_opposite_sign_muon_non_pair();
+  std::tuple<Particle*, Particle*> get_smallest_deltaLxyRatio_opposite_sign_muons();
   
   std::vector<Particle*> particles;
 

@@ -16,22 +16,27 @@ using namespace std;
 int max_events = -1;
 int n_daughters = 100;
 
-// Some final selections maxima/minima
-float Jpsi_mass = 3.096900; // GeV
-// widths = sigma based on EXO-20-014
-float Jpsi_width = 36e-3; // GeV 
-float Jpsi_mass_min = Jpsi_mass - 5*Jpsi_width;
-float Jpsi_mass_max = Jpsi_mass + 5*Jpsi_width;
-float rho_omega_mass = 780e-3; // GeV
-float rho_omega_width = 11e-3; // GeV
-float rho_omega_mass_min = rho_omega_mass - 5*rho_omega_width;
-float rho_omega_mass_max = rho_omega_mass + 5*rho_omega_width;
-float dlxy_max = 0.1; // mm
-float dlxyz_max = 0.1; // mm
-float dlxy_ratio_max = 0.1;
-float dlxyz_ratio_max = 0.1;
-float dlxy_ratio_v2_max = 0.1;
-float dlxyz_ratio_v2_max = 0.1;
+// Dimuon mass cut selections maxima/minima
+float rho_omega_mass = 0.78; // GeV
+float rho_omega_cut = 0.04; // GeV
+float rho_omega_mass_min = rho_omega_mass - rho_omega_cut;
+float rho_omega_mass_max = rho_omega_mass + rho_omega_cut;
+float phi_mass = 1.02;
+float phi_cut = 0.05;
+float phi_mass_min = phi_mass - phi_cut;
+float phi_mass_max = phi_mass + phi_cut;
+float Jpsi_mass = 3.09; // GeV
+float Jpsi_cut = 0.04; // GeV 
+float Jpsi_mass_min = Jpsi_mass - Jpsi_cut;
+float Jpsi_mass_max = Jpsi_mass + Jpsi_cut;
+float psi_mass = 3.68; // GeV
+float psi_cut = 0.18; // GeV 
+float psi_mass_min = psi_mass - psi_cut;
+float psi_mass_max = psi_mass + psi_cut;
+float Z_mass = 91.19; // GeV
+float Z_cut = 4.56; // GeV 
+float Z_mass_min = Z_mass - Z_cut;
+float Z_mass_max = Z_mass + Z_cut;
 
 TFile *input_file;
 
@@ -67,7 +72,8 @@ int main(int argc, char *argv[])
   vector<string> particle_names = {
     // "single_muon",
     // "single_muon_first_mother",
-    "os_muon",
+    "os_maxlxy-muon",
+    "os_minlxy-muon",
     // "ss_muon",
     "os_dimuon",
     // "ss_dimuon",
@@ -78,107 +84,58 @@ int main(int argc, char *argv[])
   vector<string> hist_names = {
     "", // this is without any selection
   
-    "sel_pt-min10GeV_",
-    "sel_pt-min8GeV_",
+    // Single (intermediate) selections
     "sel_pt-min5GeV_",
+    "sel_pt-min10GeV_",
+    "sel_pt-min15GeV_",
 
-    "sel_mass-Jpsi_",
-    "sel_mass-rho_omega_",
-    "sel_mass-max20GeV_",
+    "sel_mass-cuts_",
 
-    "sel_dlxy-max0p1mm_",
-    "sel_dlxyz-max0p1mm_",
-    "sel_dlxy_ratio-max0p1_",
-    "sel_dlxyz_ratio-max0p1_",
-    "sel_dlxy_ratio_v2-max0p1_",
-    "sel_dlxyz_ratio_v2-max0p1_",
+    "sel_deltalxy-max0p3mm_",
+    "sel_deltalxy_ratio_abs-max0p05_",
+    "sel_deltalxy_ratio_abs-max0p1_",
+    "sel_deltalxy_ratio_abs-max0p5_",
 
-    "sel_dR-max0p05_",
-    "sel_dR-max0p1_",
-    "sel_dR-max0p2_",
-
+    // Final selections with different combinations for N-1 plots
+    // pT > 10 GeV + dimuon mass cuts
     "final_selection_pt-min10GeV_mass-cuts_",
-    "final_selection_pt-min10GeV_mass-cuts_dR-max0p1_",
-    "final_selection_pt-min10GeV_mass-cuts_dR-max0p2_",
-    "final_selection_pt-min10GeV_mass-cuts_dR-max0p05_",
-    "final_selection_pt-min10GeV_mass-cuts_dlxy-max0p1mm_",
-    "final_selection_pt-min10GeV_mass-cuts_dlxyz-max0p1mm_",
-    "final_selection_pt-min10GeV_mass-cuts_dlxy_ratio-max0p1_",
-    "final_selection_pt-min10GeV_mass-cuts_dlxyz_ratio-max0p1_",
-    "final_selection_pt-min10GeV_mass-cuts_dlxy_ratio_v2-max0p1_",
-    "final_selection_pt-min10GeV_mass-cuts_dlxyz_ratio_v2-max0p1_",
-
-    "final_selection_pt-min10GeV_dR-max0p1_",
-    "final_selection_pt-min10GeV_dR-max0p2_",
-    "final_selection_pt-min10GeV_dR-max0p05_",
-    "final_selection_pt-min10GeV_dlxy-max0p1mm_",
-    "final_selection_pt-min10GeV_dlxyz-max0p1mm_",
-    "final_selection_pt-min10GeV_dlxy_ratio-max0p1_",
-    "final_selection_pt-min10GeV_dlxyz_ratio-max0p1_",
-    "final_selection_pt-min10GeV_dlxy_ratio_v2-max0p1_",
-    "final_selection_pt-min10GeV_dlxyz_ratio_v2-max0p1_",
-    "final_selection_pt-min10GeV_dlxy_ratio_v2-max0p1_",
-    "final_selection_pt-min10GeV_dlxyz_ratio_v2-max0p1_",
-
-    "final_selection_pt-min8GeV_mass-cuts_",
-    "final_selection_pt-min8GeV_mass-cuts_dR-max0p1_",
-    "final_selection_pt-min8GeV_mass-cuts_dR-max0p2_",
-    "final_selection_pt-min8GeV_mass-cuts_dR-max0p05_",
-    "final_selection_pt-min8GeV_mass-cuts_dlxy-max0p1mm_",
-    "final_selection_pt-min8GeV_mass-cuts_dlxyz-max0p1mm_",
-    "final_selection_pt-min8GeV_mass-cuts_dlxy_ratio-max0p1_",
-    "final_selection_pt-min8GeV_mass-cuts_dlxyz_ratio-max0p1_",
-    "final_selection_pt-min8GeV_mass-cuts_dlxy_ratio_v2-max0p1_",
-    "final_selection_pt-min8GeV_mass-cuts_dlxyz_ratio_v2-max0p1_",
-
-    "final_selection_pt-min8GeV_dR-max0p1_",
-    "final_selection_pt-min8GeV_dR-max0p2_",
-    "final_selection_pt-min8GeV_dR-max0p05_",
-    "final_selection_pt-min8GeV_dlxy-max0p1mm_",
-    "final_selection_pt-min8GeV_dlxyz-max0p1mm_",
-    "final_selection_pt-min8GeV_dlxy_ratio-max0p1_",
-    "final_selection_pt-min8GeV_dlxyz_ratio-max0p1_",
-    "final_selection_pt-min8GeV_dlxy_ratio_v2-max0p1_",
-    "final_selection_pt-min8GeV_dlxyz_ratio_v2-max0p1_",
-
     "final_selection_pt-min5GeV_mass-cuts_",
-    "final_selection_pt-min5GeV_mass-cuts_dR-max0p1_",
-    "final_selection_pt-min5GeV_mass-cuts_dR-max0p2_",
-    "final_selection_pt-min5GeV_mass-cuts_dR-max0p05_",
-    "final_selection_pt-min5GeV_mass-cuts_dlxy-max0p1mm_",
-    "final_selection_pt-min5GeV_mass-cuts_dlxyz-max0p1mm_",
-    "final_selection_pt-min5GeV_mass-cuts_dlxy_ratio-max0p1_",
-    "final_selection_pt-min5GeV_mass-cuts_dlxyz_ratio-max0p1_",
-    "final_selection_pt-min5GeV_mass-cuts_dlxy_ratio_v2-max0p1_",
-    "final_selection_pt-min5GeV_mass-cuts_dlxyz_ratio_v2-max0p1_",
+    "final_selection_pt-min15GeV_mass-cuts_",
 
-    "final_selection_pt-min5GeV_dR-max0p1_",
-    "final_selection_pt-min5GeV_dR-max0p2_",
-    "final_selection_pt-min5GeV_dR-max0p05_",
-    "final_selection_pt-min5GeV_dlxy-max0p1mm_",
-    "final_selection_pt-min5GeV_dlxyz-max0p1mm_",
-    "final_selection_pt-min5GeV_dlxy_ratio-max0p1_",
-    "final_selection_pt-min5GeV_dlxyz_ratio-max0p1_",
-    "final_selection_pt-min5GeV_dlxy_ratio_v2-max0p1_",
-    "final_selection_pt-min5GeV_dlxyz_ratio_v2-max0p1_",
+    // pT > 10 GeV + dimuon mass cuts + deltalxy cut
+    "final_selection_pt-min10GeV_mass-cuts_deltalxy-max0p3mm_",
+    "final_selection_pt-min10GeV_mass-cuts_deltalxy_ratio_abs-max0p05_",
+    "final_selection_pt-min10GeV_mass-cuts_deltalxy_ratio_abs-max0p1_",
+    "final_selection_pt-min10GeV_mass-cuts_deltalxy_ratio_abs-max0p5_",
+    // including other pT cut values
+    "final_selection_pt-min5GeV_mass-cuts_deltalxy-max0p3mm_",
+    "final_selection_pt-min5GeV_mass-cuts_deltalxy_ratio_abs-max0p05_",
+    "final_selection_pt-min5GeV_mass-cuts_deltalxy_ratio_abs-max0p1_",
+    "final_selection_pt-min5GeV_mass-cuts_deltalxy_ratio_abs-max0p5_",
+    "final_selection_pt-min15GeV_mass-cuts_deltalxy-max0p3mm_",
+    "final_selection_pt-min15GeV_mass-cuts_deltalxy_ratio_abs-max0p05_",
+    "final_selection_pt-min15GeV_mass-cuts_deltalxy_ratio_abs-max0p1_",
+    "final_selection_pt-min15GeV_mass-cuts_deltalxy_ratio_abs-max0p5_",
 
-    "final_selection_mass-cuts_",
-    "final_selection_mass-cuts_dR-max0p1_",
-    "final_selection_mass-cuts_dR-max0p2_",
-    "final_selection_mass-cuts_dR-max0p05_",
-    "final_selection_mass-cuts_dlxy-max0p1mm_",
-    "final_selection_mass-cuts_dlxyz-max0p1mm_",
-    "final_selection_mass-cuts_dlxy_ratio-max0p1_",
-    "final_selection_mass-cuts_dlxyz_ratio-max0p1_",
-    "final_selection_mass-cuts_dlxy_ratio_v2-max0p1_",
-    "final_selection_mass-cuts_dlxyz_ratio_v2-max0p1_",
-  };
+    // pT > 10 GeV + deltalxy cut
+    "final_selection_pt-min10GeV_deltalxy-max0p3mm_",
+    "final_selection_pt-min10GeV_deltalxy_ratio_abs-max0p05_",
+    "final_selection_pt-min10GeV_deltalxy_ratio_abs-max0p1_",
+    "final_selection_pt-min10GeV_deltalxy_ratio_abs-max0p5_",
 
-  vector<string> single_muon_names = {
-    "single_muon",
-    // "single_muon_first_mother",
-    "sel_pt-10GeV_single_muon",
-    // "sel_pt-10GeV_single_muon_first_mother",
+    "final_selection_pt-min5GeV_deltalxy-max0p3mm_",
+    "final_selection_pt-min5GeV_deltalxy_ratio_abs-max0p05_",
+    "final_selection_pt-min5GeV_deltalxy_ratio_abs-max0p1_",
+    "final_selection_pt-min5GeV_deltalxy_ratio_abs-max0p5_",
+    "final_selection_pt-min15GeV_deltalxy-max0p3mm_",
+    "final_selection_pt-min15GeV_deltalxy_ratio_abs-max0p05_",
+    "final_selection_pt-min15GeV_deltalxy_ratio_abs-max0p1_",
+    "final_selection_pt-min15GeV_deltalxy_ratio_abs-max0p5_",
+
+    "final_selection_mass-cuts_deltalxy-max0p3mm_",
+    "final_selection_mass-cuts_deltalxy_ratio_abs-max0p05_",
+    "final_selection_mass-cuts_deltalxy_ratio_abs-max0p1_",
+    "final_selection_mass-cuts_deltalxy_ratio_abs-max0p5_",
   };
   
   map<string, HistogramSet*> histSets;
@@ -188,369 +145,189 @@ int main(int argc, char *argv[])
       histSets[name] = new HistogramSet(name);
     }
   }
-  for(string name : single_muon_names){histSets[name] = new HistogramSet(name);}
-  
-  auto fill_single_muon_hists = [&](const Particle* particle, const Event *event){
-    // TODO: handle properly multiple mothers case (?)
-    auto mother = event->particles[particle->mothers[0]];
-    
-    histSets["single_muon"]->fill(particle);
-    // histSets["single_muon_first_mother"]->fill(mother);
-
-    if(particle->four_vector.Pt() > 10){
-      histSets["sel_pt-10GeV_single_muon"]->fill(particle);
-      // histSets["sel_pt-10GeV_single_muon_first_mother"]->fill(mother);
-    }
-  };
 
   auto fill_deltaR_deltal_selections = [&](const Particle* particle_1, const Particle* particle_2, string sign, string prefix){
-    
-    float delta_lxy = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2));
-    float delta_lxyz = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2) + pow(particle_1->z - particle_2->z, 2));
-    float delta_R = particle_1->four_vector.DeltaR(particle_2->four_vector);
-    float lxy_1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
-    float lxy_2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
-    float lxyz_1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2) + pow(particle_1->z, 2));
-    float lxyz_2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2) + pow(particle_2->z, 2));
-    // (lxy1 - lxy2) / (lxy1 + lxy2)
-    float delta_lxy_ratio = abs(lxy_1-lxy_2)/(lxy_1+lxy_2);
-    float delta_lxyz_ratio = abs(lxyz_1-lxyz_2)/(lxyz_1+lxyz_2);
+
+    float epsilon = 1e-10;
+    float x1 = particle_1->x;
+    float y1 = particle_1->y;
+    float x2 = particle_2->x + epsilon;
+    float y2 = particle_2->y + epsilon;
+
+    float delta_lxy = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
     // sqrt((x1-x2)^2 +(y1-y2)^2) / sqrt((x1+x2)^2 + (y1+y2)^2)
-    float delta_lxy_ratio_v2 = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2))/sqrt(pow(particle_1->x + particle_2->x, 2) + pow(particle_1->y + particle_2->y, 2));
-    float delta_lxyz_ratio_v2 = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2) + pow(particle_1->z - particle_2->z, 2))/sqrt(pow(particle_1->x + particle_2->x, 2) + pow(particle_1->y + particle_2->y, 2) + pow(particle_1->z + particle_2->z, 2));
+    float delta_lxy_ratio = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))/sqrt(pow(x1 + x2, 2) + pow(y1 + y2, 2));
+    float delta_lxy_ratio_abs = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))/sqrt(pow(abs(x1) + abs(x2), 2) + pow(abs(y1) + abs(y2), 2));
 
-    if(delta_lxy <= dlxy_max){
-      histSets[prefix + "_dlxy-max0p1mm_"+sign+"_muon"]->fill(particle_1);
-      histSets[prefix + "_dlxy-max0p1mm_"+sign+"_muon"]->fill(particle_2);
-      histSets[prefix + "_dlxy-max0p1mm_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets[prefix + "_dlxy-max0p1mm_"+sign+"_first_mother"]->fill(mother);
+    if(delta_lxy <= 0.3){
+      histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_maxlxy-muon"]->fill(particle_1);
+      histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_minlxy-muon"]->fill(particle_2);
+      histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_dimuon"]->fill(particle_1, particle_2);
     }
-    if(delta_lxyz <= dlxyz_max){
-      histSets[prefix + "_dlxyz-max0p1mm_"+sign+"_muon"]->fill(particle_1);
-      histSets[prefix + "_dlxyz-max0p1mm_"+sign+"_muon"]->fill(particle_2);
-      histSets[prefix + "_dlxyz-max0p1mm_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets[prefix + "_dlxyz-max0p1mm_"+sign+"_first_mother"]->fill(mother);
+
+    if(delta_lxy_ratio_abs <= 0.05){
+      histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_maxlxy-muon"]->fill(particle_1);
+      histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_minlxy-muon"]->fill(particle_2);
+      histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_dimuon"]->fill(particle_1, particle_2);
     }
-    if(delta_lxy_ratio <= dlxy_ratio_max){
-      histSets[prefix + "_dlxy_ratio-max0p1_"+sign+"_muon"]->fill(particle_1);
-      histSets[prefix + "_dlxy_ratio-max0p1_"+sign+"_muon"]->fill(particle_2);
-      histSets[prefix + "_dlxy_ratio-max0p1_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets[prefix + "_dlxy_ratio-max0p1_"+sign+"_first_mother"]->fill(mother);
+    if(delta_lxy_ratio_abs <= 0.1){
+      histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_maxlxy-muon"]->fill(particle_1);
+      histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_minlxy-muon"]->fill(particle_2);
+      histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_dimuon"]->fill(particle_1, particle_2);
     }
-    if(delta_lxyz_ratio <= dlxyz_ratio_max){
-      histSets[prefix + "_dlxyz_ratio-max0p1_"+sign+"_muon"]->fill(particle_1);
-      histSets[prefix + "_dlxyz_ratio-max0p1_"+sign+"_muon"]->fill(particle_2);
-      histSets[prefix + "_dlxyz_ratio-max0p1_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets[prefix + "_dlxyz_ratio-max0p1_"+sign+"_first_mother"]->fill(mother);
-    }
-    if(delta_lxy_ratio_v2 <= dlxy_ratio_v2_max){
-      histSets[prefix + "_dlxy_ratio_v2-max0p1_"+sign+"_muon"]->fill(particle_1);
-      histSets[prefix + "_dlxy_ratio_v2-max0p1_"+sign+"_muon"]->fill(particle_2);
-      histSets[prefix + "_dlxy_ratio_v2-max0p1_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets[prefix + "_dlxy_ratio_v2-max0p1_"+sign+"_first_mother"]->fill(mother);
-    }
-    if(delta_lxyz_ratio_v2 <= dlxyz_ratio_v2_max){
-      histSets[prefix + "_dlxyz_ratio_v2-max0p1_"+sign+"_muon"]->fill(particle_1);
-      histSets[prefix + "_dlxyz_ratio_v2-max0p1_"+sign+"_muon"]->fill(particle_2);
-      histSets[prefix + "_dlxyz_ratio_v2-max0p1_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets[prefix + "_dlxyz_ratio_v2-max0p1_"+sign+"_first_mother"]->fill(mother);
-    }
-    if(delta_R <= 0.05){
-      histSets[prefix + "_dR-max0p05_"+sign+"_muon"]->fill(particle_1);
-      histSets[prefix + "_dR-max0p05_"+sign+"_muon"]->fill(particle_2);
-      histSets[prefix + "_dR-max0p05_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets[prefix + "_dR-max0p05_"+sign+"_first_mother"]->fill(mother);
-    }
-    if(delta_R <= 0.1){
-      histSets[prefix + "_dR-max0p1_"+sign+"_muon"]->fill(particle_1);
-      histSets[prefix + "_dR-max0p1_"+sign+"_muon"]->fill(particle_2);
-      histSets[prefix + "_dR-max0p1_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets[prefix + "_dR-max0p1_"+sign+"_first_mother"]->fill(mother);
-    }
-    if(delta_R <= 0.2){
-      histSets[prefix + "_dR-max0p2_"+sign+"_muon"]->fill(particle_1);
-      histSets[prefix + "_dR-max0p2_"+sign+"_muon"]->fill(particle_2);
-      histSets[prefix + "_dR-max0p2_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets[prefix + "_dR-max0p2_"+sign+"_first_mother"]->fill(mother);
+    if(delta_lxy_ratio_abs <= 0.5){
+      histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_maxlxy-muon"]->fill(particle_1);
+      histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_minlxy-muon"]->fill(particle_2);
+      histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_dimuon"]->fill(particle_1, particle_2);
     }
   };
-  
-  auto fill_pair_hists = [&](const Particle* particle_1, const Particle* particle_2, const Event *event){
-    // TODO: handle the full chain of mother (and multiple mothers) correctly
-    auto mother = event->particles[particle_1->mothers[0]];
-    
-    histSets["os_muon"]->fill(particle_1);
-    histSets["os_muon"]->fill(particle_2);
-    histSets["os_dimuon"]->fill(particle_1, particle_2);
-    // histSets["os_first_mother"]->fill(mother);
-    
-    TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
 
-    // Independent selections:
-    if(particle_1->four_vector.Pt() > 5 && particle_2->four_vector.Pt() > 5){
-      histSets["sel_pt-min5GeV_os_muon"]->fill(particle_1);
-      histSets["sel_pt-min5GeV_os_muon"]->fill(particle_2);
-      histSets["sel_pt-min5GeV_os_dimuon"]->fill(particle_1, particle_2);
-      // histSets["sel_pt-min5GeV_os_first_mother"]->fill(mother);
-    }
-    if(particle_1->four_vector.Pt() > 8 && particle_2->four_vector.Pt() > 8){
-      histSets["sel_pt-min8GeV_os_muon"]->fill(particle_1);
-      histSets["sel_pt-min8GeV_os_muon"]->fill(particle_2);
-      histSets["sel_pt-min8GeV_os_dimuon"]->fill(particle_1, particle_2);
-      // histSets["sel_pt-8GeV_os_first_mother"]->fill(mother);
-    }
-    if(particle_1->four_vector.Pt() > 10 && particle_2->four_vector.Pt() > 10){
-      histSets["sel_pt-min10GeV_os_muon"]->fill(particle_1);
-      histSets["sel_pt-min10GeV_os_muon"]->fill(particle_2);
-      histSets["sel_pt-min10GeV_os_dimuon"]->fill(particle_1, particle_2);
-      // histSets["sel_pt-10GeV_os_first_mother"]->fill(mother);
-    }
-    if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
-        histSets["sel_mass-Jpsi_os_muon"]->fill(particle_1);
-        histSets["sel_mass-Jpsi_os_muon"]->fill(particle_2);
-        histSets["sel_mass-Jpsi_os_dimuon"]->fill(particle_1, particle_2);
-        // histSets["sel_mass-Jpsi_os_first_mother"]->fill(mother);
-    }
-    if((diparticle.M() < (rho_omega_mass_min)) || (diparticle.M() > (rho_omega_mass_max))){
-        histSets["sel_mass-rho_omega_os_muon"]->fill(particle_1);
-        histSets["sel_mass-rho_omega_os_muon"]->fill(particle_2);
-        histSets["sel_mass-rho_omega_os_dimuon"]->fill(particle_1, particle_2);
-        // histSets["sel_mass-rho_omega_os_first_mother"]->fill(mother);
-    }
-    if((diparticle.M() < (20)) || (diparticle.M() > (20))){
-        histSets["sel_mass-max20GeV_os_muon"]->fill(particle_1);
-        histSets["sel_mass-max20GeV_os_muon"]->fill(particle_2);
-        histSets["sel_mass-max20GeV_os_dimuon"]->fill(particle_1, particle_2);
-        // histSets["sel_mass-20GeV_os_first_mother"]->fill(mother);
-    }
-
-    fill_deltaR_deltal_selections(particle_1, particle_2, "os", "sel");
-  };
-
-  auto fill_non_pair_hists = [&](const Particle* particle_1, const Particle* particle_2, const Event *event, string sign){
+  auto fill_hists = [&](const Particle* particle_1, const Particle* particle_2, const Event *event, string sign){
     if(!particle_1 || !particle_2) return;
     
-    auto mother_1 = event->particles[particle_1->mothers[0]];
-    auto mother_2 = event->particles[particle_2->mothers[0]];
+    float lxy1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
+    float lxy2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
+    const Particle* particle_maxlxy;
+    const Particle* particle_minlxy;
+    if (lxy1>=lxy2){ 
+      particle_maxlxy = particle_1;
+      particle_minlxy = particle_2;
+    }
+    else { 
+      particle_maxlxy = particle_2;
+      particle_minlxy = particle_1;
+    }
       
-    histSets[sign+"_muon"]->fill(particle_1);
-    histSets[sign+"_muon"]->fill(particle_2);
+    histSets[sign+"_maxlxy-muon"]->fill(particle_maxlxy);
+    histSets[sign+"_minlxy-muon"]->fill(particle_minlxy);
     histSets[sign+"_dimuon"]->fill(particle_1, particle_2);
-    // histSets[sign+"_first_mother"]->fill(mother_1);
-    // histSets[sign+"_first_mother"]->fill(mother_2);
     
     TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
-    float delta_lxy = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2));
-    float delta_lxyz = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2) + pow(particle_1->z - particle_2->z, 2));
-    float delta_R = particle_1->four_vector.DeltaR(particle_2->four_vector);
-    float lxy_1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
-    float lxy_2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
-    float delta_lxy_ratio = abs(lxy_1-lxy_2)/(lxy_1+lxy_2);
 
     // Independent selections:
     if(particle_1->four_vector.Pt() > 10 && particle_2->four_vector.Pt() > 10){
-      histSets["sel_pt-min5GeV_"+sign+"_muon"]->fill(particle_1);
-      histSets["sel_pt-min5GeV_"+sign+"_muon"]->fill(particle_2);
-      histSets["sel_pt-min5GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets["sel_pt-5GeV_"+sign+"_first_mother"]->fill(mother_1);
-      // histSets["sel_pt-5GeV_"+sign+"_first_mother"]->fill(mother_2);
-    }
-    if(particle_1->four_vector.Pt() > 10 && particle_2->four_vector.Pt() > 10){
-      histSets["sel_pt-min8GeV_"+sign+"_muon"]->fill(particle_1);
-      histSets["sel_pt-min8GeV_"+sign+"_muon"]->fill(particle_2);
-      histSets["sel_pt-min8GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets["sel_pt-8GeV_"+sign+"_first_mother"]->fill(mother_1);
-      // histSets["sel_pt-8GeV_"+sign+"_first_mother"]->fill(mother_2);
-    }
-    if(particle_1->four_vector.Pt() > 10 && particle_2->four_vector.Pt() > 10){
-      histSets["sel_pt-min10GeV_"+sign+"_muon"]->fill(particle_1);
-      histSets["sel_pt-min10GeV_"+sign+"_muon"]->fill(particle_2);
+      histSets["sel_pt-min10GeV_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
+      histSets["sel_pt-min10GeV_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
       histSets["sel_pt-min10GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets["sel_pt-10GeV_"+sign+"_first_mother"]->fill(mother_1);
-      // histSets["sel_pt-10GeV_"+sign+"_first_mother"]->fill(mother_2);
     }
-    if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
-      histSets["sel_mass-Jpsi_"+sign+"_muon"]->fill(particle_1);
-      histSets["sel_mass-Jpsi_"+sign+"_muon"]->fill(particle_2);
-      histSets["sel_mass-Jpsi_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets["sel_mass-Jpsi_"+sign+"_first_mother"]->fill(mother_1);
-      // histSets["sel_mass-Jpsi_"+sign+"_first_mother"]->fill(mother_2);
-    }
-    if((diparticle.M() < (rho_omega_mass_min)) || (diparticle.M() > (rho_omega_mass_max))){
-      histSets["sel_mass-rho_omega_"+sign+"_muon"]->fill(particle_1);
-      histSets["sel_mass-rho_omega_"+sign+"_muon"]->fill(particle_2);
-      histSets["sel_mass-rho_omega_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets["sel_mass-rho_omega_"+sign+"_first_mother"]->fill(mother_1);
-      // histSets["sel_mass-rho_omega_"+sign+"_first_mother"]->fill(mother_2);
-    }
-    if((diparticle.M() < (20)) || (diparticle.M() > (20))){
-      histSets["sel_mass-max20GeV_"+sign+"_muon"]->fill(particle_1);
-      histSets["sel_mass-max20GeV_"+sign+"_muon"]->fill(particle_2);
-      histSets["sel_mass-max20GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-      // histSets["sel_mass-20GeV_"+sign+"_first_mother"]->fill(mother_1);
-      // histSets["sel_mass-20GeV_"+sign+"_first_mother"]->fill(mother_2);
-    }
-    fill_deltaR_deltal_selections(particle_1, particle_2, sign, "sel");
-  };
-
-  auto fill_final_selection_pair_hists = [&](const Particle* particle_1, const Particle* particle_2, const Event *event){
-
-    auto mother = event->particles[particle_1->mothers[0]];
-    TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
-
-    // With muon pT > 10 GeV
-    if(particle_1->four_vector.Pt() > 10 && particle_2->four_vector.Pt() > 10){
-      // With dimuon mass cuts
-      if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
-        if((diparticle.M() < (rho_omega_mass_min)) || (diparticle.M() > (rho_omega_mass_max))){
-          if(diparticle.M() < 20){
-            histSets["final_selection_pt-min10GeV_mass-cuts_os_muon"]->fill(particle_1);
-            histSets["final_selection_pt-min10GeV_mass-cuts_os_muon"]->fill(particle_2);
-            histSets["final_selection_pt-min10GeV_mass-cuts_os_dimuon"]->fill(particle_1, particle_2);
-            // histSets["final_selection_pt-min10GeV_mass-cuts_os_first_mother"]->fill(mother);
-
-            fill_deltaR_deltal_selections(particle_1, particle_2, "os", "final_selection_pt-min10GeV_mass-cuts");
-          }
-        }
-      }
-      // Without dimuon mass cuts
-      fill_deltaR_deltal_selections(particle_1, particle_2, "os", "final_selection_pt-min10GeV");
-    }
-    // With muon pT > 8 GeV
-    if(particle_1->four_vector.Pt() > 8 && particle_2->four_vector.Pt() > 8){
-      // With dimuon mass cuts
-      if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
-        if((diparticle.M() < (rho_omega_mass_min)) || (diparticle.M() > (rho_omega_mass_max))){
-          if(diparticle.M() < 20){
-            histSets["final_selection_pt-min8GeV_mass-cuts_os_muon"]->fill(particle_1);
-            histSets["final_selection_pt-min8GeV_mass-cuts_os_muon"]->fill(particle_2);
-            histSets["final_selection_pt-min8GeV_mass-cuts_os_dimuon"]->fill(particle_1, particle_2);
-            // histSets["final_selection_pt-min8GeV_mass-cuts_os_first_mother"]->fill(mother);
-
-            fill_deltaR_deltal_selections(particle_1, particle_2, "os", "final_selection_pt-min8GeV_mass-cuts");
-          }
-        }
-      }
-      // Without dimuon mass cuts
-      fill_deltaR_deltal_selections(particle_1, particle_2, "os", "final_selection_pt-min8GeV");
-    }
-    // With muon pT > 5 GeV
     if(particle_1->four_vector.Pt() > 5 && particle_2->four_vector.Pt() > 5){
-      // With dimuon mass cuts
-      if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
-        if((diparticle.M() < (rho_omega_mass_min)) || (diparticle.M() > (rho_omega_mass_max))){
-          if(diparticle.M() < 20){
-            histSets["final_selection_pt-min5GeV_mass-cuts_os_muon"]->fill(particle_1);
-            histSets["final_selection_pt-min5GeV_mass-cuts_os_muon"]->fill(particle_2);
-            histSets["final_selection_pt-min5GeV_mass-cuts_os_dimuon"]->fill(particle_1, particle_2);
-            // histSets["final_selection_pt-min5GeV_mass-cuts_os_first_mother"]->fill(mother);
-
-            fill_deltaR_deltal_selections(particle_1, particle_2, "os", "final_selection_pt-min5GeV_mass-cuts");
-          }
-        }
-      }
-      // Without dimuon mass cuts
-      fill_deltaR_deltal_selections(particle_1, particle_2, "os", "final_selection_pt-min5GeV");
+      histSets["sel_pt-min5GeV_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
+      histSets["sel_pt-min5GeV_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
+      histSets["sel_pt-min5GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
     }
-    // Without muon pT cut
+    if(particle_1->four_vector.Pt() > 15 && particle_2->four_vector.Pt() > 15){
+      histSets["sel_pt-min15GeV_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
+      histSets["sel_pt-min15GeV_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
+      histSets["sel_pt-min15GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+    }
     if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
       if((diparticle.M() < (rho_omega_mass_min)) || (diparticle.M() > (rho_omega_mass_max))){
-        if(diparticle.M() < 20){
-          histSets["final_selection_mass-cuts_os_muon"]->fill(particle_1);
-          histSets["final_selection_mass-cuts_os_muon"]->fill(particle_2);
-          histSets["final_selection_mass-cuts_os_dimuon"]->fill(particle_1, particle_2);
-          // histSets["final_selection_mass-cuts_os_first_mother"]->fill(mother);
-
-          fill_deltaR_deltal_selections(particle_1, particle_2, "os", "final_selection_mass-cuts");
+        if((diparticle.M() < (Z_mass_min)) || (diparticle.M() > (Z_mass_max))){
+          if((diparticle.M() < (phi_mass_min)) || (diparticle.M() > (phi_mass_max))){
+            if((diparticle.M() < (psi_mass_min)) || (diparticle.M() > (psi_mass_max))){
+              histSets["sel_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
+              histSets["sel_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
+              histSets["sel_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+            }
+          }
         }
       }
     }
+    fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "sel");
   };
-  
-  auto fill_final_selection_non_pair_hists = [&](const Particle* particle_1, const Particle* particle_2, const Event *event, string sign){
+
+  auto fill_final_selection_hists = [&](const Particle* particle_1, const Particle* particle_2, const Event *event, string sign){
     if(!particle_1 || !particle_2) return;
     
-    auto mother_1 = event->particles[particle_1->mothers[0]];
-    auto mother_2 = event->particles[particle_2->mothers[0]];
-    
+    float lxy1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
+    float lxy2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
+    const Particle* particle_maxlxy;
+    const Particle* particle_minlxy;
+    if (lxy1>=lxy2){ 
+      particle_maxlxy = particle_1;
+      particle_minlxy = particle_2;
+    }
+    else { 
+      particle_maxlxy = particle_2;
+      particle_minlxy = particle_1;
+    }
+
     TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
-    float delta_lxy = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2));
-    float delta_lxyz = sqrt(pow(particle_1->x - particle_2->x, 2) + pow(particle_1->y - particle_2->y, 2) + pow(particle_1->z - particle_2->z, 2));
-    float delta_R = particle_1->four_vector.DeltaR(particle_2->four_vector);
-    float lxy_1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
-    float lxy_2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
-    float delta_lxy_ratio = abs(lxy_1-lxy_2)/(lxy_1+lxy_2);
     
     // With muon pT > 10 GeV
     if(particle_1->four_vector.Pt() > 10 && particle_2->four_vector.Pt() > 10){     
       // With dimuon mass cuts
       if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
         if((diparticle.M() < (rho_omega_mass_min)) || (diparticle.M() > (rho_omega_mass_max))){
-          if(diparticle.M() < 20){
-            histSets["final_selection_pt-min10GeV_mass-cuts_"+sign+"_muon"]->fill(particle_1);
-            histSets["final_selection_pt-min10GeV_mass-cuts_"+sign+"_muon"]->fill(particle_2);
-            histSets["final_selection_pt-min10GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-            // histSets["final_selection_pt-min10GeV_mass-cuts_"+sign+"_first_mother"]->fill(mother_1);
-            // histSets["final_selection_pt-min10GeV_mass-cuts_"+sign+"_first_mother"]->fill(mother_2);
+          if((diparticle.M() < (Z_mass_min)) || (diparticle.M() > (Z_mass_max))){
+            if((diparticle.M() < (phi_mass_min)) || (diparticle.M() > (phi_mass_max))){
+              if((diparticle.M() < (psi_mass_min)) || (diparticle.M() > (psi_mass_max))){
+                histSets["final_selection_pt-min10GeV_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
+                histSets["final_selection_pt-min10GeV_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
+                histSets["final_selection_pt-min10GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
 
-            fill_deltaR_deltal_selections(particle_1, particle_2, sign, "final_selection_pt-min10GeV_mass-cuts");
+                fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min10GeV_mass-cuts");
+              }
+            }
           }
         }
       }
       // Without dimuon mass cuts
-      fill_deltaR_deltal_selections(particle_1, particle_2, sign, "final_selection_pt-min10GeV");
+      fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min10GeV");
     }
-    // With muon pT > 8 GeV
-    if(particle_1->four_vector.Pt() > 8 && particle_2->four_vector.Pt() > 8){     
-      // With dimuon mass cuts
-      if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
-        if((diparticle.M() < (rho_omega_mass_min)) || (diparticle.M() > (rho_omega_mass_max))){
-          if(diparticle.M() < 20){
-            histSets["final_selection_pt-min8GeV_mass-cuts_"+sign+"_muon"]->fill(particle_1);
-            histSets["final_selection_pt-min8GeV_mass-cuts_"+sign+"_muon"]->fill(particle_2);
-            histSets["final_selection_pt-min8GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-            // histSets["final_selection_pt-min8GeV_mass-cuts_"+sign+"_first_mother"]->fill(mother_1);
-            // histSets["final_selection_pt-min8GeV_mass-cuts_"+sign+"_first_mother"]->fill(mother_2);
-
-            fill_deltaR_deltal_selections(particle_1, particle_2, sign, "final_selection_pt-min8GeV_mass-cuts");
+    // Without muon pT cut
+    if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
+      if((diparticle.M() < (rho_omega_mass_min)) || (diparticle.M() > (rho_omega_mass_max))){
+        if((diparticle.M() < (Z_mass_min)) || (diparticle.M() > (Z_mass_max))){
+          if((diparticle.M() < (phi_mass_min)) || (diparticle.M() > (phi_mass_max))){
+            if((diparticle.M() < (psi_mass_min)) || (diparticle.M() > (psi_mass_max))){
+              fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_mass-cuts");
+            }
           }
         }
       }
-      // Without dimuon mass cuts
-      fill_deltaR_deltal_selections(particle_1, particle_2, sign, "final_selection_pt-min8GeV");
     }
     // With muon pT > 5 GeV
     if(particle_1->four_vector.Pt() > 5 && particle_2->four_vector.Pt() > 5){     
       // With dimuon mass cuts
       if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
         if((diparticle.M() < (rho_omega_mass_min)) || (diparticle.M() > (rho_omega_mass_max))){
-          if(diparticle.M() < 20){
-            histSets["final_selection_pt-min5GeV_mass-cuts_"+sign+"_muon"]->fill(particle_1);
-            histSets["final_selection_pt-min5GeV_mass-cuts_"+sign+"_muon"]->fill(particle_2);
-            histSets["final_selection_pt-min5GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-            // histSets["final_selection_pt-min10GeV_mass-cuts_"+sign+"_first_mother"]->fill(mother_1);
-            // histSets["final_selection_pt-min10GeV_mass-cuts_"+sign+"_first_mother"]->fill(mother_2);
+          if((diparticle.M() < (Z_mass_min)) || (diparticle.M() > (Z_mass_max))){
+            if((diparticle.M() < (phi_mass_min)) || (diparticle.M() > (phi_mass_max))){
+              if((diparticle.M() < (psi_mass_min)) || (diparticle.M() > (psi_mass_max))){
+                histSets["final_selection_pt-min5GeV_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
+                histSets["final_selection_pt-min5GeV_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
+                histSets["final_selection_pt-min5GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
 
-            fill_deltaR_deltal_selections(particle_1, particle_2, sign, "final_selection_pt-min5GeV_mass-cuts");
+                fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min5GeV_mass-cuts");
+              }
+            }
           }
         }
       }
       // Without dimuon mass cuts
-      fill_deltaR_deltal_selections(particle_1, particle_2, sign, "final_selection_pt-min5GeV");
+      fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min5GeV");
     }
-    // Without muon pT cut
-    if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
-      if((diparticle.M() < (rho_omega_mass_min)) || (diparticle.M() > (rho_omega_mass_max))){
-        if(diparticle.M() < 20){
-          histSets["final_selection_mass-cuts_"+sign+"_muon"]->fill(particle_1);
-          histSets["final_selection_mass-cuts_"+sign+"_muon"]->fill(particle_2);
-          histSets["final_selection_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-          // histSets["final_selection_mass-cuts_"+sign+"_first_mother"]->fill(mother_1);
-          // histSets["final_selection_mass-cuts_"+sign+"_first_mother"]->fill(mother_2);
+    // With muon pT > 15 GeV
+    if(particle_1->four_vector.Pt() > 15 && particle_2->four_vector.Pt() > 15){     
+      // With dimuon mass cuts
+      if((diparticle.M() < (Jpsi_mass_min)) || (diparticle.M() > (Jpsi_mass_max))){
+        if((diparticle.M() < (rho_omega_mass_min)) || (diparticle.M() > (rho_omega_mass_max))){
+          if((diparticle.M() < (Z_mass_min)) || (diparticle.M() > (Z_mass_max))){
+            if((diparticle.M() < (phi_mass_min)) || (diparticle.M() > (phi_mass_max))){
+              if((diparticle.M() < (psi_mass_min)) || (diparticle.M() > (psi_mass_max))){
+                histSets["final_selection_pt-min15GeV_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
+                histSets["final_selection_pt-min15GeV_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
+                histSets["final_selection_pt-min15GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
 
-          fill_deltaR_deltal_selections(particle_1, particle_2, sign, "final_selection_mass-cuts");
+                fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min15GeV_mass-cuts");
+              }
+            }
+          }
         }
       }
+      // Without dimuon mass cuts
+      fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min15GeV");
     }
   };
 
@@ -562,27 +339,13 @@ int main(int argc, char *argv[])
     if(preselection_code == 0){
       continue;
     }
-    else if(preselection_code == 1){ // single muon tree
-      auto muon = event->get_single_muon();
-      fill_single_muon_hists(muon, event);
-    }
-    else if(preselection_code == 2){ // pair category
-      auto muons = event->get_muon_pair();
+    else if(preselection_code == 2 || preselection_code == 3){ // non-pair category
+
+      // auto [opposite_sign_muon_1, opposite_sign_muon_2] = event->get_smallest_deltaR_opposite_sign_muon_non_pair();
+      auto [opposite_sign_muon_1, opposite_sign_muon_2] = event->get_smallest_deltaLxyRatio_opposite_sign_muons();
       
-      for(auto muon_pair : muons){
-        auto muon_1 = get<0>(muon_pair);
-        auto muon_2 = get<1>(muon_pair);
-        fill_pair_hists(muon_1, muon_2, event);
-        fill_final_selection_pair_hists(muon_1, muon_2, event);
-      }
-    }
-    else if(preselection_code == 3){ // non-pair category
-      auto [opposite_sign_muon_1, opposite_sign_muon_2] = event->get_smallest_deltaR_opposite_sign_muon_non_pair();
-      auto [same_sign_muon_1, same_sign_muon_2] = event->get_smallest_deltaR_same_sign_muon_non_pair();
-      
-      fill_non_pair_hists(opposite_sign_muon_1, opposite_sign_muon_2, event, "os");
-      // fill_non_pair_hists(same_sign_muon_1, same_sign_muon_2, event, "ss");
-      fill_final_selection_non_pair_hists(opposite_sign_muon_1, opposite_sign_muon_2, event, "os");
+      fill_hists(opposite_sign_muon_1, opposite_sign_muon_2, event, "os");
+      fill_final_selection_hists(opposite_sign_muon_1, opposite_sign_muon_2, event, "os");
     }
   }
   
