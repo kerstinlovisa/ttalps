@@ -21,7 +21,7 @@ public:
   HistogramFiller();
   ~HistogramFiller(){}
   
-  void fill_deltaR_deltal_selections(const Particle* particle_1, const Particle* particle_2,
+  void fill_deltaR_deltal_selections(const Particle* particle_1, const Particle* particle_2, const Event *event,
                                      std::string sign, std::string prefix);
   
   void fill_hists(const Particle* particle_1, const Particle* particle_2, const Event *event, std::string sign);
@@ -29,11 +29,10 @@ public:
   void fill_alp_selection_hists(const Particle* particle, const Event *event);
   
   void save_histograms(std::string output_path);
+  std::map<std::string, HistogramSet*> histSets;
   
 private:
-  std::map<std::string, HistogramSet*> histSets;
   CutsManager cutsManager;
-  
   std::vector<double> ptCuts;
 };
 

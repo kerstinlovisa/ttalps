@@ -21,7 +21,7 @@ public:
   HistogramSet(std::string prefix);
   
   void fill(const Particle* particle, const Event* event=nullptr);
-  void fill(const Particle* particle_1, const Particle* particle_2);
+  void fill(const Particle* particle_1, const Particle* particle_2, const Event* event=nullptr);
   
   std::map<std::string, TH1D*> hists;
 

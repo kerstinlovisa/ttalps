@@ -66,6 +66,7 @@ HistogramFiller::HistogramFiller()
 
 void HistogramFiller::fill_deltaR_deltal_selections(const Particle* particle_1,
                                                     const Particle* particle_2,
+                                                    const Event* event,
                                                     string sign, string prefix)
 {
   float epsilon = 1e-10;
@@ -78,25 +79,25 @@ void HistogramFiller::fill_deltaR_deltal_selections(const Particle* particle_1,
   float delta_lxy_ratio_abs = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))/sqrt(pow(abs(x1) + abs(x2), 2) + pow(abs(y1) + abs(y2), 2));
 
   if(delta_lxy <= 0.3){
-    histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_maxlxy-muon"]->fill(particle_1);
-    histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_minlxy-muon"]->fill(particle_2);
-    histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+    histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_maxlxy-muon"]->fill(particle_1, event);
+    histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_minlxy-muon"]->fill(particle_2, event);
+    histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_dimuon"]->fill(particle_1, particle_2, event);
   }
 
   if(delta_lxy_ratio_abs <= 0.05){
-    histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_maxlxy-muon"]->fill(particle_1);
-    histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_minlxy-muon"]->fill(particle_2);
-    histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+    histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_maxlxy-muon"]->fill(particle_1, event);
+    histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_minlxy-muon"]->fill(particle_2, event);
+    histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_dimuon"]->fill(particle_1, particle_2, event);
   }
   if(delta_lxy_ratio_abs <= 0.1){
-    histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_maxlxy-muon"]->fill(particle_1);
-    histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_minlxy-muon"]->fill(particle_2);
-    histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+    histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_maxlxy-muon"]->fill(particle_1, event);
+    histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_minlxy-muon"]->fill(particle_2, event);
+    histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_dimuon"]->fill(particle_1, particle_2, event);
   }
   if(delta_lxy_ratio_abs <= 0.5){
-    histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_maxlxy-muon"]->fill(particle_1);
-    histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_minlxy-muon"]->fill(particle_2);
-    histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+    histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_maxlxy-muon"]->fill(particle_1, event);
+    histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_minlxy-muon"]->fill(particle_2, event);
+    histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_dimuon"]->fill(particle_1, particle_2, event);
   }
 }
 
@@ -117,9 +118,9 @@ void HistogramFiller::fill_hists(const Particle* particle_1, const Particle* par
     particle_minlxy = particle_1;
   }
     
-  histSets[sign+"_maxlxy-muon"]->fill(particle_maxlxy);
-  histSets[sign+"_minlxy-muon"]->fill(particle_minlxy);
-  histSets[sign+"_dimuon"]->fill(particle_1, particle_2);
+  histSets[sign+"_maxlxy-muon"]->fill(particle_maxlxy, event);
+  histSets[sign+"_minlxy-muon"]->fill(particle_minlxy, event);
+  histSets[sign+"_dimuon"]->fill(particle_1, particle_2, event);
   
   TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
 
@@ -129,18 +130,18 @@ void HistogramFiller::fill_hists(const Particle* particle_1, const Particle* par
     
     string ptName = to_nice_string(ptCut);
     
-    histSets["sel_pt-min"+ptName+"GeV_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
-    histSets["sel_pt-min"+ptName+"GeV_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
-    histSets["sel_pt-min"+ptName+"GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+    histSets["sel_pt-min"+ptName+"GeV_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy, event);
+    histSets["sel_pt-min"+ptName+"GeV_"+sign+"_minlxy-muon"]->fill(particle_minlxy, event);
+    histSets["sel_pt-min"+ptName+"GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2, event);
   }
   
   if(cutsManager.passes_mass_cuts(diparticle)){
-    histSets["sel_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
-    histSets["sel_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
-    histSets["sel_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+    histSets["sel_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy, event);
+    histSets["sel_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy, event);
+    histSets["sel_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2, event);
   }
   
-  fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "sel");
+  fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, event, sign, "sel");
 }
 
 void HistogramFiller::fill_final_selection_hists(const Particle* particle_1, const Particle* particle_2, const Event *event, string sign)
@@ -168,14 +169,14 @@ void HistogramFiller::fill_final_selection_hists(const Particle* particle_1, con
     string ptName = to_nice_string(ptCut);
     
     if(cutsManager.passes_mass_cuts(diparticle)){
-      histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
-      histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
-      histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+      histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy, event);
+      histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy, event);
+      histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2, event);
       
-      fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min"+ptName+"GeV_mass-cuts");
+      fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, event, sign, "final_selection_pt-min"+ptName+"GeV_mass-cuts");
     }
     else{
-      fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min"+ptName+"GeV");
+      fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, event, sign, "final_selection_pt-min"+ptName+"GeV");
     }
   }
 };
@@ -193,6 +194,7 @@ void HistogramFiller::save_histograms(std::string output_path)
   output_file->mkdir("final_selection");
   output_file->mkdir("intermediate_selections");
   output_file->mkdir("alp_selections");
+  
   for(auto &[hist_name, hist_set] : histSets){
     if(hist_name.substr(0,15) == "final_selection"){
       output_file->cd("final_selection");

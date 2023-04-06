@@ -55,9 +55,9 @@ std::string replace_all(std::string str, const std::string& from, const std::str
   return str;
 }
 
-std::string to_nice_string(double a_value)
+std::string to_nice_string(double a_value, int precision = 1)
 {
-  std::string result = to_string_with_precision(a_value, 1);
+  std::string result = to_string_with_precision(a_value, precision);
   result = replace_all(result, ".", "p");
   return result;
 }
