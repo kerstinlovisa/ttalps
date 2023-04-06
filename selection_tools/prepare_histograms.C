@@ -15,7 +15,7 @@
 
 using namespace std;
 
-int max_events = 1000;
+int max_events = -1;
 int n_daughters = 100;
 
 TFile *input_file;
@@ -119,7 +119,8 @@ int main(int argc, char *argv[])
   
   TH1D *baseline_hist = fill_and_save_histograms(events, output_path);
   
-  vector<double> destination_lifetimes = {1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2, 1e3, 1e4}; // mm
+//  vector<double> destination_lifetimes = {1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2, 1e3, 1e4}; // mm
+  vector<double> destination_lifetimes = {1e-3, 1e0}; // mm
   
   for(double destination_lifetime : destination_lifetimes){
     

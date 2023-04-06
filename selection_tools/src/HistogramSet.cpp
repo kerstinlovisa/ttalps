@@ -30,7 +30,10 @@ HistogramSet::HistogramSet(string prefix)
   hists["lz"]       = new TH1D((prefix+"_lz").c_str(),    (prefix+"_lz").c_str(),           10000,0,      1000  );
   hists["lxyz"]     = new TH1D((prefix+"_lxyz").c_str(),  (prefix+"_lxyz").c_str(),         10000,0,      1000  );
   hists["ctau"]     = new TH1D((prefix+"_ctau").c_str(),  (prefix+"_ctau").c_str(),         1000, 0,      1000  );
-  hists["proper_ctau"]     = new TH1D((prefix+"_proper_ctau").c_str(),  (prefix+"_proper_ctau").c_str(),         1000, 0,      1  );
+  hists["proper_ctau"] = new TH1D((prefix+"_proper_ctau").c_str(),  (prefix+"_proper_ctau").c_str(),         1000, 0,      1  );
+  hists["proper_ctau_logx"] = new TH1D((prefix+"_proper_ctau_logx").c_str(),   (prefix+"_proper_ctau_logx").c_str(),
+                                  1e6, logxBins(1e6, 1e-6, 1e4));
+  
   hists["boost"]    = new TH1D((prefix+"_boost").c_str(), (prefix+"_boost").c_str(),        1000, 0,      500   );
   hists["deltaR"]   = new TH1D((prefix+"_deltaR").c_str(),   (prefix+"_deltaR").c_str(),    1000, 0,      10    );
   // hists["deltaPhi"] = new TH1D((prefix+"_deltaPhi").c_str(), (prefix+"_deltaPhi").c_str(),  1000, -5,     5     );
@@ -66,6 +69,7 @@ void HistogramSet::fill(const Particle *particle, const Event *event)
   if(event){
     auto mother = event->particles[particle->mothers[0]];
     hists["proper_ctau"]->Fill(particle->ctau/(mother->momentum()/mother->mass), event->weight);
+    hists["proper_ctau_logx"]->Fill(particle->ctau/(mother->momentum()/mother->mass), event->weight);
   }
   hists["boost"]->Fill(particle->momentum()/particle->mass, weight);
 }
