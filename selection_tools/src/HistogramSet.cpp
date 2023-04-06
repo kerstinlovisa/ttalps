@@ -43,7 +43,7 @@ HistogramSet::HistogramSet(string prefix)
   hists["deltapt"]  = new TH1D((prefix+"_deltapt").c_str(), (prefix+"_deltapt").c_str(),    1000, 0,      500   );
 }
 
-void HistogramSet::fill(const Particle *particle)
+void HistogramSet::fill(const Particle *particle, const Event *event)
 {
   hists["pt"]->Fill(particle->four_vector.Pt());
   hists["pz"]->Fill(particle->four_vector.Pz());
@@ -60,7 +60,10 @@ void HistogramSet::fill(const Particle *particle)
   hists["lz"]->Fill(particle->z);
   hists["lxyz"]->Fill(sqrt(pow(particle->x, 2) + pow(particle->y, 2) + pow(particle->z, 2)));
   hists["ctau"]->Fill(particle->ctau);
-  hists["proper_ctau"]->Fill(particle->ctau/(particle->momentum()/particle->mass));
+  if(event){
+    auto mother = event->particles[particle->mothers[0]];
+    hists["proper_ctau"]->Fill(particle->ctau/(mother->momentum()/mother->mass));
+  }
   hists["boost"]->Fill(particle->momentum()/particle->mass);
 }
 

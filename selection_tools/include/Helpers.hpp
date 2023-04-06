@@ -19,7 +19,23 @@
 #include <memory>
 #include <algorithm>
 
+#pragma clang diagnostic push // save the current state
+#pragma clang diagnostic ignored "-Wdocumentation" // turn off ROOT's warnings
+#pragma clang diagnostic ignored "-Wconversion"
 
+#include "TH1D.h"
+#include "TH2D.h"
+#include "TGraph.h"
+#include "TGraphAsymmErrors.h"
+#include "TF1.h"
+#include "TTree.h"
+#include "TFile.h"
+#include "TLorentzVector.h"
+#include "TCanvas.h"
+#include "TFile.h"
+#include "TLegend.h"
+
+#pragma clang diagnostic pop // restores the saved state for diagnostics
 
 template <typename T>
 std::string to_string_with_precision(const T a_value, const int n = 6)

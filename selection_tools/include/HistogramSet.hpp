@@ -14,12 +14,13 @@
 #include <TH1D.h>
 
 #include "Particle.hpp"
+#include "Event.hpp"
 
 class HistogramSet {
 public:
   HistogramSet(std::string prefix);
   
-  void fill(const Particle* particle);
+  void fill(const Particle* particle, const Event* event=nullptr);
   void fill(const Particle* particle_1, const Particle* particle_2);
   
   std::map<std::string, TH1D*> hists;
