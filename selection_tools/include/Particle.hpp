@@ -29,8 +29,9 @@ public:
   double eta();
   double momentum() const;
   double pt() const;
-  
-  
+  TVector3 boost() const;  
+  Particle* transform(TVector3 boost);
+
   float x, y, z, px, py, pz, energy, mass, ctau;
   std::vector<int> mothers, daughters;
   int pdgid, status, index, barcode;

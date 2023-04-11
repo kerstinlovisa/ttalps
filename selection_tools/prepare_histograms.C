@@ -55,14 +55,17 @@ int main(int argc, char *argv[])
     "os_maxlxy-muon",
     "os_minlxy-muon",
     // "ss_muon",
+    "os_muons",
     "os_dimuon",
     // "ss_dimuon",
-    // "os_first_mother",
+    "os_first_mother",
     // "ss_first_mother",
   };
 
   vector<string> hist_names = {
     "", // this is without any selection
+    "alp_",
+    "alp_reboosted_",
     "sel_mass-cuts_",
     "sel_deltalxy-max0p3mm_",
     "sel_deltalxy_ratio_abs-max0p05_",
@@ -115,22 +118,30 @@ int main(int argc, char *argv[])
     if(delta_lxy <= 0.3){
       histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_maxlxy-muon"]->fill(particle_1);
       histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_minlxy-muon"]->fill(particle_2);
+      histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_muons"]->fill(particle_1);
+      histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_muons"]->fill(particle_2);
       histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_dimuon"]->fill(particle_1, particle_2);
     }
 
     if(delta_lxy_ratio_abs <= 0.05){
       histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_maxlxy-muon"]->fill(particle_1);
       histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_minlxy-muon"]->fill(particle_2);
+      histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_muons"]->fill(particle_1);
+      histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_muons"]->fill(particle_2);
       histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_dimuon"]->fill(particle_1, particle_2);
     }
     if(delta_lxy_ratio_abs <= 0.1){
       histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_maxlxy-muon"]->fill(particle_1);
       histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_minlxy-muon"]->fill(particle_2);
+      histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_muons"]->fill(particle_1);
+      histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_muons"]->fill(particle_2);
       histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_dimuon"]->fill(particle_1, particle_2);
     }
     if(delta_lxy_ratio_abs <= 0.5){
       histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_maxlxy-muon"]->fill(particle_1);
       histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_minlxy-muon"]->fill(particle_2);
+      histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_muons"]->fill(particle_1);
+      histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_muons"]->fill(particle_2);
       histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_dimuon"]->fill(particle_1, particle_2);
     }
   };
@@ -153,6 +164,8 @@ int main(int argc, char *argv[])
       
     histSets[sign+"_maxlxy-muon"]->fill(particle_maxlxy);
     histSets[sign+"_minlxy-muon"]->fill(particle_minlxy);
+    histSets[sign+"_muons"]->fill(particle_minlxy);
+    histSets[sign+"_muons"]->fill(particle_maxlxy);
     histSets[sign+"_dimuon"]->fill(particle_1, particle_2);
     
     TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
@@ -165,12 +178,16 @@ int main(int argc, char *argv[])
       
       histSets["sel_pt-min"+ptName+"GeV_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
       histSets["sel_pt-min"+ptName+"GeV_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
+      histSets["sel_pt-min"+ptName+"GeV_"+sign+"_muons"]->fill(particle_minlxy);
+      histSets["sel_pt-min"+ptName+"GeV_"+sign+"_muons"]->fill(particle_maxlxy);
       histSets["sel_pt-min"+ptName+"GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
     }
     
     if(cutsManager.passes_mass_cuts(diparticle)){
       histSets["sel_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
       histSets["sel_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
+      histSets["sel_mass-cuts_"+sign+"_muons"]->fill(particle_minlxy);
+      histSets["sel_mass-cuts_"+sign+"_muons"]->fill(particle_maxlxy);
       histSets["sel_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
     }
     
@@ -203,6 +220,8 @@ int main(int argc, char *argv[])
       if(cutsManager.passes_mass_cuts(diparticle)){
         histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
         histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
+        histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_muons"]->fill(particle_minlxy);
+        histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_muons"]->fill(particle_maxlxy);
         histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
         
         fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min"+ptName+"GeV_mass-cuts");
@@ -234,6 +253,30 @@ int main(int argc, char *argv[])
     histSets["alp_selection_pt-min0p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_os_maxlxy-muon"]->fill(particle_maxlxy);
   };
 
+  auto fill_alp_hists = [&](const Particle* particle_1, const Particle* particle_2, const Particle* mother_1, const Event *event, string sign){
+    if(!particle_1 || !particle_2) return;
+    
+    float lxy1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
+    float lxy2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
+    const Particle* particle_maxlxy;
+    const Particle* particle_minlxy;
+    if (lxy1>=lxy2){ 
+      particle_maxlxy = particle_1;
+      particle_minlxy = particle_2;
+    }
+    else { 
+      particle_maxlxy = particle_2;
+      particle_minlxy = particle_1;
+    }
+      
+    histSets["alp_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
+    histSets["alp_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
+    histSets["alp_"+sign+"_muons"]->fill(particle_minlxy);
+    histSets["alp_"+sign+"_muons"]->fill(particle_maxlxy);
+    histSets["alp_"+sign+"_first_mother"]->fill(mother_1);
+    histSets["alp_"+sign+"_dimuon"]->fill(particle_1, particle_2);
+  };
+
   for(auto event : events){
     
     if(!event->has_ttbar_pair()) continue;
@@ -245,11 +288,26 @@ int main(int argc, char *argv[])
     else if(preselection_code == 2 || preselection_code == 3){ // pair or non-pair category
       auto [muon_1, muon_2] = event->get_smallest_deltaLxyRatio_opposite_sign_muons();
       
-      fill_hists(muon_1, muon_2, event, "os");
-      fill_final_selection_hists(muon_1, muon_2, event, "os");
-      
-      if(muon_1->has_alp_ancestor(event->particles) && muon_2->has_alp_ancestor(event->particles)){
-        fill_alp_selection_hists(muon_1, muon_2, event, "os");
+      if(muon_1 && muon_2){
+        fill_hists(muon_1, muon_2, event, "os");
+        fill_final_selection_hists(muon_1, muon_2, event, "os");
+        
+        if(muon_1->has_alp_ancestor(event->particles) && muon_2->has_alp_ancestor(event->particles)){
+          fill_alp_selection_hists(muon_1, muon_2, event, "os");
+
+          auto mother_1 = event->particles[muon_1->mothers[0]];
+          auto mother_2 = event->particles[muon_1->mothers[0]];
+
+          if(mother_1 == mother_2)
+          {
+            fill_alp_hists(muon_1, muon_2, mother_1, event, "os");
+            auto boost = mother_1->boost();
+            auto muon_boosted_1 = muon_1->transform(boost);
+            auto muon_boosted_2 = muon_2->transform(boost);
+            auto mother_boosted_1 = mother_1->transform(boost);
+            fill_alp_hists(muon_boosted_1, muon_boosted_2, mother_boosted_1, event, "reboosted_os");
+          }
+        }
       }
     }
   }
@@ -259,6 +317,7 @@ int main(int argc, char *argv[])
   output_file->mkdir("final_selection");
   output_file->mkdir("intermediate_selections");
   output_file->mkdir("alp_selections");
+  output_file->mkdir("alp");
   for(auto &[hist_name, hist_set] : histSets){
     if(hist_name.substr(0,15) == "final_selection"){
       output_file->cd("final_selection");
@@ -266,8 +325,11 @@ int main(int argc, char *argv[])
     if(hist_name.substr(0,3) == "sel"){
       output_file->cd("intermediate_selections");
     }
-    if(hist_name.substr(0,3) == "alp"){
+    if(hist_name.substr(0,5) == "alp_s"){
       output_file->cd("alp_selections");
+    }
+    else if(hist_name.substr(0,4) == "alp_"){
+      output_file->cd("alp");
     }
     for(auto &[tmp_2, hist] : hist_set->hists){
       hist->Write();

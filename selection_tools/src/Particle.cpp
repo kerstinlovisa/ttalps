@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <vector>
 #include <iostream>
+#include <TLorentzRotation.h>
 
 #include "Particle.hpp"
 
@@ -101,4 +102,22 @@ double Particle::momentum() const
 double Particle::pt() const
 {
   return four_vector.Pt();
+}
+
+TVector3 Particle::boost() const
+{
+  return four_vector.BoostVector();
+}
+
+Particle* Particle::transform(TVector3 boost)
+{
+  TLorentzRotation rotation(boost);
+  rotation.Invert();
+  TLorentzVector transformed_four_vector = rotation * four_vector;
+
+  auto particle_transformed = new Particle(transformed_four_vector.X(), transformed_four_vector.Y(), transformed_four_vector.Z(),
+                                transformed_four_vector.Px(), transformed_four_vector.Py(), transformed_four_vector.Pz(),
+                                transformed_four_vector.E(), transformed_four_vector.M(), ctau, 
+                                pdgid, daughters, status, index, barcode);
+  return particle_transformed;
 }
