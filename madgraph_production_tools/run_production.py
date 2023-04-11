@@ -62,10 +62,16 @@ def move_and_cleanup_files(output_path, file_name):
     
     command = f"mkdir -p {output_path}/{output_dir_name}"
     os.system(command)
+
+    command = f"mkdir -p {output_path}/{output_dir_name}_delphes"
+    os.system(command)
     
     command = f"mv {output_path}/{file_name}/Events/run_01/{file_name}.root {output_path}/{output_dir_name}/"
     os.system(command)
-    
+   
+    command = f"mv {output_path}/{file_name}/Events/run_01/tag_1_delphes_events.root {output_path}/{output_dir_name}_delphes/{file_name}.root"
+    os.system(command)
+ 
     if keep_lhe:
         command = f"mv {output_path}/{file_name}/Events/run_01/unweighted_events.lhe.gz "
         command += f"{output_path}/{output_dir_name}/{file_name}.lhe.gz"

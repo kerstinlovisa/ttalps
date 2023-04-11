@@ -233,7 +233,6 @@ vector<tuple<Particle*, Particle*>> Event::get_muon_pair()
 tuple<Particle*, Particle*> Event::get_smallest_deltaR_muon_pair(vector<tuple<Particle*, Particle*>> muon_pairs)
 {
   tuple<Particle*, Particle*> muons;
-  int index = -1;
   double deltaR_min = 1000.0;
   for(auto muon_pair : muon_pairs){
     auto muon_1 = get<0>(muon_pair);
@@ -325,10 +324,8 @@ std::tuple<Particle*, Particle*> Event::get_smallest_deltaLxyRatio_opposite_sign
       x2 = particles[j]->x + epsilon;
       y2 = particles[j]->y + epsilon;
 
-      // sqrt((x1-x2)^2 +(y1-y2)^2) / sqrt((x1+x2)^2 + (y1+y2)^2)
       float delta_lxy_ratio = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))/sqrt(pow(x1 + x2, 2) + pow(y1 + y2, 2));
 
-      double Ratio = particles[i]->four_vector.DeltaR(particles[j]->four_vector);
       if (delta_lxy_ratio < ratio_min)
       {
         muon1_index= i;
@@ -341,4 +338,17 @@ std::tuple<Particle*, Particle*> Event::get_smallest_deltaLxyRatio_opposite_sign
     return {particles[muon1_index],particles[muon2_index]};
   }
   return {nullptr, nullptr};
+}
+
+double Event::get_proper_lifetime()
+{
+  for(auto muon : particles){
+    if(!muon->is_muon()) continue;;
+    if(!muon->has_alp_ancestor(particles)) continue;
+    
+    auto mother = particles[muon->mothers[0]];
+    return muon->ctau/(mother->momentum()/mother->mass);
+  }
+  
+  return -1;
 }

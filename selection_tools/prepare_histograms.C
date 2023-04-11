@@ -10,8 +10,8 @@
 #include "Event.hpp"
 #include "EventReader.hpp"
 #include "HistogramSet.hpp"
-#include "CutsManager.hpp"
 #include "Helpers.hpp"
+#include "HistogramFiller.hpp"
 
 using namespace std;
 
@@ -19,6 +19,7 @@ int max_events = -1;
 int n_daughters = 100;
 
 TFile *input_file;
+TH1D *baseline_hist;
 
 TTree* get_input_tree(string input_path)
 {
@@ -32,6 +33,86 @@ TTree* get_input_tree(string input_path)
   return (TTree*)input_file->Get("Events");
 }
 
+TH1D* fill_and_save_histograms(const vector<Event*> &events, string output_path)
+{
+  auto histogramFiller = HistogramFiller();
+  
+  for(auto event : events){
+    if(!event->has_ttbar_pair()) continue;
+    int preselection_code = event->passes_preselection();
+    
+    if(preselection_code == 0){
+      continue;
+    }
+    else if(preselection_code == 2 || preselection_code == 3){ // pair or non-pair category
+      auto [muon_1, muon_2] = event->get_smallest_deltaLxyRatio_opposite_sign_muons();
+      
+      histogramFiller.fill_hists(muon_1, muon_2, event, "os");
+      histogramFiller.fill_final_selection_hists(muon_1, muon_2, event, "os");
+
+      if(!muon_1 || !muon_2) continue;
+      if(!muon_1->has_alp_ancestor(event->particles)) continue;
+      if(!muon_2->has_alp_ancestor(event->particles)) continue;
+      auto mother_1 = event->particles[muon_1->mothers[0]];
+      auto mother_2 = event->particles[muon_2->mothers[0]];
+      if(mother_1 != mother_2) continue;
+      histogramFiller.fill_alp_hists(muon_1, muon_2, mother_1, event, "os");
+      TVector3 boost = mother_1->boost();
+      auto muon_reboosted_1 = muon_1->transform(boost);
+      auto muon_reboosted_2 = muon_2->transform(boost);
+      auto mother_reboosted_1 = mother_1->transform(boost);
+      histogramFiller.fill_alp_hists(muon_reboosted_1, muon_reboosted_2, mother_reboosted_1, event, "reboosted_os");
+    }
+    
+    for(auto muon : event->particles){
+      if(!muon->is_muon()) continue;;
+      if(!muon->has_alp_ancestor(event->particles)) continue;
+      histogramFiller.fill_alp_selection_hists(muon, event);
+      break;
+    }
+  }
+  auto baseline_hist = new TH1D(*histogramFiller.histSets["alp_selection_os_minlxy-muon"]->hists["proper_ctau"]);
+  
+  histogramFiller.save_histograms(output_path);
+  
+  return baseline_hist;
+}
+
+TH1D* get_weights_histogram(TH1D* baseline_hist, double destination_lifetime)
+{
+  double fit_max = 0.1;
+  
+  auto scaled_lifetime_function = new TF1("scaled_lifetime_function", "[0]*exp(-x/[1])", 0, fit_max);
+  scaled_lifetime_function->SetParameter(0, 1);
+  scaled_lifetime_function->FixParameter(1, destination_lifetime);
+  
+  baseline_hist->Fit(scaled_lifetime_function, "", "", 0, fit_max);
+  
+  auto hist_tmp= new TH1D("hist_scaled", "hist_scaled",
+                           baseline_hist->GetNbinsX(),
+                           baseline_hist->GetXaxis()->GetBinLowEdge(1),
+                           baseline_hist->GetXaxis()->GetBinLowEdge(baseline_hist->GetNbinsX())+baseline_hist->GetXaxis()->GetBinWidth(baseline_hist->GetNbinsX()));
+  
+  auto weights = new TH1D("weights", "weights",
+                          baseline_hist->GetNbinsX(),
+                          baseline_hist->GetXaxis()->GetBinLowEdge(1),
+                          baseline_hist->GetXaxis()->GetBinLowEdge(baseline_hist->GetNbinsX())+baseline_hist->GetXaxis()->GetBinWidth(baseline_hist->GetNbinsX()));
+  
+  for(int i_bin=1; i_bin<baseline_hist->GetNbinsX()+1; i_bin++){
+    double value = baseline_hist->GetXaxis()->GetBinCenter(i_bin);
+    double content = baseline_hist->GetBinContent(i_bin);
+    double weight = 0;
+    if(content > 0) weight = scaled_lifetime_function->Eval(value)/content;
+    
+    hist_tmp->SetBinContent(i_bin, content*weight);
+    weights->SetBinContent(i_bin, weight);
+  }
+  double scale = baseline_hist->Integral()/hist_tmp->Integral();
+  weights->Scale(scale);
+  
+  return weights;
+}
+
 int main(int argc, char *argv[])
 {
   if(argc != 3){
@@ -43,302 +124,37 @@ int main(int argc, char *argv[])
   string output_path = argv[2];
   
   auto input_tree = get_input_tree(input_path);
-  auto output_file = new TFile(output_path.c_str(), "recreate");
+  
   
 // load events
   auto event_reader = EventReader(max_events, n_daughters);
   auto events = event_reader.read_events(input_tree);
   
-  vector<string> particle_names = {
-    // "single_muon",
-    // "single_muon_first_mother",
-    "os_maxlxy-muon",
-    "os_minlxy-muon",
-    // "ss_muon",
-    "os_muons",
-    "os_dimuon",
-    // "ss_dimuon",
-    "os_first_mother",
-    // "ss_first_mother",
-  };
-
-  vector<string> hist_names = {
-    "", // this is without any selection
-    "alp_",
-    "alp_reboosted_",
-    "sel_mass-cuts_",
-    "sel_deltalxy-max0p3mm_",
-    "sel_deltalxy_ratio_abs-max0p05_",
-    "sel_deltalxy_ratio_abs-max0p1_",
-    "sel_deltalxy_ratio_abs-max0p5_",
-    "alp_selection_pt-min0p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_",
-  };
+  TH1D *baseline_hist = fill_and_save_histograms(events, output_path);
   
-  vector<double> ptCuts = {0, 5, 10, 15};
+//  vector<double> destination_lifetimes = {1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2, 1e3, 1e4}; // mm
+  vector<double> destination_lifetimes = {1e-3, 1e0}; // mm
   
-  for(double ptCut : ptCuts){
-    string ptName = to_nice_string(ptCut);
+  for(double destination_lifetime : destination_lifetimes){
     
-    hist_names.push_back("sel_pt-min"+ptName+"GeV_");
-    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_mass-cuts_");
+    TH1D *weights_hist = get_weights_histogram(baseline_hist, destination_lifetime);
     
-    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_mass-cuts_deltalxy-max0p3mm_");
-    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_mass-cuts_deltalxy_ratio_abs-max0p05_");
-    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_mass-cuts_deltalxy_ratio_abs-max0p1_");
-    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_mass-cuts_deltalxy_ratio_abs-max0p5_");
-    
-    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_deltalxy-max0p3mm_");
-    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_deltalxy_ratio_abs-max0p05_");
-    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_deltalxy_ratio_abs-max0p1_");
-    hist_names.push_back("final_selection_pt-min"+ptName+"GeV_deltalxy_ratio_abs-max0p5_");
-  }
-  
-  map<string, HistogramSet*> histSets;
-  for(string hist : hist_names){
-    for(string particle : particle_names){
-      string name = hist + particle;
-      histSets[name] = new HistogramSet(name);
-    }
-  }
-
-  
-  auto cutsManager = CutsManager();
-  
-  auto fill_deltaR_deltal_selections = [&](const Particle* particle_1, const Particle* particle_2, string sign, string prefix){
-
-    float epsilon = 1e-10;
-    float x1 = particle_1->x;
-    float y1 = particle_1->y;
-    float x2 = particle_2->x + epsilon;
-    float y2 = particle_2->y + epsilon;
-
-    float delta_lxy = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
-    float delta_lxy_ratio_abs = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))/sqrt(pow(abs(x1) + abs(x2), 2) + pow(abs(y1) + abs(y2), 2));
-
-    if(delta_lxy <= 0.3){
-      histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_maxlxy-muon"]->fill(particle_1);
-      histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_minlxy-muon"]->fill(particle_2);
-      histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_muons"]->fill(particle_1);
-      histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_muons"]->fill(particle_2);
-      histSets[prefix + "_deltalxy-max0p3mm_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-    }
-
-    if(delta_lxy_ratio_abs <= 0.05){
-      histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_maxlxy-muon"]->fill(particle_1);
-      histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_minlxy-muon"]->fill(particle_2);
-      histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_muons"]->fill(particle_1);
-      histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_muons"]->fill(particle_2);
-      histSets[prefix + "_deltalxy_ratio_abs-max0p05_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-    }
-    if(delta_lxy_ratio_abs <= 0.1){
-      histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_maxlxy-muon"]->fill(particle_1);
-      histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_minlxy-muon"]->fill(particle_2);
-      histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_muons"]->fill(particle_1);
-      histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_muons"]->fill(particle_2);
-      histSets[prefix + "_deltalxy_ratio_abs-max0p1_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-    }
-    if(delta_lxy_ratio_abs <= 0.5){
-      histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_maxlxy-muon"]->fill(particle_1);
-      histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_minlxy-muon"]->fill(particle_2);
-      histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_muons"]->fill(particle_1);
-      histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_muons"]->fill(particle_2);
-      histSets[prefix + "_deltalxy_ratio_abs-max0p5_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-    }
-  };
-
-  auto fill_hists = [&](const Particle* particle_1, const Particle* particle_2, const Event *event, string sign){
-    if(!particle_1 || !particle_2) return;
-    
-    float lxy1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
-    float lxy2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
-    const Particle* particle_maxlxy;
-    const Particle* particle_minlxy;
-    if (lxy1>=lxy2){ 
-      particle_maxlxy = particle_1;
-      particle_minlxy = particle_2;
-    }
-    else { 
-      particle_maxlxy = particle_2;
-      particle_minlxy = particle_1;
-    }
-      
-    histSets[sign+"_maxlxy-muon"]->fill(particle_maxlxy);
-    histSets[sign+"_minlxy-muon"]->fill(particle_minlxy);
-    histSets[sign+"_muons"]->fill(particle_minlxy);
-    histSets[sign+"_muons"]->fill(particle_maxlxy);
-    histSets[sign+"_dimuon"]->fill(particle_1, particle_2);
-    
-    TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
-
-    // Independent selections:
-    for(double ptCut : ptCuts){
-      if(particle_1->four_vector.Pt() < ptCut || particle_2->four_vector.Pt() < ptCut) continue;
-      
-      string ptName = to_nice_string(ptCut);
-      
-      histSets["sel_pt-min"+ptName+"GeV_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
-      histSets["sel_pt-min"+ptName+"GeV_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
-      histSets["sel_pt-min"+ptName+"GeV_"+sign+"_muons"]->fill(particle_minlxy);
-      histSets["sel_pt-min"+ptName+"GeV_"+sign+"_muons"]->fill(particle_maxlxy);
-      histSets["sel_pt-min"+ptName+"GeV_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-    }
-    
-    if(cutsManager.passes_mass_cuts(diparticle)){
-      histSets["sel_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
-      histSets["sel_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
-      histSets["sel_mass-cuts_"+sign+"_muons"]->fill(particle_minlxy);
-      histSets["sel_mass-cuts_"+sign+"_muons"]->fill(particle_maxlxy);
-      histSets["sel_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-    }
-    
-    fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "sel");
-  };
-
-  auto fill_final_selection_hists = [&](const Particle* particle_1, const Particle* particle_2, const Event *event, string sign){
-    if(!particle_1 || !particle_2) return;
-    
-    float lxy1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
-    float lxy2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
-    const Particle* particle_maxlxy;
-    const Particle* particle_minlxy;
-    if(lxy1 >= lxy2){
-      particle_maxlxy = particle_1;
-      particle_minlxy = particle_2;
-    }
-    else { 
-      particle_maxlxy = particle_2;
-      particle_minlxy = particle_1;
-    }
-
-    TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
-    
-    for(double ptCut : ptCuts){
-      if(particle_1->four_vector.Pt() < ptCut || particle_2->four_vector.Pt() < ptCut) continue;
-        
-      string ptName = to_nice_string(ptCut);
-      
-      if(cutsManager.passes_mass_cuts(diparticle)){
-        histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
-        histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
-        histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_muons"]->fill(particle_minlxy);
-        histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_muons"]->fill(particle_maxlxy);
-        histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-        
-        fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min"+ptName+"GeV_mass-cuts");
+    // set new event weights
+    for(auto event : events){
+      double event_proper_lifetime = event->get_proper_lifetime();
+      int weight_bin = weights_hist->GetXaxis()->FindFixBin(event_proper_lifetime);
+      double weight = weights_hist->GetBinContent(weight_bin);
+      if(weight < 0){
+        cout<<"Found event for which weight cannot be calculated..."<<endl;
+        weight = 1;
       }
-      else{
-        fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, sign, "final_selection_pt-min"+ptName+"GeV");
-      }
+      event->weight = weight;
     }
-  };
-  
-  auto fill_alp_selection_hists = [&](const Particle* particle_1, const Particle* particle_2, const Event *event, string sign){
-    if(!particle_1 || !particle_2) return;
     
-    TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
-    if(!cutsManager.passes_mass_cuts(diparticle)) return;
-    
-    float epsilon = 1e-10;
-    float x1 = particle_1->x;
-    float y1 = particle_1->y;
-    float x2 = particle_2->x + epsilon;
-    float y2 = particle_2->y + epsilon;
-    float delta_lxy_ratio_abs = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))/sqrt(pow(abs(x1) + abs(x2), 2) + pow(abs(y1) + abs(y2), 2));
-    if(delta_lxy_ratio_abs > 0.1) return;
-    
-    float lxy1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
-    float lxy2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
-    const Particle* particle_maxlxy = (lxy1 >= lxy2) ? particle_1 : particle_2;
-    
-    histSets["alp_selection_pt-min0p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_os_maxlxy-muon"]->fill(particle_maxlxy);
-  };
-
-  auto fill_alp_hists = [&](const Particle* particle_1, const Particle* particle_2, const Particle* mother_1, const Event *event, string sign){
-    if(!particle_1 || !particle_2) return;
-    
-    float lxy1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
-    float lxy2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
-    const Particle* particle_maxlxy;
-    const Particle* particle_minlxy;
-    if (lxy1>=lxy2){ 
-      particle_maxlxy = particle_1;
-      particle_minlxy = particle_2;
-    }
-    else { 
-      particle_maxlxy = particle_2;
-      particle_minlxy = particle_1;
-    }
-      
-    histSets["alp_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
-    histSets["alp_"+sign+"_minlxy-muon"]->fill(particle_minlxy);
-    histSets["alp_"+sign+"_muons"]->fill(particle_minlxy);
-    histSets["alp_"+sign+"_muons"]->fill(particle_maxlxy);
-    histSets["alp_"+sign+"_first_mother"]->fill(mother_1);
-    histSets["alp_"+sign+"_dimuon"]->fill(particle_1, particle_2);
-  };
-
-  for(auto event : events){
-    
-    if(!event->has_ttbar_pair()) continue;
-    int preselection_code = event->passes_preselection();
-    
-    if(preselection_code == 0){
-      continue;
-    }
-    else if(preselection_code == 2 || preselection_code == 3){ // pair or non-pair category
-      auto [muon_1, muon_2] = event->get_smallest_deltaLxyRatio_opposite_sign_muons();
-      
-      if(muon_1 && muon_2){
-        fill_hists(muon_1, muon_2, event, "os");
-        fill_final_selection_hists(muon_1, muon_2, event, "os");
-        
-        if(muon_1->has_alp_ancestor(event->particles) && muon_2->has_alp_ancestor(event->particles)){
-          fill_alp_selection_hists(muon_1, muon_2, event, "os");
-
-          auto mother_1 = event->particles[muon_1->mothers[0]];
-          auto mother_2 = event->particles[muon_1->mothers[0]];
-
-          if(mother_1 == mother_2)
-          {
-            fill_alp_hists(muon_1, muon_2, mother_1, event, "os");
-            auto boost = mother_1->boost();
-            auto muon_boosted_1 = muon_1->transform(boost);
-            auto muon_boosted_2 = muon_2->transform(boost);
-            auto mother_boosted_1 = mother_1->transform(boost);
-            fill_alp_hists(muon_boosted_1, muon_boosted_2, mother_boosted_1, event, "reboosted_os");
-          }
-        }
-      }
-    }
-  }
-  
-  // close files
-  output_file->cd();
-  output_file->mkdir("final_selection");
-  output_file->mkdir("intermediate_selections");
-  output_file->mkdir("alp_selections");
-  output_file->mkdir("alp");
-  for(auto &[hist_name, hist_set] : histSets){
-    if(hist_name.substr(0,15) == "final_selection"){
-      output_file->cd("final_selection");
-    }
-    if(hist_name.substr(0,3) == "sel"){
-      output_file->cd("intermediate_selections");
-    }
-    if(hist_name.substr(0,5) == "alp_s"){
-      output_file->cd("alp_selections");
-    }
-    else if(hist_name.substr(0,4) == "alp_"){
-      output_file->cd("alp");
-    }
-    for(auto &[tmp_2, hist] : hist_set->hists){
-      hist->Write();
-    }
-    output_file->cd();
+    string lifetime_output_path = replace_all(output_path, ".root", "_ctau-"+to_nice_string(destination_lifetime, 6)+"mm.root");
+    fill_and_save_histograms(events, lifetime_output_path);
   }
   
   input_file->Close();
-  output_file->Close();
-  
   return 0;
 }

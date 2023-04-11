@@ -37,11 +37,8 @@ bool Particle::is_good_non_top_muon(const vector<Particle*> &particles)
   if(fabs(eta()) > 2.5) return false;
   if(pt() < 3) return false;
   if(has_top_ancestor(particles)) return false;
+  if(pow(energy, 2) - pow(momentum(), 2) < 0) return false;
   
-  if(pow(energy, 2) - pow(momentum(), 2) < 0){
-    cout<<"found weird momentum"<<endl;
-    return false;
-  }
   return true;
 }
 
