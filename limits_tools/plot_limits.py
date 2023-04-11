@@ -7,25 +7,48 @@ import physics as ph
 input_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/limits_pt-min10GeV_mass-cuts_deltalxy_ratio_abs-max0p1.root"
 mask_masses = True
 
+# with all couplings on
+# reference_points = {
+# # mass (GeV), x_sec (pb)
+#     0.1:  3.102,
+#     0.2: 3.066,
+#     0.3: 3.075,
+#     0.315: 3.122,
+#     0.5: 3.098,
+#     1.0: 3.104,
+#     2.0: 3.087,
+#     4.0: 3.057,
+#     8.0: 3.023,
+#     8.5: 3.086,
+#     10.: 3.046,
+#     20.: 2.993,
+#     40.: 2.870,
+#     50.: 2.799,
+#     70.: 2.622,
+#     80.: 2.518,
+#     # 90.: 2.424,
+# }
+
+# with only alp-top couplings on (cu = -0.5, cq = 0.5)
 reference_points = {
 # mass (GeV), x_sec (pb)
-    0.1:  3.102,
-    0.2: 3.066,
-    0.3: 3.075,
-    0.315: 3.122,
-    0.5: 3.098,
-    1.0: 3.104,
-    2.0: 3.087,
-    4.0: 3.057,
-    8.0: 3.023,
-    8.5: 3.086,
-    10.: 3.046,
-    20.: 2.993,
-    40.: 2.870,
-    50.: 2.799,
-    70.: 2.622,
-    80.: 2.518,
-    # 90.: 2.424,
+    0.1:  0.1188,
+    # 0.2: 4.227e-06,
+    # 0.3: 3.84e-06,
+    # 0.315: 3.74e-06,
+    # 0.5: 4.032e-06,
+    1.0: 0.1169,
+    # 2.0: 4.138e-06,
+    # 4.0: 3.987e-06,
+    # 8.0: 3.286e-06,
+    # 8.5: 3.527e-06,
+    10.: 0.1148,
+    # 20.: 2.079e-06,
+    40.: 0.09168,
+    50.: 0.0844,
+    # 70.: 3.607e-07,
+    80.: 0.06463,
+    # 90.: 2.012e-07,
 }
 
 regions_to_mask = {
@@ -138,7 +161,7 @@ def save_canvas(title, x_title, y_title, theory_line, graph_mean, graph_1sigma, 
     
         for low, high in regions_to_mask.values():
             if high > 90:
-                high = 88
+                high = 87
         
             boxes.append(TBox(low, y_low, high, y_high))
             boxes[-1].Draw()
@@ -152,7 +175,7 @@ def save_canvas(title, x_title, y_title, theory_line, graph_mean, graph_1sigma, 
         graph_2sigma.SetMinimum(2e-3)
         graph_2sigma.SetMaximum(1e2)
     else:
-        graph_2sigma.SetMinimum(2e-5)
+        graph_2sigma.SetMinimum(2e-7)
         graph_2sigma.SetMaximum(1e2)
     
     if is_lifetime:
