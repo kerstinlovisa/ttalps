@@ -6,8 +6,9 @@ void plot_histograms()
   bool weighted = true;
 
   // string base_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/";
-  string base_path = "/afs/desy.de/user/l/lrygaard/ALPpheno/hists/";
-  // string base_path = "/nfs/dust/cms/user/lrygaard/ttalps/hists/";
+  // string base_path = "/afs/desy.de/user/l/lrygaard/ALPpheno/hists/";
+  // string base_path = "/nfs/dust/cms/user/lrygaard/ttalps/alps/hists/";
+  string base_path = "/nfs/dust/cms/user/lrygaard/ttalps/hists/";
   string output_path = "/afs/desy.de/user/l/lrygaard/ALPpheno/plots/";
 
   filesystem::path p(output_path);
@@ -17,168 +18,100 @@ void plot_histograms()
     p = output_path + "final_selection";
     filesystem::create_directory(p);
     p = output_path + "intermediate_selections";
+    filesystem::create_directory(p);fill_final_selection_hists
+    p = output_path + "alp";
     filesystem::create_directory(p);
   }
 
-  int int_lumi = 101e3; // pb-1
+  int int_lumi = 150e3; // pb-1
 
   vector<int> lxy_bins = {0, 2, 10, 24, 31, 70, 110};
   
   map<string, tuple<int, string, bool, float, int> > file_names = {
     // file name                                // color        // legend           // signal   // cross-sec  // Ntot
-    {"01_muon_siblings/ttj.root",                  {kAzure+6,   "ttj pair",         false,      395.3,        12540000}},
-    {"03_muon_siblings/ttmumu.root",               {kOrange-4,  "tt#mu#mu pair",    false,      0.02091,      9940000}},
-    {"05_muon_siblings/tta_mAlp-0p315GeV.root",    {kSpring-5,  "0.315 GeV pair",   true,       3.122,        950000}},
-    {"07_muon_siblings/tta_mAlp-0p5GeV.root",      {kViolet,    "0.5 GeV pair",     true,       3.098,        860000}},
-    {"09_muon_siblings/tta_mAlp-1GeV.root",        {kRed,       "1 GeV pair",       true,       3.104,        930000}},
+    {"01_muon_siblings/ttj.root",                  {kAzure+6,   "ttj resonances",         false,      395.3,        12540000}},
+    {"03_muon_siblings/ttmumu.root",               {kOrange-4,  "tt#mu#mu resonances",    false,      0.02091,      9940000}},
+    // {"05_muon_siblings/tta_mAlp-0p315GeV.root",    {kSpring-5,  "0.315 GeV pair",   true,       3.122,        950000}},
+    // {"07_muon_siblings/tta_mAlp-0p5GeV.root",      {kViolet,    "0.5 GeV pair",     true,       3.098,        860000}},
+    // {"09_muon_siblings/tta_mAlp-2GeV.root",        {kRed,       "2 GeV pair",       true,       3.087,        980000}},
+    // {"11_muon_siblings/tta_mAlp-8GeV.root",        {kBlue,      "8 GeV pair",       true,       3.023,        890000}},
     // {"11_muon_siblings/tta_mAlp-10GeV.root",       {kBlue,      "10 GeV pair",      true,       3.046,        990000}},
-    // {"13_muon_siblings/tta_mAlp-50GeV.root",       {kBlack,     "50 GeV pair",      true,       ,             930000}},
 
-    // {"single_muon/ttj.root",                    {kViolet,   "ttj single",         false}},
-    // {"single_muon/ttmumu.root",                 {kBlue,     "tt#mu#mu single",    false}},
-    // {"single_muon/tta_mAlp-0p315GeV.root",      {kBlue+1,   "0.3 GeV single",     true}},
-    // {"single_muon/tta_mAlp-0p5GeV.root",        {kBlue+1,   "0.5 GeV single",     true}},
-    // {"single_muon/tta_mAlp-1GeV.root",          {kBlue+1,   "1 GeV single",       true}},
-    // {"single_muon/tta_mAlp-10GeV.root",         {kBlue+1,   "10 GeV single",      true}},
+    {"05_tta_mAlp-0p315GeV.root",                  {kSpring-5,  "m_{a} = 0.315 GeV",      true,       3.122,        950000}},
+    {"07_tta_mAlp-0p5GeV.root",                    {kViolet,    "m_{a} = 0.5 GeV",        true,       3.098,        860000}},
+    {"09_tta_mAlp-2GeV.root",                      {kRed,       "m_{a} = 2 GeV",          true,       3.087,        980000}},
+    {"11_tta_mAlp-8GeV.root",                      {kBlue,      "m_{a} = 8 GeV",          true,       3.023,        890000}},
+    // {"11_tta_mAlp-10GeV.root",                     {kBlue,      "m_{a} = 10 GeV",         true,       3.046,        990000}},
 
-    {"02_muon_non_siblings/ttj.root",              {kBlue-6,      "ttj non-pair",     false,    395.3,        12540000}},
-    {"04_muon_non_siblings/ttmumu.root",           {kOrange+1,    "tt#mu#mu non-pair",false,    0.02091,      9940000}},
-    // {"06_muon_non_siblings/tta_mAlp-0p315GeV.root",{kGreen+3,     "0.3 GeV non-pair", true,     3.075,        950000}},
-    // {"08_muon_non_siblings/tta_mAlp-0p5GeV.root",  {kBlue+3,      "0.5 GeV non-pair", true,     3.098,        860000}},
-    // {"10_muon_non_siblings/tta_mAlp-1GeV.root",    {kRed+4,       "1 GeV non-pair",   true,     3.104,        930000}},
-    // {"12_muon_non_siblings/tta_mAlp-10GeV.root",   {kBlue,       "10 GeV non-pair",  true,     3.046,        990000}},
-    // {"14_muon_non_siblings/tta_mAlp-10GeV.root",   {kBlack,       "50 GeV non-pair",  true,     ,        930000}},
+    {"02_muon_non_siblings/ttj.root",              {kBlue-6,    "ttj non-resonances",     false,      395.3,        12540000}},
+    {"04_muon_non_siblings/ttmumu.root",           {kOrange+1,  "tt#mu#mu non-resonances",false,      0.02091,      9940000}},
+    // {"06_muon_non_siblings/tta_mAlp-0p315GeV.root",{kGreen+2,     "0.3 GeV non-pair", true,     3.075,        950000}},
+    // {"08_muon_non_siblings/tta_mAlp-0p5GeV.root",  {kViolet+2,    "0.5 GeV non-pair", true,     3.098,        860000}},
+    // {"10_muon_non_siblings/tta_mAlp-2GeV.root",    {kRed+3,       "2 GeV non-pair",   true,     3.087,        980000}},
+    // {"12_muon_non_siblings/tta_mAlp-8GeV.root",    {kBlue+2,      "8 GeV non-pair",   true,     3.023,        890000}},
+    // {"12_muon_non_siblings/tta_mAlp-10GeV.root",   {kBlue+2,      "10 GeV non-pair",  true,     3.046,        990000}},
   };
   
-  map<string, tuple<bool, bool, bool, int, double, double, double, double, string>> hist_names = {
-    // Add desciption of rebin & rebinned...
-//                                logy   logx   rebinned  rebin   xMin    xMax    yMin    yMax    xlabel
-    {"muon_pt",                   {true, false,  false,   1,      0,      50,     10,   1e5,      "p_{T}^{#mu} [GeV]"}},
-    // {"muon_pz",                   {true, false,  false,   10,     0,      100,    0,      0,      "p_{z}^{#mu} [GeV]"}},
-    // {"muon_mass",                 {true, false,   false,  1,      0.1,    1,      10,     5e6,    "m_{#mu} [GeV]"}},
-    {"muon_mass_log",             {true, true,   false,   1,      0.1,    1,      10,     5e6,    "m_{#mu} [GeV]"}},
-    {"muon_lxy",                  {true, false,  false,   10,     0,      110,    100,    4e6,    "l_{xy}^{#mu} [mm]"}},
-    // {"muon_lxy_logx",             {true, true,   false,   1,      0,      200,    0,      0,      "l_{xy}^{#mu} [mm]"}},
-    {"muon_lxy_rebinned",         {true, false,  true,    1,      0,      110,    0.1,    2e5,    "l_{xy}^{#mu} [mm]"}},
-    // {"muon_lz",                   {true, false,  false,   1,      0,      50,     0,      0,      "l_{z}^{#mu} [mm]"}},
-    {"muon_lxyz",                 {true, false,  false,   1,      0,      100,    0,      0,      "l_{xyz}^{#mu} [mm]"}},
-    {"muon_ctau",                 {true, false,  false,   1,      0,      100,    0,      0,      "Muon c#tau [mm]"}},
-    {"muon_boost",                {true, false,  false,   20,     0,      120,    0,      0,      "Muon #gamma#beta"}},
-    {"dimuon_pt",                 {true, false,  false,   10,     0,      100,    0,      0,      "Dimuon p_{T}[GeV]"}},
-    // {"dimuon_pz",                 {true, false,  false,   10,     0,      100,    0,      0,      "Dimuon p_{z}[GeV]"}},
-    // {"dimuon_mass",               {true, false,  false,   1,      0.1,    10,      1,      2e5,      "m_{#mu#bar{#mu}} [GeV]"}},
-    {"dimuon_mass_log",           {true, true,   false,   1,      0.1,    200,    1,      2e5,      "m_{#mu#bar{#mu}} [GeV]"}},
-    {"dimuon_deltaR",             {true, false,  false,   1,      0,      1,      1,      2e5,    "#Delta R(#mu#bar{#mu})"}},
-    // {"dimuon_deltaPhi",           {true, false,  false,   1,     -4,      4,      0,      0,      "#Delta #phi(#mu#bar{#mu})"}},
-    {"dimuon_deltalxy",           {true, false,  false,   1,      0,      10,     1,      1e6,    "#Delta l_{xy}(#mu#bar{#mu}) [mm]"}},
-    {"dimuon_deltalxyz",          {true, false,  false,   1,      0,      10,     1,      4e5,    "#Delta l_{xyz}(#mu#bar{#mu}) [mm]"}},
-    {"dimuon_deltalxy_ratio",     {true, false,  false,   1,      0,      3,     1,      4e5,    "|l_{xy}^{#mu} - l_{xy}^{#bar{#mu}})| / (l_{xy}^{#mu} + l_{xy}^{#bar{#mu}})"}},
-    {"dimuon_deltalxy_ratio_v2",  {true, false,  false,   1,      0,      10,     1,      4e5,    "#Delta l_{xy}(#mu#bar{#mu}) [mm]"}},
-    {"dimuon_deltapt",            {true, false,  false,   1,      0,      100,     1,      1e5,      "#Delta p_{T}(#mu#bar{#mu}) [mm]"}},
-    // {"first_mother_pt",           {true, false,  false,   1,      0,      100,    0,      0,      "Muon first mother p_{T} [GeV]"}},
-    // {"first_mother_pz",           {true, false,  false,   10,     0,      100,    0,      0,      "Muon first mother p_{z} [GeV]"}},
-    // {"first_mother_mass",         {true, true,   false,   1,      0.1,    10,    10,    5e6,      "Muon first mother m [GeV]"}},
-    // {"first_mother_lxy",          {true, false,  false,   1,      0,      100,    0,      0,      "Muon first mother l_{xy} [mm]"}},
-    // {"first_mother_lxy_rebinned", {true, false,  true,    1,      0,      110,    0,      0,      "Muon first mother l_{xy} [mm]"}},
-    // {"first_mother_lz",           {true, false,  false,   1,      0,      100,    0,      0,      "Muon first mother l_{z} [mm]"}},
-    // {"first_mother_lxyz",         {true, false,  false,   1,      0,      100,    0,      0,      "Muon first mother l_{xyz} [mm]"}},
-    // {"first_mother_ctau",         {true, false,  false,   1,      0,      100,    0,      0,      "Muon first mother c#tau [mm]"}},
-    // {"first_mother_boost",        {true, false,  false,   20,     0,      120,    0,      0,      "Muon first mother #gamma#beta"}},
+  map<string, tuple<bool, bool, bool, int, double, double, double, double, string, string>> hist_names = {
+    // Rebinned option implies histograms with cutomized binning
+//                                logy   logx   rebinned  rebin   xMin    xMax    yMin    yMax    xlabel                       ylabel
+    {"muons_pt",                  {true, false,  false,   1,      0,      50,     10,   3e5,      "p_{T}^{#mu} [GeV]",         "Muons / 0.5 GeV"}},
+    // {"first_mother_pt",           {true, false,  false,   1,      0,      50,     10,   3e5,      "p_{T}^{a} [GeV]",         "Events / 0.5 GeV"}},
+    // {"first_mother_eta",          {false, false,  false,   1,      -3,      3,     0,   2000,      "#eta",         "Events "}},
+    {"maxlxy-muon_pt",            {true, false,  false,   1,      0,      50,     10,   2e4,      "p_{T}^{#mu} [GeV]",         "Events / 0.5 GeV"}},
+    {"minlxy-muon_pt",            {true, false,  false,   1,      0,      50,     10,   2e4,      "p_{T}^{#mu} [GeV]",         "Events / 0.5 GeV"}},
+    // {"maxlxy-muon_pz",            {true, false,  false,   10,     0,      100,    0,      0,      "p_{z}^{#mu} [GeV]",      "Events / GeV"}},
+    // {"minlxy-muon_pz",            {true, false,  false,   10,     0,      100,    0,      0,      "p_{z}^{#mu} [GeV]",      "Events / GeV"}},
+    {"maxlxy-muon_lxy",           {true, false,  false,   20,     0,      150,      5,    4e6,    "l_{xy}^{#mu} [mm]",         "Events / 2.0 mm"}},
+    {"minlxy-muon_lxy",           {true, false,  false,   20,     0,      150,     10,    6e6,    "l_{xy}^{#mu} [mm]",         "Events / 2.0 mm"}},
+    {"maxlxy-muon_lxy_rebinned",  {true, false,  true,    1,      0,      110,    0.1,    2e5,    "l_{xy}^{#mu} [mm]",         "Events / mm"}},
+    {"minlxy-muon_lxy_rebinned",  {true, false,  true,    1,      0,      110,    0.1,    2e5,    "l_{xy}^{#mu} [mm]",         "Events / mm"}},
+    // {"maxlxy-muon_lxy_2bins",     {true, false,  true,    1,      0,      110,    0.1,    2e5,    "l_{xy}^{#mu} [mm]",         "Events / mm"}},
+    // {"minlxy-muon_lxy_2bins",     {true, false,  true,    1,      0,      110,    0.1,    2e5,    "l_{xy}^{#mu} [mm]",         "Events / mm"}},
+    // {"maxlxy-muon_lz",            {true, false,  false,   1,      0,      50,     0,      0,      "l_{z}^{#mu} [mm]",       "Events / mm"}},
+    // {"minlxy-muon_lz",            {true, false,  false,   1,      0,      50,     0,      0,      "l_{z}^{#mu} [mm]",       "Events / mm"}},
+    // {"maxlxy-muon_lxyz",          {true, false,  false,   1,      0,      100,    0,      0,      "l_{xyz}^{#mu} [mm]",        "Events / mm"}},
+    // {"minlxy-muon_lxyz",          {true, false,  false,   1,      0,      100,    0,      0,      "l_{xyz}^{#mu} [mm]",        "Events / mm"}},
+    // {"maxlxy-muon_ctau",          {true, false,  false,   1,      0,      100,    0,      0,      "Muon c#tau [mm]",           "Events / mm"}},
+    // {"minlxy-muon_ctau",          {true, false,  false,   1,      0,      100,    0,      0,      "Muon c#tau [mm]",           "Events / mm"}},
+    // {"maxlxy-muon_boost",         {true, false,  false,   20,     0,      120,    0,      0,      "Muon #gamma#beta",          "Events / GeV"}},
+    // {"minlxy-muon_boost",         {true, false,  false,   20,     0,      120,    0,      0,      "Muon #gamma#beta",          "Events / GeV"}},
+    {"dimuon_pt",                 {true, false,  false,   10,     0,      100,    0,      0,      "Dimuon p_{T}[GeV]",         "Events / GeV"}},
+    // {"dimuon_pz",                 {true, false,  false,   10,     0,      100,    0,      0,      "Dimuon p_{z}[GeV]",      "Events / GeV"}},
+    {"dimuon_mass",               {true, false,  false,   1,      0.1,    1,      1,      1e6,    "m_{#mu#bar{#mu}} [GeV]",      "Events / GeV"}},
+    {"dimuon_mass_log",           {true, true,   false,   1,      0.25,   10,     1,      1e9,    "m_{#mu#bar{#mu}} [GeV]",          "Events / GeV"}},
+    // {"first_mother_mass",         {true, false,  false,   1,      0.1,    1,      1,      1e6,     "m_{a} [GeV]",      "Events / GeV"}},
+    // {"first_mother_mass_log",     {true, true,   false,   1,      0.25,   10,     1,      1e9,     "m_{a} [GeV]",          "Events / GeV"}},
+    {"dimuon_deltaR",             {true, false,  false,   1,      0,      1,      1,      2e5,    "#Delta R(#mu#bar{#mu})",            "Events"}},
+    // {"dimuon_deltaPhi",           {true, false,  false,   1,     -4,      4,      0,      0,      "#Delta #phi(#mu#bar{#mu})",              "Events"}},
+    {"dimuon_deltalxy",           {true, false,  false,   1,      0,      0.001,  1,      1e6,    "#Delta l_{xy}(#mu#bar{#mu}) [mm]",          "Events / mm"}},
+    {"dimuon_deltalxy_diff_abs",  {true, false,  false,   1,      0,      10,     1,      1e6,    "|l_{xy}^{#mu} - l_{xy}^{#bar{#mu}}| [mm]",  "Events / mm"}},
+    {"dimuon_deltalxy_ratio_abs", {true, false,  false,   10,     0,      1.05,     1,    1e9,    "R_{lxy}",         "Events / 0.05"}},
+    // {"dimuon_deltapt",            {true, false,  false,   1,      0,      100,    1,      1e5,     "#Delta p_{T}(#mu#bar{#mu}) [mm]",          "Events / GeV"}},
   };
 
   vector<string> prefixes = {
     "", // this is for no selections
 
-    "intermediate_selections/sel_pt-min10GeV_",
-    "intermediate_selections/sel_pt-min8GeV_",
-    "intermediate_selections/sel_pt-min5GeV_",
+    // "intermediate_selections/sel_pt-min10p0GeV_",
+    // "intermediate_selections/sel_mass-cuts_",
 
-    "intermediate_selections/sel_mass-Jpsi_",
-    "intermediate_selections/sel_mass-rho_omega_",
-    "intermediate_selections/sel_mass-max20GeV_",
+    // "intermediate_selections/sel_deltalxy-max0p3mm_",
+    // "intermediate_selections/sel_deltalxy_ratio_abs-max0p05_",
 
-    "intermediate_selections/sel_dlxy-max0p1mm_",
-    "intermediate_selections/sel_dlxyz-max0p1mm_",
-    "intermediate_selections/sel_dlxy_ratio-max0p1_",
-    // "intermediate_selections/sel_dlxyz_ratio-max0p1_",
-    // "intermediate_selections/sel_dlxy_ratio_v2-max0p1_",
-    // "intermediate_selections/sel_dlxyz_ratio_v2-max0p1_",
+    // "final_selection/final_selection_pt-min10p0GeV_mass-cuts_",
 
-    "final_selection/final_selection_pt-min10GeV_mass-cuts_",
-    "final_selection/final_selection_pt-min10GeV_mass-cuts_dR-max0p1_",
-    "final_selection/final_selection_pt-min10GeV_mass-cuts_dR-max0p2_",
-    "final_selection/final_selection_pt-min10GeV_mass-cuts_dR-max0p05_",
-    "final_selection/final_selection_pt-min10GeV_mass-cuts_dlxy-max0p1mm_",
-    "final_selection/final_selection_pt-min10GeV_mass-cuts_dlxyz-max0p1mm_",
-    "final_selection/final_selection_pt-min10GeV_mass-cuts_dlxy_ratio-max0p1_",
-    "final_selection/final_selection_pt-min10GeV_mass-cuts_dlxyz_ratio-max0p1_",
-    "final_selection/final_selection_pt-min10GeV_mass-cuts_dlxy_ratio_v2-max0p1_",
-    "final_selection/final_selection_pt-min10GeV_mass-cuts_dlxyz_ratio_v2-max0p1_",
+    // "final_selection/final_selection_pt-min10p0GeV_mass-cuts_deltalxy-max0p3mm_",
+    "final_selection/final_selection_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_",
+    // "final_selection/final_selection_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_",
+    // "final_selection/final_selection_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p5_",
 
-    // "final_selection/final_selection_pt-min10GeV_dR-max0p1_",
-    // "final_selection/final_selection_pt-min10GeV_dR-max0p2_",
-    // "final_selection/final_selection_pt-min10GeV_dR-max0p05_",
-    // "final_selection/final_selection_pt-min10GeV_dlxy-max0p1mm_",
-    // "final_selection/final_selection_pt-min10GeV_dlxyz-max0p1mm_",
-    // "final_selection/final_selection_pt-min10GeV_dlxy_ratio-max0p1_",
-    // "final_selection/final_selection_pt-min10GeV_dlxyz_ratio-max0p1_",
-    // "final_selection/final_selection_pt-min10GeV_dlxy_ratio_v2-max0p1_",
-    // "final_selection/final_selection_pt-min10GeV_dlxyz_ratio_v2-max0p1_",
-    // "final_selection/final_selection_pt-min10GeV_dlxy_ratio_v2-max0p1_",
-    // "final_selection/final_selection_pt-min10GeV_dlxyz_ratio_v2-max0p1_",
+    // // "final_selection/final_selection_pt-min10p0GeV_deltalxy-max0p3mm_",
+    // "final_selection/final_selection_pt-min10p0GeV_deltalxy_ratio_abs-max0p05_",
 
-    "final_selection/final_selection_pt-min8GeV_mass-cuts_",
-    "final_selection/final_selection_pt-min8GeV_mass-cuts_dR-max0p1_",
-    "final_selection/final_selection_pt-min8GeV_mass-cuts_dR-max0p2_",
-    "final_selection/final_selection_pt-min8GeV_mass-cuts_dR-max0p05_",
-    "final_selection/final_selection_pt-min8GeV_mass-cuts_dlxy-max0p1mm_",
-    "final_selection/final_selection_pt-min8GeV_mass-cuts_dlxyz-max0p1mm_",
-    "final_selection/final_selection_pt-min8GeV_mass-cuts_dlxy_ratio-max0p1_",
-    "final_selection/final_selection_pt-min8GeV_mass-cuts_dlxyz_ratio-max0p1_",
-    "final_selection/final_selection_pt-min8GeV_mass-cuts_dlxy_ratio_v2-max0p1_",
-    "final_selection/final_selection_pt-min8GeV_mass-cuts_dlxyz_ratio_v2-max0p1_",
+    // "final_selection/final_selection_mass-cuts_deltalxy-max0p3mm_",
+    // "final_selection/final_selection_mass-cuts_deltalxy_ratio_abs-max0p05_",
 
-    // "final_selection/final_selection_pt-min8GeV_dR-max0p1_",
-    // "final_selection/final_selection_pt-min8GeV_dR-max0p2_",
-    // "final_selection/final_selection_pt-min8GeV_dR-max0p05_",
-    // "final_selection/final_selection_pt-min8GeV_dlxy-max0p1mm_",
-    // "final_selection/final_selection_pt-min8GeV_dlxyz-max0p1mm_",
-    // "final_selection/final_selection_pt-min8GeV_dlxy_ratio-max0p1_",
-    // "final_selection/final_selection_pt-min8GeV_dlxyz_ratio-max0p1_",
-    // "final_selection/final_selection_pt-min8GeV_dlxy_ratio_v2-max0p1_",
-    // "final_selection/final_selection_pt-min8GeV_dlxyz_ratio_v2-max0p1_",
-
-    "final_selection/final_selection_pt-min5GeV_mass-cuts_",
-    "final_selection/final_selection_pt-min5GeV_mass-cuts_dR-max0p1_",
-    "final_selection/final_selection_pt-min5GeV_mass-cuts_dR-max0p2_",
-    "final_selection/final_selection_pt-min5GeV_mass-cuts_dR-max0p05_",
-    "final_selection/final_selection_pt-min5GeV_mass-cuts_dlxy-max0p1mm_",
-    "final_selection/final_selection_pt-min5GeV_mass-cuts_dlxyz-max0p1mm_",
-    "final_selection/final_selection_pt-min5GeV_mass-cuts_dlxy_ratio-max0p1_",
-    "final_selection/final_selection_pt-min5GeV_mass-cuts_dlxyz_ratio-max0p1_",
-    "final_selection/final_selection_pt-min5GeV_mass-cuts_dlxy_ratio_v2-max0p1_",
-    "final_selection/final_selection_pt-min5GeV_mass-cuts_dlxyz_ratio_v2-max0p1_",
-
-    // "final_selection/final_selection_pt-min5GeV_dR-max0p1_",
-    // "final_selection/final_selection_pt-min5GeV_dR-max0p2_",
-    // "final_selection/final_selection_pt-min5GeV_dR-max0p05_",
-    // "final_selection/final_selection_pt-min5GeV_dlxy-max0p1mm_",
-    // "final_selection/final_selection_pt-min5GeV_dlxyz-max0p1mm_",
-    // "final_selection/final_selection_pt-min5GeV_dlxy_ratio-max0p1_",
-    // "final_selection/final_selection_pt-min5GeV_dlxyz_ratio-max0p1_",
-    // "final_selection/final_selection_pt-min5GeV_dlxy_ratio_v2-max0p1_",
-    // "final_selection/final_selection_pt-min5GeV_dlxyz_ratio_v2-max0p1_",
-
-    // "final_selection/final_selection_mass-cuts_",
-    // "final_selection/final_selection_mass-cuts_dR-max0p1_",
-    // "final_selection/final_selection_mass-cuts_dR-max0p2_",
-    // "final_selection/final_selection_mass-cuts_dR-max0p05_",
-    // "final_selection/final_selection_mass-cuts_dlxy-max0p1mm_",
-    // "final_selection/final_selection_mass-cuts_dlxyz-max0p1mm_",
-    // "final_selection/final_selection_mass-cuts_dlxy_ratio-max0p1_",
-    // "final_selection/final_selection_mass-cuts_dlxyz_ratio-max0p1_",
-    // "final_selection/final_selection_mass-cuts_dlxy_ratio_v2-max0p1_",
-    // "final_selection/final_selection_mass-cuts_dlxyz_ratio_v2-max0p1_",
   };
   
   vector<string> categories = {
@@ -199,10 +132,17 @@ void plot_histograms()
     }
   }
   
-  auto legend = new TLegend(0.6, 0.7, 0.9, 0.9);
+  auto legend = new TLegend(0.5, 0.6, 0.89, 0.85);
   legend->SetNColumns(2);
+  legend->SetBorderSize(0);
   vector<string> in_legend;
-  
+  TLatex text(0.51, 0.86, "L = 150 fb^{-1}, #sqrt{s} = 13 TeV");
+  text.SetNDC(kTRUE);
+  text.SetTextSize(0.03);
+  gStyle->SetStatStyle(0);
+  gStyle->SetTitleStyle(0);
+  gROOT->ForceStyle();
+
   for(auto &[file_name_, params] : file_names){
     auto [color, title, signal, cross_sec, N_tot] = params;
 
@@ -216,7 +156,7 @@ void plot_histograms()
         for (auto category : categories) {
           string full_hist_name = prefix + category + hist_name;
           auto hist = (TH1D*)input_file->Get(full_hist_name.c_str());
-          auto [logy, logx, rebinned, rebin, xMin, xMax, yMin, yMax, xlabel] = params;
+          auto [logy, logx, rebinned, rebin, xMin, xMax, yMin, yMax, xlabel, ylabel] = params;
           
           cout << file_name << ":  " << full_hist_name << endl;
           if(hist->GetEntries() == 0) continue;
@@ -261,7 +201,7 @@ void plot_histograms()
       for (auto category : categories) {
         string full_hist_name = prefix + category + hist_name;
     
-        auto [logy, logx, rebinned, rebin, xMin, xMax, yMin, yMax, xlabel] = params;
+        auto [logy, logx, rebinned, rebin, xMin, xMax, yMin, yMax, xlabel, ylabel] = params;
 
         auto canvas = new TCanvas("canvas", "canvas");
         canvas->cd();
@@ -279,7 +219,7 @@ void plot_histograms()
           ghost_hist->GetXaxis()->SetTitle(xlabel.c_str());
           ghost_hist->GetXaxis()->SetTitleSize(0.04);
           ghost_hist->GetYaxis()->SetTitleSize(0.04);
-          ghost_hist->GetYaxis()->SetTitle("number of events [a.u.]");
+          ghost_hist->GetYaxis()->SetTitle(ylabel.c_str());
           ghost_hist->SetStats(0);
           ghost_hist->SetMaximum(yMax);
           ghost_hist->SetMinimum(yMin);
@@ -300,13 +240,16 @@ void plot_histograms()
         stacks_background[full_hist_name]->GetXaxis()->SetTitle(xlabel.c_str());
         stacks_background[full_hist_name]->GetXaxis()->SetTitleSize(0.04);
         stacks_background[full_hist_name]->GetYaxis()->SetTitleSize(0.04);
-        stacks_background[full_hist_name]->GetYaxis()->SetTitle("number of events [a.u.]");
+        stacks_background[full_hist_name]->GetYaxis()->SetTitle(ylabel.c_str());
         stacks_background[full_hist_name]->GetXaxis()->SetRangeUser(xMin, xMax);
+
         gPad->Modified();
+        gPad->RedrawAxis();
         if(logy) canvas->SetLogy();
         if(logx) canvas->SetLogx();
 
         legend->Draw();
+        text.Draw();
 
         canvas->Update();
         
