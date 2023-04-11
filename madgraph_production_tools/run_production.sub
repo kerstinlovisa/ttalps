@@ -9,4 +9,4 @@ log                   = log/$(ClusterId).log
 requirements 	      = (OpSysAndVer =?= "CentOS7")
 +JobFlavour           = "longlunch"
 
-queue 10
+queue 100

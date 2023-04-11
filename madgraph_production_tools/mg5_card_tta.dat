@@ -38,6 +38,8 @@ set nevents dummy_value
 # alp settings
 set pt_min_pdg {9000005:20}
 set Ma dummy_value
+set ptl 5.0
+set etal 3.5
 
 set time_of_flight 0
 

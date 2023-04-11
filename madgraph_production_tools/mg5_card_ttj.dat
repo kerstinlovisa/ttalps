@@ -39,6 +39,8 @@ set MT 172.
 # jet cuts
 set ptj 20.0
 set etaj 3
+#set ptl 5.0
+#set etal 3.5
 
 # other settings
 set use_syst False
