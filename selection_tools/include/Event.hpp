@@ -38,7 +38,10 @@ public:
   std::tuple<Particle*, Particle*> get_smallest_deltaLxyRatio_opposite_sign_muons();
   
   std::vector<Particle*> particles;
-
+  double weight = 1;
+  
+  double get_proper_lifetime();
+  
 private:
   void setup_particle_mothers();
   void setup_motherless_particles();

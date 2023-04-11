@@ -26,16 +26,19 @@ cross_section_ttmumu = 0.02091178
 
 signals = {
 #                           mass     file                       n_gen      ref. x_sec (pb)
-	"tta_mAlp-0p1GeV":      (0.1,   ("tta_mAlp-0p1GeV.root",    2087780.0, 1e-1)),
-	"tta_mAlp-0p2GeV":      (0.2,   ("tta_mAlp-0p2GeV.root",    2385275.0, 1e-1)),
-    "tta_mAlp-0p3GeV":      (0.3,   ("tta_mAlp-0p3GeV.root",    1950000.0, 1e-3)),
-	"tta_mAlp-0p315GeV":    (0.315, ("tta_mAlp-0p315GeV.root",  2978471.0, 1e-3)),
-    "tta_mAlp-0p5GeV":      (0.5,   ("tta_mAlp-0p5GeV.root",    1659356.0, 1e-3)),
-    "tta_mAlp-1GeV":        (1.0,   ("tta_mAlp-1GeV.root",      1158318.0, 1e-3)),
-	"tta_mAlp-4GeV":        (4.0,   ("tta_mAlp-4GeV.root",      2307648.0, 1e-3)),
-	"tta_mAlp-8GeV":        (8.0,   ("tta_mAlp-8GeV.root",      2018449.0, 1e-3)),
-	"tta_mAlp-8p5GeV":      (8.5,   ("tta_mAlp-8p5GeV.root",    2128905.0, 1e-3)),
-    "tta_mAlp-10GeV":       (10,    ("tta_mAlp-10GeV.root",     1127443.0, 1e-1)),
+	"tta_mAlp-0p1GeV":      (0.1,   ("tta_mAlp-0p1GeV.root",    960000.0, 1e-1)),
+	"tta_mAlp-0p2GeV":      (0.2,   ("tta_mAlp-0p2GeV.root",    920000.0, 1e-1)),
+	"tta_mAlp-0p315GeV":    (0.315, ("tta_mAlp-0p315GeV.root",  950000.0, 1e-3)),
+	"tta_mAlp-0p5GeV":      (0.5,   ("tta_mAlp-0p5GeV.root",    860000.0, 1e-3)),
+	"tta_mAlp-2GeV":        (2.0,   ("tta_mAlp-2GeV.root",      980000.0, 1e-3)),
+	"tta_mAlp-8GeV":        (8.0,   ("tta_mAlp-8GeV.root",      890000.0, 1e-3)),
+	"tta_mAlp-8p5GeV":      (8.5,   ("tta_mAlp-8p5GeV.root",    950000.0, 1e-3)),
+	"tta_mAlp-10GeV":       (10,    ("tta_mAlp-10GeV.root",     990000.0, 1e-3)),
+	"tta_mAlp-20GeV":       (20,    ("tta_mAlp-20GeV.root",     960000.0, 1e-3)),
+#	"tta_mAlp-40GeV":       (40,    ("tta_mAlp-40GeV.root",     930000.0, 1e-3)),
+	"tta_mAlp-50GeV":       (50,    ("tta_mAlp-50GeV.root",     950000.0, 1e-3)),
+	"tta_mAlp-70GeV":       (70,    ("tta_mAlp-70GeV.root",     860000.0, 1e-3)),
+	"tta_mAlp-80GeV":       (80,    ("tta_mAlp-80GeV.root",     990000.0, 1e-3)),
     }
 
 base_path = "/nfs/dust/cms/user/lrygaard/ttalps/hists/"
@@ -52,9 +55,11 @@ base_path = "/nfs/dust/cms/user/lrygaard/ttalps/hists/"
 #cuts = "pt-5GeV_dR-0p2"
 #cuts = "pt-5GeV_mass-cuts_dR-0p1"
 #cuts = "pt-5GeV_mass-cuts_dR-0p2"
-cuts = "pt-5GeV_mass-cuts"
+#cuts = "pt-5GeV_mass-cuts"
 
-hist_name = f"final_selection/final_selection_{cuts}_os_muon_lxy_rebinned"
+cuts = "pt-min10GeV_mass-cuts_deltalxy_ratio_abs-max0p1"
+
+hist_name = f"final_selection/final_selection_{cuts}_os_maxlxy-muon_lxy_rebinned"
 output_file_name = f"limits_{cuts}.root"
 
 tmp_combine_file_name = "tmp_combine_workspace.root"

@@ -25,6 +25,7 @@ output dummy_value
 launch
 
 1
+#2
 
 # proton beams
 set lpp1 1
@@ -38,6 +39,8 @@ set MT 172.
 # jet cuts
 set ptj 20.0
 set etaj 3
+#set ptl 5.0
+#set etal 3.5
 
 # other settings
 set use_syst False
@@ -47,3 +50,4 @@ set lhaid 303400
 set iseed dummy_value
 
 pythia8_card.dat
+#delphes_card_CMS_PileUp.tcl
