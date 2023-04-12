@@ -19,7 +19,7 @@
 class HistogramFiller {
 public:
   HistogramFiller();
-  ~HistogramFiller(){}
+  ~HistogramFiller();
   
   void fill_deltaR_deltal_selections(const Particle* particle_1, const Particle* particle_2, const Event *event,
                                      std::string sign, std::string prefix);

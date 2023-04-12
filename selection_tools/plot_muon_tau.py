@@ -42,31 +42,31 @@ baseline_lifetime = default_function.GetParameter(1)
 print(f"Baseline lifetime:{baseline_lifetime} mm")
 
 
-# def find_lifetime_for_mass(mass):
-#     Lambda = 1000
-#     ctau = ph.ctaua(mass, 0.5, 0.5, Lambda)  # in cm
-#
-#     boost = 1 / mass
-#
-#     if mass < 3:
-#         boost *= 223
-#     elif mass < 20:
-#         boost *= 230
-#     elif mass < 30:
-#         boost *= 240
-#     elif mass < 50:
-#         boost *= 260
-#     else:
-#         boost *= 296
-#
-#     # return boost * ctau
-#     return ctau
-#
-#
-# lifetime = find_lifetime_for_mass(0.3)
-# lifetime *= 1e1 # cm -> mm
+def find_lifetime_for_mass(mass):
+    Lambda = 1000
+    ctau = ph.ctaua(mass, 0.5, 0.5, Lambda)  # in cm
 
-# print(f"expected lifetime: {lifetime} mm")
+    boost = 1 / mass
+
+    if mass < 3:
+        boost *= 223
+    elif mass < 20:
+        boost *= 230
+    elif mass < 30:
+        boost *= 240
+    elif mass < 50:
+        boost *= 260
+    else:
+        boost *= 296
+
+    # return boost * ctau
+    return ctau
+
+
+lifetime = find_lifetime_for_mass(0.3)
+lifetime *= 1e1 # cm -> mm
+
+print(f"expected lifetime: {lifetime} mm")
 
 hists_tmp = {}
 weights = {}

@@ -64,6 +64,15 @@ HistogramFiller::HistogramFiller()
   }
 }
 
+HistogramFiller::~HistogramFiller()
+{
+  for(auto &[setName, histSet] : histSets){
+    for(auto &[histName, hist] : histSet->hists){
+      delete hist;
+    }
+  }
+}
+
 void HistogramFiller::fill_deltaR_deltal_selections(const Particle* particle_1,
                                                     const Particle* particle_2,
                                                     const Event* event,

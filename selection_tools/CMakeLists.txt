@@ -24,6 +24,7 @@ add_library(Analysis  src/Event.cpp
                       src/EventReader.cpp
                       src/Particle.cpp
                       src/HistogramSet.cpp
+                      src/HistogramFiller.cpp
                       src/CutsManager.cpp
 )
 
