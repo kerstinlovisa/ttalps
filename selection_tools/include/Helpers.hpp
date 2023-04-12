@@ -46,7 +46,7 @@ std::string to_string_with_precision(const T a_value, const int n = 6)
   return out.str();
 }
 
-std::string replace_all(std::string str, const std::string& from, const std::string& to) {
+inline std::string replace_all(std::string str, const std::string& from, const std::string& to) {
   size_t start_pos = 0;
   while((start_pos = str.find(from, start_pos)) != std::string::npos) {
     str.replace(start_pos, from.length(), to);
@@ -55,7 +55,7 @@ std::string replace_all(std::string str, const std::string& from, const std::str
   return str;
 }
 
-std::string to_nice_string(double a_value, int precision = 1)
+inline std::string to_nice_string(double a_value, int precision = 1)
 {
   std::string result = to_string_with_precision(a_value, precision);
   result = replace_all(result, ".", "p");
