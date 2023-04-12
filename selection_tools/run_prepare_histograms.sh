@@ -2,11 +2,11 @@
 
 process=$1
 part=$2
-username=`whoami`
+username=$3
 
 base_input_path="/nfs/dust/cms/user/${username}/ttalps"
-base_output_path="/nfs/dust/cms/user/jniedzie/ttalps"
-# base_output_path="/nfs/dust/cms/user/lrygaard/ttalps" 
+# base_output_path="/nfs/dust/cms/user/jniedzie/ttalps"
+base_output_path="/nfs/dust/cms/user/lrygaard/ttalps" 
 # base_output_path="/afs/desy.de/user/l/lrygaard/ALPpheno" 
 output_file_name="${process}_part-${part}.root"
 
