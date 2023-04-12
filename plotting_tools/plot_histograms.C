@@ -18,7 +18,7 @@ void plot_histograms()
     p = output_path + "final_selection";
     filesystem::create_directory(p);
     p = output_path + "intermediate_selections";
-    filesystem::create_directory(p);fill_final_selection_hists
+    filesystem::create_directory(p);
     p = output_path + "alp";
     filesystem::create_directory(p);
   }

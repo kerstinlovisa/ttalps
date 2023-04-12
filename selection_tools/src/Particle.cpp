@@ -101,6 +101,21 @@ double Particle::pt() const
   return four_vector.Pt();
 }
 
+double Particle::Px() const
+{
+  return four_vector.Px();
+}
+
+double Particle::M() const
+{
+  return four_vector.M();
+}
+
+double Particle::E() const
+{
+  return four_vector.E();
+}
+
 TVector3 Particle::boost() const
 {
   return four_vector.BoostVector();

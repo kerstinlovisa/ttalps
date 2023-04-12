@@ -29,6 +29,9 @@ public:
   double eta();
   double momentum() const;
   double pt() const;
+  double Px() const;
+  double M() const;
+  double E() const;
   TVector3 boost() const;  
   Particle* transform(TVector3 boost);
 
