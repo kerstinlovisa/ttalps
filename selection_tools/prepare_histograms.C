@@ -56,13 +56,6 @@ TH1D* fill_and_save_histograms(const vector<Event*> &events, string output_path)
       auto mother_1 = event->particles[muon_1->mothers[0]];
       auto mother_2 = event->particles[muon_2->mothers[0]];
       if(mother_1 != mother_2) continue;
-      if(mother_1->M()>=0.5) continue;
-      auto diparticle = muon_1->four_vector + muon_2->four_vector;
-      if(diparticle.M()<=0.5) continue;
-      std::cout << "Mass: " << mother_1->mass << "\t" << mother_1->M() << "\t" << diparticle.M() << std::endl;
-      std::cout << "Momentum: " << mother_1->px << "\t" << mother_1->Px() << std::endl;
-      std::cout << "Energy: " << mother_1->energy << "\t" << mother_1->E() << std::endl;
-      std::cout << "Status: " << mother_1->status << "\t" << muon_1->status << "\t" << muon_2->status << std::endl;
       histogramFiller.fill_alp_hists(muon_1, muon_2, mother_1, event, "os");
       TVector3 boost = mother_1->boost();
       auto muon_reboosted_1 = muon_1->transform(boost);
