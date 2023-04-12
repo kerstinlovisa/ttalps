@@ -2,7 +2,7 @@
 
 process=$1
 part=$2
-username=$3
+username=`whoami`
 
 base_input_path="/nfs/dust/cms/user/${username}/ttalps"
 base_output_path="/nfs/dust/cms/user/jniedzie/ttalps"
