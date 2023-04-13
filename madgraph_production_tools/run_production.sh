@@ -25,4 +25,4 @@ fi
 
 cd $user_base_path || exit
 
-$python_path $user_base_path/run_production.py -pr $1 -p $2 -n $3 -m $4 -o $output_path
+$python_path $user_base_path/run_production.py -pr $1 -p $2 -n $3 -m $4 -o $output_path -l $5
