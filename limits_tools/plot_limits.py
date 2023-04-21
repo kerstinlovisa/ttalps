@@ -1,11 +1,14 @@
-from math import sqrt
+from math import sqrt, pi
 
 from ROOT import TFile, kGreen, kYellow, TCanvas, gPad, TGraph, kRed, TLegend, TGraphAsymmErrors, TBox, kWhite
 
 import physics as ph
 
-input_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/limits_pt-min10GeV_mass-cuts_deltalxy_ratio_abs-max0p1.root"
+input_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/limits_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1.root"
 mask_masses = True
+
+Lambda = 4*pi*1000
+coupling = 0.5
 
 # with all couplings on
 # reference_points = {
@@ -59,9 +62,10 @@ regions_to_mask = {
     "z": (86.63, 95.75),
 }
 
+
 def find_lifetime_for_mass(mass):
-    Lambda = 1000
-    ctau = ph.ctaua(mass, 0.5, 0.5, Lambda) # in cm
+    
+    ctau = ph.ctaua(mass, coupling, coupling, Lambda) # in cm
 
     boost = 1/mass
 
@@ -179,7 +183,7 @@ def save_canvas(title, x_title, y_title, theory_line, graph_mean, graph_1sigma, 
         graph_2sigma.SetMaximum(1e2)
     
     if is_lifetime:
-        graph_2sigma.GetXaxis().SetLimits(1e-4, 1e5)
+        graph_2sigma.GetXaxis().SetLimits(1e-4, 20)
     else:
         graph_2sigma.GetXaxis().SetRangeUser(0, 90)
 
