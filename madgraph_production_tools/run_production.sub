@@ -1,7 +1,7 @@
 Universe              = vanilla
 executable            = run_production.sh
 #			process		part	  n_events	alp_mass (GeV) ctau_0
-arguments             = tta 		$(ProcId) 10000		0.2		1e-4
+arguments             = tta 		$(ProcId) 10000		0.2		1e4
 GetEnv                = True
 output                = output/$(ClusterId).$(ProcId).out
 error                 = error/$(ClusterId).$(ProcId).err

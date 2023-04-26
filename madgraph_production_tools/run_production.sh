@@ -3,6 +3,7 @@
 username=`whoami`
 firstletter=${username:0:1}
 
+
 if [ $username == "jniedzie" ]
   then
   user_base_path="/afs/desy.de/user/${firstletter}/${username}/ttalps/ttalps/madgraph_production_tools/"
