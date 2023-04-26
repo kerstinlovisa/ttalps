@@ -1,7 +1,7 @@
 Universe              = vanilla
 executable            = run_prepare_histograms.sh
-#			process			part
-arguments             = tta_mAlp-2GeV 	$(ProcId)
+#			process			part	    input_user (dust space with input histograms)
+arguments             = tta_mAlp-10GeV 	$(ProcId)   jniedzie
 # example proceses: ttj, ttmumu, tta_mAlp-0p1GeV, tta_mAlp-0p2GeV, tta_mAlp-0p315GeV, tta_mAlp-0p5GeV, 
 #                   tta_mAlp-2GeV, tta_mAlp-8GeV, tta_mAlp-8p5GeV, tta_mAlp-10GeV, tta_mAlp-20GeV,
 #                   tta_mAlp-50GeV, tta_mAlp-70GeV, tta_mAlp-80GeV

@@ -2,10 +2,14 @@
 
 process=$1
 part=$2
+input_user=$3
+username=`whoami`
 
-base_output_path="/nfs/dust/cms/user/jniedzie/ttalps"
+# base_output_path="/nfs/dust/cms/user/jniedzie/ttalps"
+base_input_path="/nfs/dust/cms/user/${input_user}/ttalps"
+base_output_path="/nfs/dust/cms/user/${username}/ttalps"
 
-input_file_path=`ls ${base_output_path}/${process}_nEvents-10000*/*root -1 | sed -n $((part+1))p`
+input_file_path=`ls ${base_input_path}/${process}_nEvents-10000*/*root -1 | sed -n $((part+1))p`
 
 input_path=$(dirname "$input_file_path")
 input_path="${input_path}/"

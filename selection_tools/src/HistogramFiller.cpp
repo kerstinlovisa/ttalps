@@ -190,7 +190,30 @@ void HistogramFiller::fill_final_selection_hists(const Particle* particle_1, con
   }
 };
 
-void HistogramFiller::fill_alp_selection_hists(const Particle* particle, const Event *event)
+void HistogramFiller::fill_alp_in_preselection_hists(const Particle* particle_1, const Particle* particle_2, const Particle* mother, const Event *event, string sign)
+{
+  if(!particle_1 || !particle_2) return;
+  
+  float lxy1 = sqrt(pow(particle_1->x, 2) + pow(particle_1->y, 2));
+  float lxy2 = sqrt(pow(particle_2->x, 2) + pow(particle_2->y, 2));
+  const Particle* particle_maxlxy;
+  const Particle* particle_minlxy;
+  if (lxy1>=lxy2){
+    particle_maxlxy = particle_1;
+    particle_minlxy = particle_2;
+  }
+  else {
+    particle_maxlxy = particle_2;
+    particle_minlxy = particle_1;
+  }
+    
+  histSets[sign+"_maxlxy-muon"]->fill(particle_maxlxy, event);
+  histSets[sign+"_minlxy-muon"]->fill(particle_minlxy, event);
+  histSets[sign+"_first_mother"]->fill(mother, event);
+  histSets[sign+"_dimuon"]->fill(particle_1, particle_2, event);
+}
+
+void HistogramFiller::fill_first_muon_from_alp_selection_hists(const Particle* particle, const Event *event)
 {
   if(!particle) return;
   histSets["alp_selection_os_minlxy-muon"]->fill(particle, event);
@@ -211,8 +234,11 @@ void HistogramFiller::save_histograms(std::string output_path)
     if(hist_name.substr(0,3) == "sel"){
       output_file->cd("intermediate_selections");
     }
-    if(hist_name.substr(0,3) == "alp"){
+    if(hist_name.substr(0,5) == "alp_s"){
       output_file->cd("alp_selections");
+    }
+    else if(hist_name.substr(0,3) == "alp"){
+      output_file->cd("alp");
     }
     for(auto &[tmp_2, hist] : hist_set->hists){
       hist->Write();

@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <vector>
 #include <iostream>
+#include <TLorentzRotation.h>
 
 #include "Particle.hpp"
 
@@ -20,6 +21,24 @@ pdgid(_pdgid), daughters(_daughters), status(_status), index(_index), barcode(_b
   four_vector.SetPxPyPzE(px, py, pz, energy);
 }
 
+Particle::Particle(TVector3 boost, Particle* particle):
+ctau(particle->ctau), pdgid(particle->pdgid), daughters(particle->daughters), 
+status(particle->status), index(particle->index), barcode(particle->barcode)
+{
+  TLorentzRotation rotation(boost);
+  rotation.Invert();
+  TLorentzVector transformed_four_vector = rotation * four_vector;
+
+  x = transformed_four_vector.X();
+  y = transformed_four_vector.Y();
+  z = transformed_four_vector.Z();
+  px = transformed_four_vector.Px(); 
+  py = transformed_four_vector.Py();
+  pz = transformed_four_vector.Pz();
+  energy = transformed_four_vector.E();
+  mass = transformed_four_vector.M();
+}
+
 void Particle::print()
 {
   cout<<"Particle "<<index<<" (pdg: "<<pdgid<<", status: "<<status<<"), daughters: ";
@@ -34,7 +53,7 @@ bool Particle::is_good_non_top_muon(const vector<Particle*> &particles)
   if(!is_final()) return false;
   if(abs(pdgid) != 13) return false;
   if(fabs(eta()) > 2.5) return false;
-  if(pt() < 3) return false;
+  if(pt() < 5) return false;
   if(has_top_ancestor(particles)) return false;
   if(pow(energy, 2) - pow(momentum(), 2) < 0) return false;
   
@@ -81,6 +100,7 @@ bool Particle::has_alp_ancestor(const vector<Particle*> &other_particles)
 bool Particle::is_final()
 {
   if(abs(pdgid) == 6) return status == 62;
+  if(abs(pdgid) == 13) return status == 1;
   
   return true;
 }
@@ -98,4 +118,9 @@ double Particle::momentum() const
 double Particle::pt() const
 {
   return four_vector.Pt();
+}
+
+TVector3 Particle::get_boost() const
+{
+  return four_vector.BoostVector();
 }

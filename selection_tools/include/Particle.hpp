@@ -14,6 +14,7 @@ class Particle
 public:
   Particle(float _x, float _y, float _z, float _px, float _py, float _pz, float _energy, float _mass, float _ctau,
            int _pdgid, std::vector<int> _daughters, int _status, int _index, int _barcode);
+  Particle(TVector3 boost, Particle* particle);
   ~Particle(){}
   
   void print();
@@ -29,8 +30,8 @@ public:
   double eta();
   double momentum() const;
   double pt() const;
-  
-  
+  TVector3 get_boost() const;  
+
   float x, y, z, px, py, pz, energy, mass, ctau;
   std::vector<int> mothers, daughters;
   int pdgid, status, index, barcode;

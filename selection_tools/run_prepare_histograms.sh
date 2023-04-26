@@ -2,12 +2,11 @@
 
 process=$1
 part=$2
+input_user=$3
 username=`whoami`
 
-base_input_path="/nfs/dust/cms/user/${username}/ttalps"
-base_output_path="/nfs/dust/cms/user/jniedzie/ttalps"
-# base_output_path="/nfs/dust/cms/user/lrygaard/ttalps" 
-# base_output_path="/afs/desy.de/user/l/lrygaard/ALPpheno" 
+base_input_path="/nfs/dust/cms/user/${input_user}/ttalps"
+base_output_path="/nfs/dust/cms/user/${username}/ttalps"
 output_file_name="${process}_part-${part}.root"
 
 category="muon_siblings"

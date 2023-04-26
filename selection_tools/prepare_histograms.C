@@ -49,6 +49,20 @@ TH1D* fill_and_save_histograms(const vector<Event*> &events, string output_path)
       
       histogramFiller.fill_hists(muon_1, muon_2, event, "os");
       histogramFiller.fill_final_selection_hists(muon_1, muon_2, event, "os");
+
+      if(!muon_1 || !muon_2) continue;
+      if(!muon_1->has_alp_ancestor(event->particles)) continue;
+      if(!muon_2->has_alp_ancestor(event->particles)) continue;
+      auto mother_1 = event->particles[muon_1->mothers[0]];
+      auto mother_2 = event->particles[muon_2->mothers[0]];
+      if(mother_1 != mother_2) continue;
+      histogramFiller.fill_alp_hists(muon_1, muon_2, mother_1, event, "os");
+
+      TVector3 boost = mother_1->get_boost();
+      auto muon_reboosted_1 = new Particle(boost, muon_1);
+      auto muon_reboosted_2 = new Particle(boost, muon_2);
+      auto mother_reboosted_1 = new Particle(boost, mother_1);
+      histogramFiller.fill_alp_hists(muon_reboosted_1, muon_reboosted_2, mother_reboosted_1, event, "reboosted_os");
     }
     
     for(auto muon : event->particles){
@@ -111,7 +125,6 @@ int main(int argc, char *argv[])
   string output_path = argv[2];
   
   auto input_tree = get_input_tree(input_path);
-  
   
 // load events
   auto event_reader = EventReader(max_events, n_daughters);
