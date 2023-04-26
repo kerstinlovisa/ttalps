@@ -44,3 +44,4 @@ TdAlps/__pycache__/*
 plotting_tools/*.pdf
 
 limits_tools/*.pdf
+limits_tools/__pycache__/*

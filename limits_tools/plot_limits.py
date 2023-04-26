@@ -3,6 +3,7 @@ from math import sqrt, pi
 from ROOT import TFile, kGreen, kYellow, TCanvas, gPad, TGraph, kRed, TLegend, TGraphAsymmErrors, TBox, kWhite
 
 import physics as ph
+from limits_tools import alp_cross_section_only_top_coupling, mass_to_lifetime, cross_section_to_coupling, regions_to_mask
 
 input_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/limits_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1.root"
 mask_masses = True
@@ -10,140 +11,7 @@ mask_masses = True
 Lambda = 4*pi*1000
 coupling = 0.5
 
-# with all couplings on
-# reference_points = {
-# # mass (GeV), x_sec (pb)
-#     0.1:  3.102,
-#     0.2: 3.066,
-#     0.3: 3.075,
-#     0.315: 3.122,
-#     0.5: 3.098,
-#     1.0: 3.104,
-#     2.0: 3.087,
-#     4.0: 3.057,
-#     8.0: 3.023,
-#     8.5: 3.086,
-#     10.: 3.046,
-#     20.: 2.993,
-#     40.: 2.870,
-#     50.: 2.799,
-#     70.: 2.622,
-#     80.: 2.518,
-#     # 90.: 2.424,
-# }
 
-# with only alp-top couplings on (cu = -0.5, cq = 0.5)
-reference_points = {
-# mass (GeV), x_sec (pb)
-    0.1:  0.1188,
-    # 0.2: 4.227e-06,
-    # 0.3: 3.84e-06,
-    # 0.315: 3.74e-06,
-    # 0.5: 4.032e-06,
-    1.0: 0.1169,
-    # 2.0: 4.138e-06,
-    # 4.0: 3.987e-06,
-    # 8.0: 3.286e-06,
-    # 8.5: 3.527e-06,
-    10.: 0.1148,
-    # 20.: 2.079e-06,
-    40.: 0.09168,
-    50.: 0.0844,
-    # 70.: 3.607e-07,
-    80.: 0.06463,
-    # 90.: 2.012e-07,
-}
-
-regions_to_mask = {
-    "rho/omega": (0.74, 0.82),
-    "phi": (0.97, 1.07),
-    "j/psi": (2.94, 3.24),
-    "psi": (3.50, 3.86),
-    "z": (86.63, 95.75),
-}
-
-
-def find_lifetime_for_mass(mass):
-    
-    ctau = ph.ctaua(mass, coupling, coupling, Lambda) # in cm
-
-    boost = 1/mass
-
-    if mass < 3:
-        boost *= 223
-    elif mass < 20:
-        boost *= 230
-    elif mass < 30:
-        boost *= 240
-    elif mass < 50:
-        boost *= 260
-    else:
-        boost *= 296
-    
-    return boost*ctau
-
-def mass_to_lifetime(input_graph):
-    output_graph = TGraphAsymmErrors()
-    
-    for i in range(input_graph.GetN()):
-        mass = input_graph.GetPointX(i)
-        x_sec = input_graph.GetPointY(i)
-        x_sec_up = input_graph.GetErrorYhigh(i)
-        x_sec_down = input_graph.GetErrorYlow(i)
-        
-        lifetime = find_lifetime_for_mass(mass)
-        
-        output_graph.SetPoint(i, lifetime, x_sec)
-        output_graph.SetPointError(i, 0, 0, x_sec_down, x_sec_up)
-        
-    return output_graph
-
-
-def find_coupling_for_cross_section(x_sec, mass):
-    
-    coeffs = {
-        0.1: 0.1177,
-        0.2: 0.1192,
-        0.3: 0.1173,
-        0.315: 0.1183,
-        0.5: 0.1186,
-        1: 0.1171,
-        2: 0.1180,
-        4: 0.1178,
-        8: 0.1165,
-        8.5: 0.1170,
-        10: 0.1143,
-        20: 0.1090,
-        40: 0.0923,
-        50: 0.0848,
-        70: 0.0715,
-        80: 0.0652,
-    }
-    
-    couping = x_sec/coeffs[mass]
-    couping = sqrt(couping)
-    return couping
-
-
-def cross_section_to_coupling(input_graph):
-    output_graph = TGraphAsymmErrors()
-    
-    for i in range(input_graph.GetN()):
-        mass = input_graph.GetPointX(i)
-        x_sec = input_graph.GetPointY(i)
-        x_sec_up = input_graph.GetErrorYhigh(i)
-        x_sec_down = input_graph.GetErrorYlow(i)
-        
-        coupling = find_coupling_for_cross_section(x_sec, mass)
-        coupling_up = find_coupling_for_cross_section(x_sec_up, mass) if x_sec_up > 0 else 0
-        coupling_down = find_coupling_for_cross_section(x_sec_down, mass) if x_sec_down > 0 else 0
-        
-        output_graph.SetPoint(i, mass, coupling)
-        output_graph.SetPointError(i, 0, 0, coupling_down, coupling_up)
-    
-    return output_graph
-
-    
 def save_canvas(title, x_title, y_title, theory_line, graph_mean, graph_1sigma, graph_2sigma, is_lifetime=False, is_coupling=False):
     canvas = TCanvas(title, title, 800, 600)
     
@@ -216,20 +84,20 @@ def main():
     
     i_point = 0
     
-    for mass, x_sec in reference_points.items():
+    for mass, x_sec in alp_cross_section_only_top_coupling.items():
         theory_line.SetPoint(i_point, mass, x_sec)
         i_point += 1
 
 
-    theory_line_lifetime = mass_to_lifetime(theory_line)
-    graph_mean_lifetime = mass_to_lifetime(graph_mean)
-    graph_1sigma_lifetime = mass_to_lifetime(graph_1sigma)
-    graph_2sigma_lifetime = mass_to_lifetime(graph_2sigma)
+    theory_line_lifetime = mass_to_lifetime(theory_line, coupling, Lambda)
+    graph_mean_lifetime = mass_to_lifetime(graph_mean, coupling, Lambda)
+    graph_1sigma_lifetime = mass_to_lifetime(graph_1sigma, coupling, Lambda)
+    graph_2sigma_lifetime = mass_to_lifetime(graph_2sigma, coupling, Lambda)
 
-    theory_line_coupling = cross_section_to_coupling(theory_line)
-    graph_mean_coupling = cross_section_to_coupling(graph_mean)
-    graph_1sigma_coupling = cross_section_to_coupling(graph_1sigma)
-    graph_2sigma_coupling = cross_section_to_coupling(graph_2sigma)
+    theory_line_coupling = cross_section_to_coupling(theory_line, coupling)
+    graph_mean_coupling = cross_section_to_coupling(graph_mean, coupling)
+    graph_1sigma_coupling = cross_section_to_coupling(graph_1sigma, coupling)
+    graph_2sigma_coupling = cross_section_to_coupling(graph_2sigma, coupling)
 
     save_canvas("limits_mass", "m_{a} (GeV)", "#sigma(pp#rightarrow t#bar{t}a) #times BR(a#rightarrow #mu#mu) (pb)",
                 theory_line, graph_mean, graph_1sigma, graph_2sigma)
