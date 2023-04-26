@@ -24,34 +24,85 @@ n_generated_ttmumu = 9940000.0
 cross_section_ttj = 395.296031
 cross_section_ttmumu = 0.02091178
 
-#ctaus = ("", "1p000000", "0p001000") # the empty string includes the default ctau value
-#ctaus = ("1p000000", "0p001000")
-ctaus = ("","0p1000000", "0p5000000", "1p0000000")
+# the empty string includes the default ctau value
+#ctaus = ("","0p0000100", "0p0000500", "0p0001000")  # for 1e-4 mm samples
+#ctaus = ("","0p1000000", "0p5000000", "1p0000000")  # for 1 mm samples
+#ctaus = ("","100p0000000", "50p0000000", "10p0000000")  # for 100 mm samples
+ctaus = ("",)  # for 1e5 mm samples
 
 base_path_backgrounds = "/nfs/dust/cms/user/jniedzie/ttalps/hists/"
 
 #base_path = "/nfs/dust/cms/user/lrygaard/ttalps/hists/"
-base_path = "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-1mm/hists/"
+#base_path = "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-1em4mm/hists/"
+#base_path = "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-1mm/hists/"
+#base_path = "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-1e2mm/hists/"
+#base_path = "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-1e2mm_test_pTcut5/hists/"
+#base_path = "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-1e2mm_test_func/hists/"
+base_path = "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-1e5mm/hists/"
+
 #base_path = "/nfs/dust/cms/user/jniedzie/ttalps/hists/"
 
-signals = {
+
+# 1e-4 mm samples
+#signals = {
+#                           mass     file                       n_gen       ref. x_sec (pb)
+#        "tta_mAlp-0p2GeV":    (0.2,   (base_path+"tta_mAlp-0p2GeV.root",    823515.0, 1e-3)),
+#        "tta_mAlp-0p3GeV":    (0.3,   (base_path+"tta_mAlp-0p3GeV.root",    794059.0, 1e-3)),
+#        "tta_mAlp-0p35GeV":   (0.35,  (base_path+"tta_mAlp-0p35GeV.root",   811341.0, 1e-3)),
+#        "tta_mAlp-0p5GeV":    (0.5,   (base_path+"tta_mAlp-0p5GeV.root",    819359.0, 1e-3)),
+#        "tta_mAlp-0p9GeV":    (0.9,   (base_path+"tta_mAlp-0p9GeV.root",    889230.0, 1e-3)),
+#        "tta_mAlp-1p25GeV":   (1.25,  (base_path+"tta_mAlp-1p25GeV.root",   798418.0, 1e-3)),
+#        "tta_mAlp-2GeV":      (2.0,   (base_path+"tta_mAlp-2GeV.root",      897726.0, 1e-3)),
+#        "tta_mAlp-4GeV":      (4.0,   (base_path+"tta_mAlp-4GeV.root",      857528.0, 1e-3)),
+#        "tta_mAlp-8GeV":      (8.0,   (base_path+"tta_mAlp-8GeV.root",      920562.0, 1e-3)),
+#        "tta_mAlp-10GeV":     (10,    (base_path+"tta_mAlp-10GeV.root",     864471.0, 1e-3)),
+#}
+
+# 1 mm samples
+#signals = {
 #                           mass     file                       n_gen      ref. x_sec (pb)
-#	"tta_mAlp-0p1GeV":      (0.1,   (base_path+"tta_mAlp-0p1GeV.root",    970000.0, 10)),
-	"tta_mAlp-0p3GeV":      (0.3,   (base_path+"tta_mAlp-0p3GeV.root",    990000.0, 1e-3)),
-	"tta_mAlp-0p35GeV":     (0.35,  (base_path+"tta_mAlp-0p35GeV.root",   990000.0, 1e-3)),
-	"tta_mAlp-0p5GeV":      (0.5,   (base_path+"tta_mAlp-0p5GeV.root",    1000000.0, 1e-3)),
-	"tta_mAlp-0p9GeV":      (0.9,   (base_path+"tta_mAlp-0p9GeV.root",    990000.0, 1e-3)),
+#	"tta_mAlp-0p2GeV":	(0.2,   (base_path+"tta_mAlp-0p2GeV.root",    980000.0, 1e-3)),
+#	"tta_mAlp-0p3GeV":      (0.3,   (base_path+"tta_mAlp-0p3GeV.root",    990000.0, 1e-3)),
+#	"tta_mAlp-0p35GeV":     (0.35,  (base_path+"tta_mAlp-0p35GeV.root",   990000.0, 1e-3)),
+#	"tta_mAlp-0p5GeV":      (0.5,   (base_path+"tta_mAlp-0p5GeV.root",    1000000.0, 1e-3)),
+#	"tta_mAlp-0p9GeV":      (0.9,   (base_path+"tta_mAlp-0p9GeV.root",    990000.0, 1e-3)),
 #	"tta_mAlp-1p25GeV":     (1.25,  (base_path+"tta_mAlp-1p25GeV.root",   980000.0, 1e-3)),
-	"tta_mAlp-2GeV":        (2.0,   (base_path+"tta_mAlp-2GeV.root",      1000000.0, 1e-3)),
-	"tta_mAlp-4GeV":        (4.0,   (base_path+"tta_mAlp-4GeV.root",      1000000.0, 1e-3)),
-	"tta_mAlp-8GeV":        (8.0,   (base_path+"tta_mAlp-8GeV.root",      1000000.0, 1e-3)),
+#	"tta_mAlp-2GeV":        (2.0,   (base_path+"tta_mAlp-2GeV.root",      1000000.0, 1e-3)),
+#	"tta_mAlp-4GeV":        (4.0,   (base_path+"tta_mAlp-4GeV.root",      1000000.0, 1e-3)),
+#	"tta_mAlp-8GeV":        (8.0,   (base_path+"tta_mAlp-8GeV.root",      1000000.0, 1e-3)),
 #	"tta_mAlp-10GeV":       (10,    (base_path+"tta_mAlp-10GeV.root",     980000.0, 1e-3)),
-#	"tta_mAlp-20GeV":       (20,    (base_path+"tta_mAlp-20GeV.root",     960000.0, 1e-3)),
-#	"tta_mAlp-40GeV":       (40,    (base_path+"tta_mAlp-40GeV.root",     930000.0, 1e-3)),
-#	"tta_mAlp-50GeV":       (50,    (base_path+"tta_mAlp-50GeV.root",     950000.0, 1e-3)),
-#	"tta_mAlp-70GeV":       (70,    (base_path+"tta_mAlp-70GeV.root",     860000.0, 1e-3)),
-#	"tta_mAlp-80GeV":       (80,    (base_path+"tta_mAlp-80GeV.root",     990000.0, 1e-3)),
-    }
+#}
+
+# 100 mm samples
+#signals = {
+#                           mass     file                       n_gen       ref. x_sec (pb)
+#    	"tta_mAlp-0p2GeV":	(0.2,   (base_path+"tta_mAlp-0p2GeV.root",    945666.0, 1e-3)),
+#        "tta_mAlp-0p3GeV":	(0.3,   (base_path+"tta_mAlp-0p3GeV.root",    939472.0, 1e-3)),
+#        "tta_mAlp-0p35GeV":     (0.35,  (base_path+"tta_mAlp-0p35GeV.root",   954548.0, 1e-3)),
+#        "tta_mAlp-0p5GeV":	(0.5,   (base_path+"tta_mAlp-0p5GeV.root",    910031.0, 1e-3)),
+#        "tta_mAlp-0p9GeV":	(0.9,   (base_path+"tta_mAlp-0p9GeV.root",    905981.0, 1e-3)),
+#        "tta_mAlp-1p25GeV":	(1.25,  (base_path+"tta_mAlp-1p25GeV.root",   904457.0, 1e-3)),
+#        "tta_mAlp-2GeV":	(2.0,   (base_path+"tta_mAlp-2GeV.root",      902781.0, 1e-3)),
+#        "tta_mAlp-4GeV":	(4.0,   (base_path+"tta_mAlp-4GeV.root",      957228.0, 1e-3)),
+#        "tta_mAlp-8GeV":	(8.0,   (base_path+"tta_mAlp-8GeV.root",      881900.0, 1e-3)),
+#        "tta_mAlp-10GeV":	(10,    (base_path+"tta_mAlp-10GeV.root",     959596.0, 1e-3)),
+#}
+
+# 1e5 mm samples
+signals = {
+    #                           mass     file                       n_gen       ref. x_sec (pb)
+    #	"tta_mAlp-0p2GeV":    (0.2,   (base_path+"tta_mAlp-0p2GeV.root",    824599.0, 1e-3)),
+#    "tta_mAlp-0p3GeV":    (0.3,   (base_path+"tta_mAlp-0p3GeV.root",    617049.0, 1e-3)),
+    "tta_mAlp-0p35GeV":   (0.35,  (base_path+"tta_mAlp-0p35GeV.root",   600727.0, 1e3)),
+    "tta_mAlp-0p5GeV":    (0.5,   (base_path+"tta_mAlp-0p5GeV.root",    634373.0, 1e3)),
+    "tta_mAlp-0p9GeV":    (0.9,   (base_path+"tta_mAlp-0p9GeV.root",    566575.0, 1e3)),
+    "tta_mAlp-1p25GeV":   (1.25,  (base_path+"tta_mAlp-1p25GeV.root",   495886.0, 1e3)),
+    "tta_mAlp-2GeV":      (2.0,   (base_path+"tta_mAlp-2GeV.root",      551414.0, 1e3)),
+    "tta_mAlp-4GeV":      (4.0,   (base_path+"tta_mAlp-4GeV.root",      543955.0, 1e-3)),
+    "tta_mAlp-8GeV":      (8.0,   (base_path+"tta_mAlp-8GeV.root",      494375.0, 1e-3)),
+    "tta_mAlp-10GeV":     (10,    (base_path+"tta_mAlp-10GeV.root",     620215.0, 1e-3)),
+}
+
 
 #cuts = "mass-cuts"
 #cuts = "mass-cuts_dR-0p1"
@@ -121,6 +172,7 @@ def get_datacard_for_signal(expected):
     
     return data_card
     
+
 def save_datacard(processes):
     hists = {}
     files = {}
@@ -145,9 +197,8 @@ def save_datacard(processes):
             
         if bin_dict["tta"] == 0:
             bin_dict["tta"] = 1e-50
-            
-        expected.append(bin_dict)
         
+        expected.append(bin_dict)
         print(f"Adding bin: {expected[-1]})")
     
     data_card = get_datacard_for_signal(expected)
@@ -178,13 +229,10 @@ def get_limits_for_signal(signal):
     limits = {}
     with open(tmp_output_file_name, "r") as file:
         lines = file.readlines()
-        
-        count = 0
-        
+
         for line in lines:
             if "Expected" in line:
                 parts = line.split(" ")
-                
                 limits[parts[1]] = float(parts[-1])
     
     return limits
