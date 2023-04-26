@@ -190,7 +190,7 @@ void HistogramFiller::fill_final_selection_hists(const Particle* particle_1, con
   }
 };
 
-void HistogramFiller::fill_alp_hists(const Particle* particle_1, const Particle* particle_2, const Particle* mother, const Event *event, string sign)
+void HistogramFiller::fill_alp_in_preselection_hists(const Particle* particle_1, const Particle* particle_2, const Particle* mother, const Event *event, string sign)
 {
   if(!particle_1 || !particle_2) return;
   
@@ -213,7 +213,7 @@ void HistogramFiller::fill_alp_hists(const Particle* particle_1, const Particle*
   histSets[sign+"_dimuon"]->fill(particle_1, particle_2, event);
 }
 
-void HistogramFiller::fill_alp_selection_hists(const Particle* particle, const Event *event)
+void HistogramFiller::fill_first_muon_from_alp_selection_hists(const Particle* particle, const Event *event)
 {
   if(!particle) return;
   histSets["alp_selection_os_minlxy-muon"]->fill(particle, event);
