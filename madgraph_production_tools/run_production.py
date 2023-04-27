@@ -122,6 +122,7 @@ def get_args():
     parser.add_argument("-m", "--alp_mass", help="", default=50e-03)
     parser.add_argument("-o", "--output_path", help="", default=".")
     parser.add_argument("-pr", "--process", help="", default="tta")
+    parser.add_argument("-l", "--lifetime", help="", default=-1)
     
     return parser.parse_args()
 
@@ -141,6 +142,12 @@ def get_output_file_name(process, part, n_events, alp_mass):
     file_name += f"_part-{part}"
     
     return file_name
+
+
+def get_gamma_for_lifetime(lifetime):  # in mm
+    lifetime /= 10  # convert to cm
+    gamma = ph.sm['c'] * ph.sm['hbar'] / lifetime
+    return gamma
 
 
 def main():
@@ -195,8 +202,11 @@ def main():
 
     # prepare param card
     alp_mass = float(args.alp_mass)
+    lifetime = float(args.lifetime)
     
-    if use_gamma_total:
+    if lifetime > 0:
+        gamma = get_gamma_for_lifetime(lifetime)
+    elif use_gamma_total:
         gamma = ph.Gammaa(alp_mass, coupling, coupling, Lambda)
     else:
         lscs = ph.getLSfromctt(coupling, coupling, Lambda, alp_mass)
