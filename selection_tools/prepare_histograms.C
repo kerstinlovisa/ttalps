@@ -33,11 +33,11 @@ TTree* get_input_tree(string input_path)
   return (TTree*)input_file->Get("Events");
 }
 
-TH1D* fill_and_save_histograms(const vector<Event*> &events, string output_path, bool compress=false)
+TH1D* fill_and_save_histograms(const vector<Event*> &events, string output_path, bool reduce_hists=false)
 {
   bool include_lxy_selection = true;
 
-  auto histogramFiller = HistogramFiller(compress);
+  auto histogramFiller = HistogramFiller(reduce_hists);
   for(auto event : events){
     if(!event->has_ttbar_pair()) continue;
     int preselection_code = event->passes_preselection(include_lxy_selection);
@@ -51,7 +51,7 @@ TH1D* fill_and_save_histograms(const vector<Event*> &events, string output_path,
       histogramFiller.fill_hists(muon_1, muon_2, event, "os");
       histogramFiller.fill_final_selection_hists(muon_1, muon_2, event, "os");
 
-      if(!compress)
+      if(!reduce_hists)
       {
         auto first_muon_1 = muon_1;
         auto first_muon_2 = muon_2;
@@ -159,10 +159,10 @@ int main(int argc, char *argv[])
   auto event_reader = EventReader(max_events, n_daughters);
   auto events = event_reader.read_events(input_tree);
 
-  bool compress = false;
-  if(ctau_option != 0.0) compress = true;
+  bool reduce_hists = false;
+  if(ctau_option != 0.0) reduce_hists = true;
   
-  TH1D *baseline_hist = fill_and_save_histograms(events, output_path, compress);
+  TH1D *baseline_hist = fill_and_save_histograms(events, output_path, reduce_hists);
 
 //  vector<double> destination_lifetimes = {1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2, 1e3, 1e4}; // mm
   // vector<double> destination_lifetimes = {1e-3, 1e0}; // mm

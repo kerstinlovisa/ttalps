@@ -18,7 +18,7 @@
 
 class HistogramFiller {
 public:
-  HistogramFiller(bool compress=false);
+  HistogramFiller(bool reduce_hists=false);
   ~HistogramFiller();
   
   void fill_deltaR_deltal_selections(const Particle* particle_1, const Particle* particle_2, const Event *event,
@@ -37,7 +37,7 @@ public:
 private:
   CutsManager cutsManager;
   std::vector<double> ptCuts;
-  bool compress_=false;
+  bool reduce_hists_=false;
 };
 
 #endif /* HistogramFiller_hpp */

@@ -19,7 +19,7 @@
 
 class HistogramSet {
 public:
-  HistogramSet(std::string prefix, bool compress=false, bool alp=false);
+  HistogramSet(std::string prefix, bool reduce_hists=false, bool alp=false);
   
   void fill(const Particle* particle, const Event* event=nullptr);
   void fill(const Particle* particle_1, const Particle* particle_2, const Event* event=nullptr);
@@ -30,7 +30,7 @@ public:
 
   float* logxBins(const int n_bins, const float min, const float max);
 private:
-  bool compress_=false;
+  bool reduce_hists_=false;
 };
 
 #endif /* HistogramSet_hpp */

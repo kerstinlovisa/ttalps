@@ -11,9 +11,9 @@
 
 using namespace std;
 
-HistogramSet::HistogramSet(string prefix, bool compress, bool alp)
+HistogramSet::HistogramSet(string prefix, bool reduce_hists, bool alp)
 {
-  compress_=compress;
+  reduce_hists_=reduce_hists;
 
   float binList[7] = {0, 2, 10, 24, 31, 70, 110}; // mm
   float binListExtended[10] = {0, 2, 10, 24, 31, 70, 110, 1300, 3000, 7300}; // mm
@@ -30,7 +30,7 @@ HistogramSet::HistogramSet(string prefix, bool compress, bool alp)
   hists["proper_ctau_logx"] = new TH1D((prefix+"_proper_ctau_logx").c_str(),   (prefix+"_proper_ctau_logx").c_str(),
                                   180, logxBins(180, 1e-6, 1000));
 
-  if(!compress){
+  if(!reduce_hists){
     hists["pt"]       = new TH1D((prefix+"_pt").c_str(),    (prefix+"_pt").c_str(),           1000, 0,      200   );
     // hists["pz"]       = new TH1D((prefix+"_pz").c_str(),    (prefix+"_pz").c_str(),           1000, 0,      500   );
     hists["mass_log"] = new TH1D((prefix+"_mass_log").c_str(),  (prefix+"_mass_log").c_str(), 1000,  logxBins(1000,0.1,100));
@@ -78,7 +78,7 @@ void HistogramSet::fill(const Particle *particle, const Event *event)
   hists["lxy_rebinned"]->Fill(sqrt(pow(particle->x, 2) + pow(particle->y, 2)), weight);
   hists["lxy_rebinned_extended"]->Fill(sqrt(pow(particle->x, 2) + pow(particle->y, 2)), weight);
   hists["lxy_rebinned_extended_general"]->Fill(sqrt(pow(particle->x, 2) + pow(particle->y, 2)), weight);
-  if(!compress_)
+  if(!reduce_hists_)
   {
     hists["pt"]->Fill(particle->four_vector.Pt(), weight);
     // hists["pz"]->Fill(particle->four_vector.Pz(), weight);
@@ -100,7 +100,7 @@ void HistogramSet::fill(const Particle *particle, const Event *event)
 
 void HistogramSet::fill(const Particle* particle_1, const Particle* particle_2, const Event *event)
 {
-  if(!compress_){
+  if(!reduce_hists_){
     double weight = 1;
     if(event) weight = event->weight;
     
