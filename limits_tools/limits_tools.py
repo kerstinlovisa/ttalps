@@ -63,10 +63,31 @@ def find_lifetime_for_mass(mass, coupling, Lambda):
     else:
         boost *= 296
     
-    return boost * ctau
+    ctau *= boost
+    
+    return ctau
+
+
+def find_lifetime_for_mass_mumuonly_noboost(mass, coupling, Lambda):
+    # ctau = ph.ctaua(mass, coupling, coupling, Lambda) # in cm
+    # return ctau * 10 # convert to mm
+    
+    lscs = ph.getLSfromctt(coupling, coupling, Lambda, mass)
+    gamma_mumu = ph.Gammaatoll(mass, ph.readCmumu(lscs), ph.sm['mmu'], Lambda)
+    
+    if gamma_mumu == 0:
+        return 999999
+    
+    lifetime_mumu = ph.sm["c"] * ph.sm["hbar"] / gamma_mumu
+    lifetime_mumu *= 10  # convert to mm
+    
+    return lifetime_mumu
 
 
 def mass_to_lifetime(input_graph, coupling, Lambda):
+    if input_graph is None:
+        return None
+    
     output_graph = TGraphAsymmErrors()
     
     for i in range(input_graph.GetN()):
@@ -112,6 +133,9 @@ def find_coupling_for_cross_section(x_sec, mass):
 
 
 def cross_section_to_coupling(input_graph):
+    if input_graph is None:
+        return None
+    
     output_graph = TGraphAsymmErrors()
     
     for i in range(input_graph.GetN()):
