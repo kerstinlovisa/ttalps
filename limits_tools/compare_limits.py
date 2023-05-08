@@ -1,87 +1,107 @@
+from math import sqrt, pi
+
 from ROOT import TFile, kGreen, kYellow, TCanvas, gPad, TGraph, kRed, kViolet, kBlue, TLegend, kCyan, kOrange
 
+from limits_tools import alp_cross_section_only_top_coupling, cross_section_to_coupling
 
-limits_variants = [
-    # ("mass-cuts", kViolet, 1, "mass cuts"),
-    # ("pt-5GeV_mass-cuts", kBlue, 1, "mass cuts, p_{T, #mu} > 5 GeV"),
-    # ("pt-min5GeV_mass-cuts", kViolet, 1, "mass cuts, p_{T, #mu} > 5 GeV"),
-    # ("pt-min8GeV_mass-cuts", kBlue, 1, "mass cuts, p_{T, #mu} > 8 GeV"),
-    ("pt-min10GeV_mass-cuts_deltalxy_ratio_abs-max0p1", kGreen+1, 1, "mass cuts, R_{xy}^{abs} < 0.1"),
-    ("pt-min10GeV_mass-cuts_deltalxy_ratio_abs-max0p5", kViolet, 1, "mass cuts, R_{xy}^{abs} < 0.5"),
-    # ("pt-min10GeV_mass-cuts_dR-max0p1", kBlue, 1, "mass cuts, p_{T, #mu} > 10 GeV, #Delta R < 0.1"),
-    # ("pt-min10GeV_mass-cuts_dR-max0p2", kOrange+1, 1, "mass cuts, p_{T, #mu} > 10 GeV, #Delta R < 0.2"),
-
-
-]
 
 base_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/"
 
-reference_points = {
-# mass (GeV), x_sec (pb)
-    0.1:  3.102,
-    0.2: 3.066,
-    0.3: 3.075,
-    0.315: 3.122,
-    0.5: 3.098,
-    1.0: 3.104,
-    2.0: 3.087,
-    4.0: 3.057,
-    8.0: 3.023,
-    8.5: 3.086,
-    10.: 3.046,
-    20.: 2.993,
-    40.: 2.870,
-    50.: 2.799,
-    70.: 2.622,
-    80.: 2.518,
-    90.: 2.424,
-}
-
-theory_line = TGraph()
-
-i_point = 0
-
-for mass, x_sec in reference_points.items():
-    theory_line.SetPoint(i_point, mass, x_sec)
-    i_point += 1
-
-canvas = TCanvas("limits", "limits", 800, 600)
-
-canvas.cd()
-
-gPad.SetLogy()
-gPad.SetLogx()
-
-theory_line.SetLineColor(kRed)
-theory_line.Draw("AL")
-
-theory_line.SetMinimum(2e-5)
-theory_line.SetMaximum(2e3)
-theory_line.GetXaxis().SetRangeUser(0, 90)
-
-theory_line.GetYaxis().SetTitle("#sigma(pp#rightarrow t#bar{t}a) #times BR(a#rightarrow #mu#mu) (pb)")
-theory_line.GetXaxis().SetTitle("m_{a} (GeV)")
+limits_variants = [
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1", kViolet+1, 1, "default_lifetime"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_ctau-1e5mm", kCyan+1, 1, "1e5 mm"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_ctau-1e2mm", kBlue, 1, "100 mm"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_ctau-1mm", kGreen+1, 1, "1 mm"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_ctau-1em4mm", kOrange, 1, "1e-4 mm"),
+]
 
 
-legend = TLegend(0.3, 0.7, 0.7, 0.9)
-
-files = {}
-
-legend.AddEntry(theory_line, "theory", "l")
-
-for (cuts, color, style, title) in limits_variants:
-    files[cuts] = TFile.Open(f"{base_path}limits_{cuts}.root")
-    graph_mean = files[cuts].Get("limits_mean")
-    graph_mean.SetLineColor(color)
-    graph_mean.SetLineStyle(style)
-    graph_mean.Draw("Lsame")
+def main():
     
-    legend.AddEntry(graph_mean, title, "l")
+    theory_line = TGraph()
+    
+    i_point = 0
+    
+    for mass, x_sec in alp_cross_section_only_top_coupling.items():
+        theory_line.SetPoint(i_point, mass, x_sec)
+        i_point += 1
+    
+    canvas_cross_section = TCanvas("limits_x_sec", "limits_x_sec", 800, 600)
+    canvas_coupling = TCanvas("limits_coupling", "limits_coupling", 800, 600)
+    
+    canvas_cross_section.cd()
+    
+    gPad.SetLogy()
+    # gPad.SetLogx()
+    
+    theory_line.SetLineColor(kRed)
+    theory_line.Draw("AL")
+    
+    theory_line.SetMinimum(2e-5)
+    theory_line.SetMaximum(2e3)
+    theory_line.GetXaxis().SetRangeUser(0.3, 10)
+    
+    theory_line.GetYaxis().SetTitle("#sigma(pp#rightarrow t#bar{t}a) #times BR(a#rightarrow #mu#mu) (pb)")
+    theory_line.GetXaxis().SetTitle("m_{a} (GeV)")
+    
+    canvas_coupling.cd()
+    gPad.SetLogy()
+    # gPad.SetLogx()
 
-dummy_graph = TGraph()
-legend.AddEntry(dummy_graph, "", "")
+    theory_line_coupling = cross_section_to_coupling(theory_line)
 
-legend.Draw()
+    theory_line_coupling.SetMinimum(1e-2)
+    theory_line_coupling.SetMaximum(1e2)
+    theory_line_coupling.GetXaxis().SetRangeUser(0.3, 10)
 
-canvas.Update()
-canvas.SaveAs("limits_comparison.pdf")
+    theory_line_coupling.GetYaxis().SetTitle("c_{tt}")
+    theory_line_coupling.GetXaxis().SetTitle("m_{a} (GeV)")
+
+    theory_line_coupling.SetLineColor(kRed)
+    theory_line_coupling.Draw("AL")
+    
+    legend = TLegend(0.3, 0.7, 0.7, 0.9)
+    
+    files = {}
+    
+    legend.AddEntry(theory_line, "theory", "l")
+    
+    for (cuts, color, style, title) in limits_variants:
+        files[cuts] = TFile.Open(f"{base_path}limits_{cuts}.root")
+        graph_mean = files[cuts].Get("limits_mean")
+        graph_mean.SetLineColor(color)
+        graph_mean.SetLineStyle(style)
+
+        canvas_cross_section.cd()
+        graph_mean.Draw("Lsame")
+
+        canvas_coupling.cd()
+        graph_mean_coupling = cross_section_to_coupling(graph_mean)
+        graph_mean_coupling.SetLineColor(color)
+        graph_mean_coupling.SetLineStyle(style)
+        graph_mean_coupling.DrawClone("Lsame")
+        
+        legend.AddEntry(graph_mean, title, "l")
+    
+    dummy_graph = TGraph()
+    legend.AddEntry(dummy_graph, "", "")
+    
+    canvas_cross_section.cd()
+    legend.Draw()
+
+    canvas_coupling.cd()
+    legend.Draw()
+    
+    canvas_cross_section.Update()
+    canvas_cross_section.SaveAs("limits_comparison.pdf")
+
+    canvas_coupling.Update()
+    canvas_coupling.SaveAs("limits_comparison_coupling.pdf")
+
+    
+    
+    
+    
+
+if __name__ == "__main__":
+    main()
