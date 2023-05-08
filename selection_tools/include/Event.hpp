@@ -28,7 +28,8 @@ public:
   
   bool has_two_opposite_sign_muons();
   bool has_ttbar_pair();
-  int passes_preselection();
+  int get_final_state_particle_index(int particle_index, std::vector<Particle*> particles);
+  int passes_preselection(bool include_lxy_selection=false);
   
   Particle* get_single_muon();
   std::vector<std::tuple<Particle*, Particle*>> get_muon_pair();
