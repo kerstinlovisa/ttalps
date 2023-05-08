@@ -145,13 +145,13 @@ TH1D* get_weights_histogram(TH1D* baseline_hist, double destination_lifetime)
 int main(int argc, char *argv[])
 {
   if(argc != 4){
-    cout<<"Usage: ./prepare_histograms input_path output_path signal_input"<<endl;
+    cout<<"Usage: ./prepare_histograms input_path output_path ctau_option"<<endl;
     exit(0);
   }
   
   string input_path = argv[1];
   string output_path = argv[2];
-  double signal_input = atof(argv[3]);
+  double ctau_option = atof(argv[3]);
   
   auto input_tree = get_input_tree(input_path);
   
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
   auto events = event_reader.read_events(input_tree);
 
   bool compress = false;
-  if(signal_input != 0.0) compress = true;
+  if(ctau_option != 0.0) compress = true;
   
   TH1D *baseline_hist = fill_and_save_histograms(events, output_path, compress);
 
