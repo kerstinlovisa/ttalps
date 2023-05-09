@@ -69,9 +69,6 @@ def find_lifetime_for_mass(mass, coupling, Lambda):
 
 
 def find_lifetime_for_mass_mumuonly_noboost(mass, coupling, Lambda):
-    # ctau = ph.ctaua(mass, coupling, coupling, Lambda) # in cm
-    # return ctau * 10 # convert to mm
-    
     lscs = ph.getLSfromctt(coupling, coupling, Lambda, mass)
     gamma_mumu = ph.Gammaatoll(mass, ph.readCmumu(lscs), ph.sm['mmu'], Lambda)
     
@@ -82,6 +79,16 @@ def find_lifetime_for_mass_mumuonly_noboost(mass, coupling, Lambda):
     lifetime_mumu *= 10  # convert to mm
     
     return lifetime_mumu
+
+
+def get_theory_lifetime_vs_mass_mumu_only():
+    graph = TGraph()
+    graph.SetLineColor(kRed)
+    
+    for i_mass, mass in enumerate(linspace(0, 10)):
+        graph.SetPoint(i_mass, mass, find_lifetime_for_mass_mumuonly_noboost(mass, coupling, Lambda))
+    
+    return graph
 
 
 def mass_to_lifetime(input_graph, coupling, Lambda):

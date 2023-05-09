@@ -12,6 +12,10 @@ max_ctau_exp = 8
 Lambda = 4*pi*1000
 coupling = 0.5
 
+use_tiny_below = 1e-2
+# use_tiny_below = 1e-6
+
+
 def main():
     gStyle.SetLineScalePS(1)
     
@@ -64,7 +68,7 @@ def main():
             
             for desired_xsec, [_, _, closest_xsec, _] in isobarns.items():
                 
-                xsec_comp = xsec if desired_xsec >= 1e-2 else xsec_tiny
+                xsec_comp = xsec if desired_xsec >= use_tiny_below else xsec_tiny
                 
                 if abs(desired_xsec - xsec_comp) < abs(desired_xsec-closest_xsec):
                     isobarns[desired_xsec][2] = xsec_comp
