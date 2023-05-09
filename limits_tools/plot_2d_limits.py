@@ -35,7 +35,7 @@ mass_max = 10
 
 colors = (kViolet, kBlue, kCyan + 1, kGreen, kOrange, kRed)
 
-re_fit_2d_limits = True
+re_fit_2d_limits = False
 interactive_mode = False
 project_2d_graph = False
 
