@@ -10,7 +10,7 @@
 
 using namespace std;
 
-HistogramFiller::HistogramFiller(bool reduce_hists)
+HistogramFiller::HistogramFiller(bool reduce_hists, bool include_alp_ancestor_hists)
 {
   cutsManager = CutsManager();
   reduce_hists_=reduce_hists;
@@ -57,10 +57,12 @@ HistogramFiller::HistogramFiller(bool reduce_hists)
     hist_names.push_back("sel_deltalxy_ratio_abs-max0p1_");
     hist_names.push_back("sel_deltalxy_ratio_abs-max0p5_");
     hist_names.push_back("sel_eta-max0p1_");
-    // hist_names.push_back("alp_");
-    // hist_names.push_back("alp_reboosted_");
-    // hist_names.push_back("alp_final_selection_");
-    // hist_names.push_back("alp_final_selection_reboosted_");
+  }
+  if(include_alp_ancestor_hists){
+    hist_names.push_back("alp_");
+    hist_names.push_back("alp_reboosted_");
+    hist_names.push_back("alp_final_selection_");
+    hist_names.push_back("alp_final_selection_reboosted_");
   }
 
   ptCuts = {0, 5, 10, 15};
@@ -88,13 +90,11 @@ HistogramFiller::HistogramFiller(bool reduce_hists)
       histSets[name] = new HistogramSet(name, reduce_hists);
     }
   }
-  // if(!reduce_hists)
-  // {
-  //   histSets["alp_os_first_mother"] = new HistogramSet("alp_os_first_mother", reduce_hists, true);
-  //   histSets["alp_reboosted_os_first_mother"] = new HistogramSet("alp_reboosted_os_first_mother", reduce_hists, true);
-  //   histSets["alp_final_selection_os_first_mother"] = new HistogramSet("alp_final_selection_os_first_mother", reduce_hists, true);
-  //   histSets["alp_final_selection_reboosted_os_first_mother"] = new HistogramSet("alp_final_selection_reboosted_os_first_mother", reduce_hists, true);
-  // }
+  if(!include_alp_ancestor_hists) return;
+  histSets["alp_os_first_mother"] = new HistogramSet("alp_os_first_mother", reduce_hists);
+  histSets["alp_reboosted_os_first_mother"] = new HistogramSet("alp_reboosted_os_first_mother", reduce_hists);
+  histSets["alp_final_selection_os_first_mother"] = new HistogramSet("alp_final_selection_os_first_mother", reduce_hists);
+  histSets["alp_final_selection_reboosted_os_first_mother"] = new HistogramSet("alp_final_selection_reboosted_os_first_mother", reduce_hists);
 }
 
 HistogramFiller::~HistogramFiller()

@@ -11,7 +11,7 @@
 
 using namespace std;
 
-HistogramSet::HistogramSet(string prefix, bool reduce_hists, bool alp)
+HistogramSet::HistogramSet(string prefix, bool reduce_hists)
 {
   reduce_hists_=reduce_hists;
 
@@ -30,37 +30,33 @@ HistogramSet::HistogramSet(string prefix, bool reduce_hists, bool alp)
   hists["proper_ctau_logx"] = new TH1D((prefix+"_proper_ctau_logx").c_str(),   (prefix+"_proper_ctau_logx").c_str(),
                                   180, logxBins(180, 1e-6, 1000));
 
-  if(!reduce_hists){
-    hists["pt"]       = new TH1D((prefix+"_pt").c_str(),    (prefix+"_pt").c_str(),           1000, 0,      200   );
-    // hists["pz"]       = new TH1D((prefix+"_pz").c_str(),    (prefix+"_pz").c_str(),           1000, 0,      500   );
-    hists["mass_log"] = new TH1D((prefix+"_mass_log").c_str(),  (prefix+"_mass_log").c_str(), 1000,  logxBins(1000,0.1,100));
-    hists["mass"]     = new TH1D((prefix+"_mass").c_str(),  (prefix+"_mass").c_str(),         1500,  0,     15   );
-    hists["eta"]      = new TH1D((prefix+"_eta").c_str(),   (prefix+"_eta").c_str(),          1000, -5,     5     );
-    hists["phi"]      = new TH1D((prefix+"_phi").c_str(),   (prefix+"_phi").c_str(),          1000, -5,     5     );
-    // hists["y"]        = new TH1D((prefix+"_y").c_str(),     (prefix+"_y").c_str(),            1000, -5,     5     );
-    // hists["theta"]    = new TH1D((prefix+"_theta").c_str(), (prefix+"_theta").c_str(),        1000, -5,     5     );
-    hists["lxy"]      = new TH1D((prefix+"_lxy").c_str(),   (prefix+"_lxy").c_str(),          1000,0,      1000   );
-    hists["lxy_logx"] = new TH1D((prefix+"_lxy_logx").c_str(),   (prefix+"_lxy_logx").c_str(),350, logxBins(350,1e-4,1e4));
-    float bin2List[3] = {0, 10, 110};
-    hists["lxy_2bins"]= new TH1D((prefix+"_lxy_2bins").c_str(),   (prefix+"_lxy_2bins").c_str(),2, bin2List);
-    // hists["lz"]       = new TH1D((prefix+"_lz").c_str(),    (prefix+"_lz").c_str(),           10000,0,      1000  );
-    // hists["lxyz"]     = new TH1D((prefix+"_lxyz").c_str(),  (prefix+"_lxyz").c_str(),         10000,0,      1000  );
-    hists["boost"]    = new TH1D((prefix+"_boost").c_str(), (prefix+"_boost").c_str(),        500,  0,      500   );
-    hists["deltaR"]   = new TH1D((prefix+"_deltaR").c_str(),   (prefix+"_deltaR").c_str(),    1000, 0,      10    );
-    // hists["deltaPhi"] = new TH1D((prefix+"_deltaPhi").c_str(), (prefix+"_deltaPhi").c_str(),  1000, -5,     5     );
-    hists["deltalxy"] = new TH1D((prefix+"_deltalxy").c_str(), (prefix+"_deltalxy").c_str(),  1000, 0,      10   );
-    hists["deltalxy_diff_abs"]= new TH1D((prefix+"_deltalxy_diff_abs").c_str(), (prefix+"_deltalxy_diff_abs").c_str(),     1000, 0,   10   );
-    hists["deltalxy_ratio_abs"] = new TH1D((prefix+"_deltalxy_ratio_abs").c_str(), (prefix+"_deltalxy_ratio_abs").c_str(), 200,  0,   2 );
-    hists["deltapt"]  = new TH1D((prefix+"_deltapt").c_str(), (prefix+"_deltapt").c_str(),    1000, 0,      500   );
-    hists2d["pt_2d"] = new TH2D((prefix+"_pt_2d").c_str(),  (prefix+"_pt_2d").c_str(), 500, 0, 100, 500, 0, 100);
+  if(reduce_hists) return;
+  hists["pt"]       = new TH1D((prefix+"_pt").c_str(),    (prefix+"_pt").c_str(),           1000, 0,      200   );
+  // hists["pz"]       = new TH1D((prefix+"_pz").c_str(),    (prefix+"_pz").c_str(),           1000, 0,      500   );
+  hists["mass_log"] = new TH1D((prefix+"_mass_log").c_str(),  (prefix+"_mass_log").c_str(), 1000,  logxBins(1000,0.1,100));
+  hists["mass"]     = new TH1D((prefix+"_mass").c_str(),  (prefix+"_mass").c_str(),         1500,  0,     15   );
+  hists["eta"]      = new TH1D((prefix+"_eta").c_str(),   (prefix+"_eta").c_str(),          1000, -5,     5     );
+  hists["phi"]      = new TH1D((prefix+"_phi").c_str(),   (prefix+"_phi").c_str(),          1000, -5,     5     );
+  // hists["y"]        = new TH1D((prefix+"_y").c_str(),     (prefix+"_y").c_str(),            1000, -5,     5     );
+  // hists["theta"]    = new TH1D((prefix+"_theta").c_str(), (prefix+"_theta").c_str(),        1000, -5,     5     );
+  hists["lxy"]      = new TH1D((prefix+"_lxy").c_str(),   (prefix+"_lxy").c_str(),          1000,0,      1000   );
+  hists["lxy_logx"] = new TH1D((prefix+"_lxy_logx").c_str(),   (prefix+"_lxy_logx").c_str(),350, logxBins(350,1e-4,1e4));
+  float bin2List[3] = {0, 10, 110};
+  hists["lxy_2bins"]= new TH1D((prefix+"_lxy_2bins").c_str(),   (prefix+"_lxy_2bins").c_str(),2, bin2List);
+  // hists["lz"]       = new TH1D((prefix+"_lz").c_str(),    (prefix+"_lz").c_str(),           10000,0,      1000  );
+  // hists["lxyz"]     = new TH1D((prefix+"_lxyz").c_str(),  (prefix+"_lxyz").c_str(),         10000,0,      1000  );
+  hists["boost"]    = new TH1D((prefix+"_boost").c_str(), (prefix+"_boost").c_str(),        500,  0,      500   );
+  hists["deltaR"]   = new TH1D((prefix+"_deltaR").c_str(),   (prefix+"_deltaR").c_str(),    1000, 0,      10    );
+  // hists["deltaPhi"] = new TH1D((prefix+"_deltaPhi").c_str(), (prefix+"_deltaPhi").c_str(),  1000, -5,     5     );
+  hists["deltalxy"] = new TH1D((prefix+"_deltalxy").c_str(), (prefix+"_deltalxy").c_str(),  1000, 0,      10   );
+  hists["deltalxy_diff_abs"]= new TH1D((prefix+"_deltalxy_diff_abs").c_str(), (prefix+"_deltalxy_diff_abs").c_str(),     1000, 0,   10   );
+  hists["deltalxy_ratio_abs"] = new TH1D((prefix+"_deltalxy_ratio_abs").c_str(), (prefix+"_deltalxy_ratio_abs").c_str(), 200,  0,   2 );
+  hists["deltapt"]  = new TH1D((prefix+"_deltapt").c_str(), (prefix+"_deltapt").c_str(),    1000, 0,      500   );
 
-    if(alp)
-    {
-      hists2d["-dimuon_mass_1p5"] = new TH2D((prefix+"-dimuon_mass_1p5").c_str(),  (prefix+"-dimuon_mass_1p5").c_str(),  300, 0, 1.5, 300, 0, 1.5);
-      hists2d["-dimuon_mass_4p5"] = new TH2D((prefix+"-dimuon_mass_4p5").c_str(),  (prefix+"-dimuon_mass_4p5").c_str(),  600, 1.5, 4.5, 600, 1.5, 4.5);
-      hists2d["-dimuon_mass_10p5"] = new TH2D((prefix+"-dimuon_mass_10p5").c_str(),  (prefix+"-dimuon_mass_10p5").c_str(), 600, 7.5, 10.5, 600, 7.5, 10.5);
-    }
-  }
+  hists2d["pt_2d"] = new TH2D((prefix+"_pt_2d").c_str(),  (prefix+"_pt_2d").c_str(), 500, 0, 100, 500, 0, 100);
+  hists2d["_dimuon_mass_2d_1p5"] = new TH2D((prefix+"_dimuon_mass_2d_1p5").c_str(),  (prefix+"_dimuon_mass_2d_1p5").c_str(),  300, 0, 1.5, 300, 0, 1.5);
+  hists2d["_dimuon_mass_2d_4p5"] = new TH2D((prefix+"_dimuon_mass_2d_4p5").c_str(),  (prefix+"_dimuon_mass_2d_4p5").c_str(),  600, 1.5, 4.5, 600, 1.5, 4.5);
+  hists2d["_dimuon_mass_2d_10p5"] = new TH2D((prefix+"_dimuon_mass_2d_10p5").c_str(),  (prefix+"_dimuon_mass_2d_10p5").c_str(), 600, 7.5, 10.5, 600, 7.5, 10.5);
 }
 
 void HistogramSet::fill(const Particle *particle, const Event *event)

@@ -19,7 +19,7 @@
 
 class HistogramSet {
 public:
-  HistogramSet(std::string prefix, bool reduce_hists=false, bool alp=false);
+  HistogramSet(std::string prefix, bool reduce_hists=false);
   
   void fill(const Particle* particle, const Event* event=nullptr);
   void fill(const Particle* particle_1, const Particle* particle_2, const Event* event=nullptr);

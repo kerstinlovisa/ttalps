@@ -130,15 +130,11 @@ int Event::get_final_state_particle_index(int particle_index, vector<Particle*> 
 {
   bool daughter_exists = true;
   int new_particle_index = particle_index;
-  while(daughter_exists)
-  {
+  while(daughter_exists){
     daughter_exists = false;
-    for (auto daughter_index : particles[new_particle_index]->daughters)
-    {
-      if (daughter_index > 0) 
-      {
-        if (particles[daughter_index]->pdgid == particles[particle_index]->pdgid)
-        {
+    for (auto daughter_index : particles[new_particle_index]->daughters){
+      if (daughter_index > 0) {
+        if (particles[daughter_index]->pdgid == particles[particle_index]->pdgid){
           daughter_exists = true;
           new_particle_index = daughter_index;
         }
@@ -185,7 +181,6 @@ int Event::passes_preselection(bool include_lxy_selection)
       mother = particles[mother->mothers[0]];
     }
     vector<int> sister_indices = get_sisters_indices(mother, last_muon_index);
-    // vector<int> sister_indices = get_sisters_indices(mother, i_particle);
     
     for(int sister_index : sister_indices){
       already_accounted_for.push_back(sister_index);
