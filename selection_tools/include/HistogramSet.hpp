@@ -30,7 +30,7 @@ public:
 
   float* logxBins(const int n_bins, const float min, const float max);
 private:
-  bool reduce_hists_=false;
+  bool reduceHists=false;
 };
 
 #endif /* HistogramSet_hpp */

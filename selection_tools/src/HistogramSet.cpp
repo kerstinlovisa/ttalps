@@ -13,7 +13,7 @@ using namespace std;
 
 HistogramSet::HistogramSet(string prefix, bool reduce_hists)
 {
-  reduce_hists_=reduce_hists;
+  reduceHists=reduce_hists;
 
   float binList[7] = {0, 2, 10, 24, 31, 70, 110}; // mm
   float binListExtended[10] = {0, 2, 10, 24, 31, 70, 110, 1300, 3000, 7300}; // mm
@@ -74,7 +74,7 @@ void HistogramSet::fill(const Particle *particle, const Event *event)
   hists["lxy_rebinned"]->Fill(sqrt(pow(particle->x, 2) + pow(particle->y, 2)), weight);
   hists["lxy_rebinned_extended"]->Fill(sqrt(pow(particle->x, 2) + pow(particle->y, 2)), weight);
   hists["lxy_rebinned_extended_general"]->Fill(sqrt(pow(particle->x, 2) + pow(particle->y, 2)), weight);
-  if(!reduce_hists_)
+  if(!reduceHists)
   {
     hists["pt"]->Fill(particle->four_vector.Pt(), weight);
     // hists["pz"]->Fill(particle->four_vector.Pz(), weight);
@@ -96,7 +96,7 @@ void HistogramSet::fill(const Particle *particle, const Event *event)
 
 void HistogramSet::fill(const Particle* particle_1, const Particle* particle_2, const Event *event)
 {
-  if(!reduce_hists_){
+  if(!reduceHists){
     double weight = 1;
     if(event) weight = event->weight;
     

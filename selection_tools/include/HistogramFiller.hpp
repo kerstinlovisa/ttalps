@@ -37,7 +37,7 @@ public:
 private:
   CutsManager cutsManager;
   std::vector<double> ptCuts;
-  bool reduce_hists_=false;
+  bool reduceHists=false;
 };
 
 #endif /* HistogramFiller_hpp */
