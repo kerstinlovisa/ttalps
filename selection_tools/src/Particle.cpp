@@ -108,9 +108,7 @@ bool Particle::is_final()
 
 bool Particle::is_prompt()
 {
-  if(sqrt(pow(x, 2) + pow(y, 2)) > 0.2) return false;
-
-  return true;
+  return sqrt(x*x + y*y) <= 0.2;
 }
 
 double Particle::eta()
