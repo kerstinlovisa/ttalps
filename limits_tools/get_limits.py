@@ -13,8 +13,30 @@ from ROOT import TFile, TGraphAsymmErrors
 
 import limits_params as params
 
-sample = "1e2mm_updated"
+# sample = "1e0mm"
+# sample = "1e1mm"
+# sample = "1e4mm"
+# sample = "1e5mm"
+# sample = "1e6mm"
+# sample = "1e7mm"
+
+# sample = "default"
+# sample = "default_non-muon-mothers"
+# sample = "default_non-prompt-selection"
+sample = "default_new-dimuon-mass-cuts"
+
+# sample = "2e6mm_updated"
+# sample = "3e6mm_updated"
+# sample = "5e6mm_updated"
+# sample = "8e6mm_updated"
+# sample = "2e7mm_updated"
+# sample = "2e8mm_updated"
+
+zero_signal_value = 1e-50
+zero_background_value = 1e-2
+
 sample_short = sample.split("mm")[0]
+sample_short = sample_short.split("_")[0]
 
 parser = OptionParser()
 addDatacardParserOptions(parser)
@@ -77,25 +99,45 @@ def save_datacard(processes):
     
     for name, (input_file_name, _, _) in processes.items():
         files[name] = TFile.Open(input_file_name)
-        hists[name] = files[name].Get(params.hist_name)
+        
+        hist_name = params.signal_hist_name if name == "tta" else params.background_hist_name
+        print(f"Loading histogram: {hist_name}")
+        
+        hists[name] = files[name].Get(hist_name)
 
         if not files[name] or not hists[name]:
-            print(f"couldn't open hist: {params.hist_name} from file: {input_file_name}")
+            print(f"couldn't open hist: {hist_name} from file: {input_file_name}")
 
         n_bins = hists[name].GetNbinsX()
     
     expected = []
     
+    n_signal_events = 0
+    
     for i_bin in range(n_bins):
         bin_dict = {}
         for name, (_, n_generated_events, cross_section) in processes.items():
-            bin_dict[name] = float(hists[name].GetBinContent(i_bin + 1)) * params.lumi * cross_section / n_generated_events
+            bin_content = float(hists[name].GetBinContent(i_bin + 1))
+            # bin_width = hists[name].GetXaxis().GetBinWidth(i_bin + 1)
+            # bin_content /= bin_width
+            
+            bin_dict[name] = bin_content / n_generated_events * params.lumi * cross_section
             
         if bin_dict["tta"] == 0:
-            bin_dict["tta"] = 1e-50
+            bin_dict["tta"] = zero_signal_value
+
+        if bin_dict["ttj"] == 0:
+            bin_dict["ttj"] = zero_background_value
+            
+        if bin_dict["ttmumu"] == 0:
+            bin_dict["ttmumu"] = zero_background_value
+
+        n_signal_events += bin_dict["tta"]
         
         expected.append(bin_dict)
         print(f"Adding bin: {expected[-1]})")
+    
+    print(f"Total number of signal events: {n_signal_events}")
     
     data_card = get_datacard_for_signal(expected)
     
@@ -110,8 +152,8 @@ def save_datacard(processes):
 
 def get_limits_for_signal(signal):
     processes = {
-        "ttj": (params.base_path_backgrounds+"ttj.root", params.n_generated_ttj, params.cross_section_ttj),
-        "ttmumu": (params.base_path_backgrounds+"ttmumu.root", params.n_generated_ttmumu, params.cross_section_ttmumu),
+        "ttj": (params.get_base_background_path(sample)+"ttj.root", params.n_generated_ttj, params.cross_section_ttj),
+        "ttmumu": (params.get_base_background_path(sample)+"ttmumu.root", params.n_generated_ttmumu, params.cross_section_ttmumu),
         "tta": signal,
     }
     

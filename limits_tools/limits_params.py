@@ -22,125 +22,211 @@ def get_ctaus(sample):
     return ("",)
 
 
-base_path_backgrounds = "/nfs/dust/cms/user/lrygaard/ttalps/hists/"
+def get_base_background_path(sample):
+    if sample == "default_non-prompt-selection":
+        return "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds_non-prompt-selection/hists/"
+    elif sample == "default_new-dimuon-mass-cuts":
+        return "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds_new-dimuon-mass-cuts/hists/"
+    
+    return "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds_new-dimuon-mass-cuts/hists/"
 
 
 def get_base_path(sample):
     if sample == "default":
         return "/nfs/dust/cms/user/lrygaard/ttalps/hists/"
-        
+    elif sample == "default_non-muon-mothers":
+        return "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-default_muon-status/hists/"
+    elif sample == "default_non-prompt-selection":
+        return "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-default_non-prompt-selection/hists/"
+    elif sample == "default_new-dimuon-mass-cuts":
+        return "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-default_new-dimuon-mass-cuts/hists/"
+    
     return f"/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-{sample}/hists/"
 
 
 cuts = "pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05"
 
-#hist_name = f"final_selection/final_selection_{cuts}_os_maxlxy-muon_lxy_rebinned"
-hist_name = f"final_selection/final_selection_{cuts}_os_maxlxy-muon_lxy_rebinned_extended"
+# hist_name = f"final_selection/final_selection_{cuts}_os_maxlxy-muon_lxy_rebinned"
+background_hist_name = f"final_selection/final_selection_{cuts}_os_minlxy-muon_lxy_rebinned_extended"
+# background_hist_name = f"final_selection/final_selection_{cuts}_os_first_minlxy-muon_lxy_rebinned_extended"
+
+signal_hist_name = f"final_selection/final_selection_{cuts}_os_minlxy-muon_lxy_rebinned_extended"
+# signal_hist_name = f"final_selection/final_selection_{cuts}_os_first_minlxy-muon_lxy_rebinned_extended"
+
+
 output_file_name = f"limits_{cuts}.root"
 
 tmp_combine_file_name = "tmp_combine_workspace.root"
 tmp_output_file_name = "tmp_output.txt"
 
 signals = {
-    "1em4": {
-        #                     mass     file                                 n_gen     ref. x_sec (pb)
-        # "tta_mAlp-0p2GeV":    (0.2,   ("tta_mAlp-0p2GeV.root",    823515.0, 1e-3)),
-        "tta_mAlp-0p3GeV":    (0.3,   ("tta_mAlp-0p3GeV.root",    794059.0, 1e-3)),
-        "tta_mAlp-0p35GeV":   (0.35,  ("tta_mAlp-0p35GeV.root",   811341.0, 1e-3)),
-        "tta_mAlp-0p5GeV":    (0.5,   ("tta_mAlp-0p5GeV.root",    819359.0, 1e-3)),
-        "tta_mAlp-0p9GeV":    (0.9,   ("tta_mAlp-0p9GeV.root",    889230.0, 1e-3)),
-        "tta_mAlp-1p25GeV":   (1.25,  ("tta_mAlp-1p25GeV.root",   798418.0, 1e-3)),
-        "tta_mAlp-2GeV":      (2.0,   ("tta_mAlp-2GeV.root",      897726.0, 1e-3)),
-        "tta_mAlp-4GeV":      (4.0,   ("tta_mAlp-4GeV.root",      857528.0, 1e-3)),
-        "tta_mAlp-8GeV":      (8.0,   ("tta_mAlp-8GeV.root",      920562.0, 1e-3)),
-        "tta_mAlp-10GeV":     (10,    ("tta_mAlp-10GeV.root",     864471.0, 1e-3)),
+    "default": {
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    990000.0,   1e-3)),
+        "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   980000.0,   1e-3)),
+        "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    1000000.0,  1e-3)),
+        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    1000000.0,  1e-3)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   990000.0,   1e-3)),
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     980000.0,   1e-3)),
     },
-    "1": {
-        #                           mass     file                       n_gen      ref. x_sec (pb)
-        # "tta_mAlp-0p2GeV":	(0.2,   ("tta_mAlp-0p2GeV.root",    980000.0, 1e-3)),
-        "tta_mAlp-0p3GeV":      (0.3,   ("tta_mAlp-0p3GeV.root",    990000.0, 1e-3)),
-        "tta_mAlp-0p35GeV":     (0.35,  ("tta_mAlp-0p35GeV.root",   990000.0, 1e-3)),
-        "tta_mAlp-0p5GeV":      (0.5,   ("tta_mAlp-0p5GeV.root",    1000000.0, 1e-3)),
-        "tta_mAlp-0p9GeV":      (0.9,   ("tta_mAlp-0p9GeV.root",    990000.0, 1e-3)),
-        "tta_mAlp-1p25GeV":     (1.25,  ("tta_mAlp-1p25GeV.root",   980000.0, 1e-3)),
-        "tta_mAlp-2GeV":        (2.0,   ("tta_mAlp-2GeV.root",      1000000.0, 1e-3)),
-        "tta_mAlp-4GeV":        (4.0,   ("tta_mAlp-4GeV.root",      1000000.0, 1e-3)),
-        "tta_mAlp-8GeV":        (8.0,   ("tta_mAlp-8GeV.root",      1000000.0, 1e-3)),
-        "tta_mAlp-10GeV":       (10,    ("tta_mAlp-10GeV.root",     980000.0, 1e-3)),
+    "1e0": {
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    1000000.0,  1e-3)),
+        "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   1000000.0,  1e-3)),
+        "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    1000000.0,  1e-3)),
+        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    990000.0,   1e-3)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   990000.0,   1e-3)),
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      980000.0,   1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     990000.0,   1e-3)),
     },
-    "1e2": {
-        #                           mass     file                       n_gen       ref. x_sec (pb)
-        # "tta_mAlp-0p2GeV":	(0.2,   ("tta_mAlp-0p2GeV.root",    945666.0, 1e-3)),
-        "tta_mAlp-0p3GeV":	(0.3,   ("tta_mAlp-0p3GeV.root",    939472.0, 1e-3)),
-        "tta_mAlp-0p35GeV":     (0.35,  ("tta_mAlp-0p35GeV.root",   954548.0, 1e-3)),
-        "tta_mAlp-0p5GeV":	(0.5,   ("tta_mAlp-0p5GeV.root",    910031.0, 1e-3)),
-        "tta_mAlp-0p9GeV":	(0.9,   ("tta_mAlp-0p9GeV.root",    905981.0, 1e-3)),
-        "tta_mAlp-1p25GeV":	(1.25,  ("tta_mAlp-1p25GeV.root",   904457.0, 1e-3)),
-        "tta_mAlp-2GeV":	(2.0,   ("tta_mAlp-2GeV.root",      902781.0, 1e-3)),
-        "tta_mAlp-4GeV":	(4.0,   ("tta_mAlp-4GeV.root",      957228.0, 1e-3)),
-        "tta_mAlp-8GeV":	(8.0,   ("tta_mAlp-8GeV.root",      881900.0, 1e-3)),
-        "tta_mAlp-10GeV":	(10,    ("tta_mAlp-10GeV.root",     959596.0, 1e-3)),
+    "1e1": {
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    990000.0,   1e-3)),
+        "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   990000.0,   1e-3)),
+        "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    990000.0,   1e-3)),
+        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    1000000.0,  1e-3)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   1000000.0,  1e-3)),
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     990000.0,   1e-3)),
     },
     "5e3": {
-        #                           mass     file                       n_gen    ref. x_sec (pb)
-        "tta_mAlp-0p3GeV": (0.3, ("tta_mAlp-0p3GeV.root", 990000.0, 1e3)),
-        "tta_mAlp-0p35GeV": (0.35, ("tta_mAlp-0p35GeV.root", 272399.0, 1e0)),
-        "tta_mAlp-0p5GeV": (0.5, ("tta_mAlp-0p5GeV.root", 990000.0, 1e0)),
-        "tta_mAlp-0p9GeV": (0.9, ("tta_mAlp-0p9GeV.root", 348056.0, 1e0)),
-        "tta_mAlp-1p25GeV": (1.25, ("tta_mAlp-1p25GeV.root", 970000.0, 1e0)),
-        "tta_mAlp-2GeV": (2.0, ("tta_mAlp-2GeV.root", 1000000.0, 1e0)),
-        "tta_mAlp-4GeV": (4.0, ("tta_mAlp-4GeV.root", 990000.0, 1e-3)),
-        "tta_mAlp-8GeV": (8.0, ("tta_mAlp-8GeV.root", 990000.0, 1e-3)),
-        "tta_mAlp-10GeV": (10, ("tta_mAlp-10GeV.root", 960000.0, 1e-3)),
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    990000.0,   1e0)),
+        "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    990000.0,   1e0)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   970000.0,   1e0)),
     },
     "1e4": {
-        #                           mass     file                       n_gen    ref. x_sec (pb)
-        "tta_mAlp-0p3GeV":    (0.3,   ("tta_mAlp-0p3GeV.root",    334084.0, 1e3)),
-        "tta_mAlp-0p35GeV":   (0.35,  ("tta_mAlp-0p35GeV.root",   272399.0, 1e0)),
-        "tta_mAlp-0p5GeV":    (0.5,   ("tta_mAlp-0p5GeV.root",    306497.0, 1e0)),
-        "tta_mAlp-0p9GeV":    (0.9,   ("tta_mAlp-0p9GeV.root",    348056.0, 1e0)),
-        "tta_mAlp-1p25GeV":   (1.25,  ("tta_mAlp-1p25GeV.root",   248064.0, 1e0)),
-        "tta_mAlp-2GeV":      (2.0,   ("tta_mAlp-2GeV.root",    378581.0, 1e0)),
-        "tta_mAlp-4GeV":      (4.0,   ("tta_mAlp-4GeV.root",    544395.0, 1e-3)),
-        "tta_mAlp-8GeV":      (8.0,   ("tta_mAlp-8GeV.root",    573907.0, 1e-3)),
-        "tta_mAlp-10GeV":     (10,    ("tta_mAlp-10GeV.root",     678842.0, 1e-3)),
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    970000.0,   1e0)),
+        "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   1000000.0,  1e0)),
+        # "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    1000000.0,  1e0)),
+        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    1000000.0,  1e0)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   990000.0,   1e0)),
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      990000.0,   1e0)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     1000000.0,  1e-3)),
     },
     "5e4": {
-        #                           mass     file                       n_gen    ref. x_sec (pb)
-        "tta_mAlp-0p3GeV":    (0.3,   ("tta_mAlp-0p3GeV.root",    334084.0, 1e3)),
-        "tta_mAlp-0p35GeV":   (0.35,  ("tta_mAlp-0p35GeV.root",   272399.0, 1e0)),
-        "tta_mAlp-0p5GeV":    (0.5,   ("tta_mAlp-0p5GeV.root",    306497.0, 1e0)),
-        "tta_mAlp-0p9GeV":    (0.9,   ("tta_mAlp-0p9GeV.root",    348056.0, 1e0)),
-        "tta_mAlp-1p25GeV":   (1.25,  ("tta_mAlp-1p25GeV.root",   248064.0, 1e0)),
-        "tta_mAlp-2GeV":      (2.0,   ("tta_mAlp-2GeV.root",    1000000.0, 1e0)),
-        "tta_mAlp-4GeV":      (4.0,   ("tta_mAlp-4GeV.root",    990000.0, 1e-3)),
-        "tta_mAlp-8GeV":      (8.0,   ("tta_mAlp-8GeV.root",    960000.0, 1e-3)),
-        "tta_mAlp-10GeV":     (10,    ("tta_mAlp-10GeV.root",     678842.0, 1e-3)),
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      1000000.0,  1e0)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      960000.0,   1e-3)),
     },
     "9e4": {
-        #                           mass     file                       n_gen    ref. x_sec (pb)
-        "tta_mAlp-0p3GeV":    (0.3,   ("tta_mAlp-0p3GeV.root",    334084.0, 1e3)),
-        "tta_mAlp-0p35GeV":   (0.35,  ("tta_mAlp-0p35GeV.root",   272399.0, 1e0)),
-        "tta_mAlp-0p5GeV":    (0.5,   ("tta_mAlp-0p5GeV.root",    306497.0, 1e0)),
-        "tta_mAlp-0p9GeV":    (0.9,   ("tta_mAlp-0p9GeV.root",    348056.0, 1e0)),
-        "tta_mAlp-1p25GeV":   (1.25,  ("tta_mAlp-1p25GeV.root",   248064.0, 1e0)),
-        "tta_mAlp-2GeV":      (2.0,   ("tta_mAlp-2GeV.root",    1000000.0, 1e0)),
-        "tta_mAlp-4GeV":      (4.0,   ("tta_mAlp-4GeV.root",    990000.0, 1e-3)),
-        "tta_mAlp-8GeV":      (8.0,   ("tta_mAlp-8GeV.root",    990000.0, 1e-3)),
-        "tta_mAlp-10GeV":     (10,    ("tta_mAlp-10GeV.root",     960000.0, 1e-3)),
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     960000.0,   1e-3)),
     },
     "1e5": {
-        #                           mass     file                       n_gen       ref. x_sec (pb)
-        # "tta_mAlp-0p2GeV":    (0.2,   ("tta_mAlp-0p2GeV.root",    824599.0, 1e-3)),
-        "tta_mAlp-0p3GeV": (0.3, ("tta_mAlp-0p3GeV.root", 617049.0, 1e-3)),
-        "tta_mAlp-0p35GeV": (0.35, ("tta_mAlp-0p35GeV.root", 600727.0, 1e3)),
-        "tta_mAlp-0p5GeV": (0.5, ("tta_mAlp-0p5GeV.root", 634373.0, 1e3)),
-        "tta_mAlp-0p9GeV": (0.9, ("tta_mAlp-0p9GeV.root", 566575.0, 1e3)),
-        "tta_mAlp-1p25GeV": (1.25, ("tta_mAlp-1p25GeV.root", 495886.0, 1e3)),
-        "tta_mAlp-2GeV": (2.0, ("tta_mAlp-2GeV.root", 551414.0, 1e3)),
-        "tta_mAlp-4GeV": (4.0, ("tta_mAlp-4GeV.root", 543955.0, 1e-3)),
-        "tta_mAlp-8GeV": (8.0, ("tta_mAlp-8GeV.root", 494375.0, 1e-3)),
-        "tta_mAlp-10GeV": (10, ("tta_mAlp-10GeV.root", 620215.0, 1e-3)),
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    980000.0,   1e-3)),
+        "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   1000000.0,  1e-3)),
+        "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    990000.0,   1e-3)),
+        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    990000.0,   1e-3)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   990000.0,   1e-3)),
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      980000.0,   1e-3)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     1000000.0,  1e-3)),
+    },
+    "1e6": {
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    990000.0,   1e0)),
+        "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   1000000.0,  1e0)),
+        "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    990000.0,   1e0)),
+        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    1000000.0,  1e0)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   990000.0,   1e-3)),
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      970000.0,   1e-3)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     1000000.0,  1e-3)),
+    },
+    "2e6": {
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    990000.0,   1e0)),
+        "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   980000.0,   1e0)),
+        "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    990000.0,   1e0)),
+        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    990000.0,   1e0)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   1000000.0,  1e-3)),
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      1000000.0,  1e-3)),
+    },
+    "3e6": {
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    980000.0,   1e0)),
+        "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   1000000.0,  1e0)),
+        "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    1000000.0,  1e0)),
+        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    2990000.0,  1e0)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   3000000.0,  1e-3)),
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      2980000.0,  1e-3)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     980000.0,   1e-3)),
+    },
+    "5e6": {
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        # "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    1000000.0,  1e3)),
+        "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   970000.0,   1e-1)),
+        "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    1000000.0,  1e-1)),
+        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    990000.0,   1e-1)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   1000000.0,  1e-1)),
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      980000.0,   1e-1)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      990000.0,   1e-1)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      990000.0,   1e-1)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     1000000.0,  1e-1)),
+    },
+    "8e6": {
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        # "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    990000.0,   1e0)),
+        "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   1000000.0,  1e0)),
+        "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    1000000.0,  1e0)),
+        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    1000000.0,  1e0)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   990000.0,   1e-3)),
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     1000000.0,  1e-3)),
+    },
+    "1e7": {
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        # "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    980000.0,   1e1)),
+        "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   990000.0,   1e0)),
+        "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    1000000.0,  1e0)),
+        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    1000000.0,  1e0)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   980000.0,   1e-3)),
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      990000.0,   1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     990000.0,   1e-3)),
+        "tta_mAlp-50GeV":   (50,    ("tta_mAlp-50GeV.root",     1000000.0,  1e-3)),
+    },
+    "2e7": {
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        # "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    980000.0,   1e1)),
+        # "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   1000000.0,  1e1)),
+        # "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    1000000.0,  1e6)),
+        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    1000000.0,  1e0)),
+        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   1000000.0,  1e0)),
+        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      980000.0,   1e-3)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      980000.0,   1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     1000000.0,  1e-3)),
+        "tta_mAlp-50GeV":   (50,    ("tta_mAlp-50GeV.root",     1000000.0,  1e-3)),
+    },
+    "2e8": {
+        #                   mass    file                        n_gen       ref. x_sec (pb)
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      980000.0,   1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     1000000.0,  1e-3)),
+        "tta_mAlp-50GeV":   (50,    ("tta_mAlp-50GeV.root",     1000000.0,  1e-3)),
     },
 }
 
