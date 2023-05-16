@@ -4,12 +4,15 @@ from ROOT import TGraphAsymmErrors
 
 import physics as ph
 
+tiny_scale = 1e9
+large_scale = 1e3
+
 regions_to_mask = {
-    "rho/omega": (0.74, 0.82),
-    "phi": (0.97, 1.07),
+    # "rho/omega": (0.74, 0.82),
+    # "phi": (0.97, 1.07),
     "j/psi": (2.94, 3.24),
     "psi": (3.50, 3.86),
-    "z": (86.63, 95.75),
+    # "z": (86.63, 95.75),
 }
 
 
@@ -47,23 +50,26 @@ alp_cross_section_only_top_coupling = {
 }
 
 
-def find_lifetime_for_mass(mass, coupling, Lambda):
+def find_lifetime_for_mass(mass, coupling, Lambda, boost=False):
     ctau = ph.ctaua(mass, coupling, coupling, Lambda)  # in cm
     
-    boost = 1 / mass
+    if boost:
+        boost = 1 / mass
+        
+        if mass < 3:
+            boost *= 223
+        elif mass < 20:
+            boost *= 230
+        elif mass < 30:
+            boost *= 240
+        elif mass < 50:
+            boost *= 260
+        else:
+            boost *= 296
+        
+        ctau *= boost
     
-    if mass < 3:
-        boost *= 223
-    elif mass < 20:
-        boost *= 230
-    elif mass < 30:
-        boost *= 240
-    elif mass < 50:
-        boost *= 260
-    else:
-        boost *= 296
-    
-    ctau *= boost
+    ctau *= 10  # cm -> mm
     
     return ctau
 

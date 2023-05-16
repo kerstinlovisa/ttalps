@@ -8,26 +8,26 @@ from limits_tools import alp_cross_section_only_top_coupling, cross_section_to_c
 base_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/"
 
 limits_variants = [
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default", kBlack, 2, "default"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default", kBlack, 2, "default"),
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_displacedOnly", kGreen+1, 1, "default, l_xy > 200 #mu m"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_newCuts", kBlack, 1, "default, new cuts"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_newCuts", kBlack, 1, "default, new cuts"),
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_newCuts_firstMin", kRed, 3, "default, new cuts, first"),
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_firstMuon", kBlack, 2, "default, first muon"),
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_lastMuon", kGreen+1, 3, "default, last muon"),
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_trackerOnly", kBlack, 2, "default lifetime, tracker only"),
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1mm", kViolet, 1, "1 mm"),
     
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e0mm_newCuts", kPink,        1, "1e0 mm, new cuts"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e1mm_newCuts", kViolet,      1, "1e1 mm, new cuts"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e4mm_newCuts", kBlue,        1, "1e4 mm, new cuts"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e5mm_newCuts", kCyan+1,      1, "1e5 mm, new cuts"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e6mm_newCuts", kGreen+1,     1, "1e6 mm, new cuts"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e7mm_newCuts", kOrange+1,    1, "1e7 mm, new cuts"),
-    
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e4mm", kBlue, 2, "1e4 mm"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e5mm", kCyan+1, 2, "1e5 mm"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e6mm", kGreen+1, 2, "1e6 mm"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e7mm", kOrange+1, 2, "1e7 mm"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e0mm_newCuts", kPink,        1, "1e0 mm, new cuts"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e1mm_newCuts", kViolet,      1, "1e1 mm, new cuts"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e4mm_newCuts", kBlue,        1, "1e4 mm, new cuts"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e5mm_newCuts", kCyan+1,      1, "1e5 mm, new cuts"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e6mm_newCuts", kGreen+1,     1, "1e6 mm, new cuts"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e7mm_newCuts", kOrange+1,    1, "1e7 mm, new cuts"),
+    #
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e4mm", kBlue, 2, "1e4 mm"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e5mm", kCyan+1, 2, "1e5 mm"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e6mm", kGreen+1, 2, "1e6 mm"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e7mm", kOrange+1, 2, "1e7 mm"),
     
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e6mm_trackerOnly", kGreen+1, 2, "1e6 mm, tracker only"),
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-2e6mm", kGreen+1, 2, "2e6 mm"),
@@ -41,7 +41,12 @@ limits_variants = [
     
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-2e7mm", kOrange+1, 2, "2e7 mm"),
     
-    
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-0", kBlack, 1, "default, bck=0"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1em10", kViolet, 1, "default, bck=1e-10"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1em5", kBlue, 1, "default, bck=1e-5"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1em1", kCyan+1, 1, "default, bck=1e-1"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1e0", kGreen+1, 1, "default, bck=1e0"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1e1", kOrange, 1, "default, bck=1e1"),
 ]
 
 
@@ -67,8 +72,10 @@ def main():
     theory_line.SetLineColor(kWhite)
     theory_line.Draw("AL")
     
-    theory_line.SetMinimum(2e-5)
-    theory_line.SetMaximum(2e3)
+    # theory_line.SetMinimum(2e-5)
+    theory_line.SetMinimum(1e-4)
+    # theory_line.SetMaximum(2e3)
+    theory_line.SetMaximum(1e-2)
     theory_line.GetXaxis().SetRangeUser(0.3, 10)
     
     theory_line.GetYaxis().SetTitle("#sigma(pp#rightarrow t#bar{t}a) #times BR(a#rightarrow #mu#mu) (pb)")
