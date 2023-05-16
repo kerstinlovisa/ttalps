@@ -265,7 +265,7 @@ def save_canvas(theory_line, graph_mean, graph_1sigma, graph_2sigma, mode):
     if mask_masses:
         boxes = []
         y_low = 1e-3 if mode == "coupling_vs_mass" else 5e-6
-        y_high = 5e-1 if mode == "coupling_vs_mass" else 1e-2
+        y_high = 5e-1 if mode == "coupling_vs_mass" else 9e-3
 
         for low, high in regions_to_mask.values():
             if high > 90:
@@ -276,7 +276,8 @@ def save_canvas(theory_line, graph_mean, graph_1sigma, graph_2sigma, mode):
             boxes[-1].SetFillColor(kWhite)
             boxes[-1].SetLineColor(kWhite)
 
-    legend = TLegend(0.17, 0.75, 0.45, 0.9)
+    legend = TLegend(0.19, 0.75, 0.45, 0.895)
+    legend.SetBorderSize(0)
 
     lumi_label = get_lumi_label(mode)
     lumi_label.Draw()
@@ -303,7 +304,7 @@ def save_canvas(theory_line, graph_mean, graph_1sigma, graph_2sigma, mode):
         line_1pb.Draw("same")
     
     canvases[mode].Update()
-    canvases[mode].SaveAs(f"{mode}.pdf")
+    canvases[mode].SaveAs(f"plots/{mode}.pdf")
 
 
 
@@ -434,7 +435,7 @@ def save_double_canvas(theory_line, graph_mean, graph_1sigma, graph_2sigma,
     legend.Draw()
     
     canvases[mode].Update()
-    canvases[mode].SaveAs(f"{mode}.pdf")
+    canvases[mode].SaveAs(f"plots/{mode}.pdf")
 
 
 def main():

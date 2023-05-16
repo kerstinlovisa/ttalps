@@ -46,3 +46,4 @@ plotting_tools/*.pdf
 limits_tools/*.pdf
 limits_tools/__pycache__/*
 limits_tools/*.root
+limits_tools/plots/*
