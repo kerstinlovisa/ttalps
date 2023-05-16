@@ -35,9 +35,9 @@ TTree* get_input_tree(string input_path)
 
 TH1D* fill_and_save_histograms(const vector<Event*> &events, string output_path, bool reduce_hists=false, bool include_alp_ancestor_hists=false)
 {
+  bool displaced_mass_cuts = true;
   bool include_lxy_selection = true;
-
-  auto histogramFiller = HistogramFiller(reduce_hists, include_alp_ancestor_hists);
+  auto histogramFiller = HistogramFiller(reduce_hists, include_alp_ancestor_hists, displaced_mass_cuts);
   for(auto event : events){
     if(!event->has_ttbar_pair()) continue;
     int preselection_code = event->passes_preselection(include_lxy_selection);
@@ -52,6 +52,7 @@ TH1D* fill_and_save_histograms(const vector<Event*> &events, string output_path,
       histogramFiller.fill_final_selection_hists(muon_1, muon_2, event, "os");
 
       if(reduce_hists) continue;
+      if(!muon_1 || !muon_2) continue;
       // Selection of "first" and "last" muons and muon mothers
       auto first_muon_1 = muon_1;
       auto first_muon_2 = muon_2;

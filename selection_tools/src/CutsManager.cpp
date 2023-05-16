@@ -9,19 +9,22 @@
 
 using namespace std;
 
-CutsManager::CutsManager()
+CutsManager::CutsManager(bool displaced_mass_cuts)
 {
-  masses["rho"] = 0.78;
-  masses["phi"] = 1.02;
   masses["Jpsi"] = 3.09;
   masses["psi"] = 3.68;
   masses["Z"] = 91.19;
-  
-  mass_cuts["rho"] = 0.04;
-  mass_cuts["phi"] = 0.05;
+
   mass_cuts["Jpsi"] = 0.04;
   mass_cuts["psi"] = 0.18;
   mass_cuts["Z"] = 4.56;
+
+  if(!displaced_mass_cuts){
+    masses["rho"] = 0.78;
+    masses["phi"] = 1.02;
+    mass_cuts["rho"] = 0.04;
+    mass_cuts["phi"] = 0.05;
+  }
   
   for(auto &[particle_name, mass] : masses){
     mass_min[particle_name] = mass - mass_cuts[particle_name];

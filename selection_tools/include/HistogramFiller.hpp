@@ -18,7 +18,7 @@
 
 class HistogramFiller {
 public:
-  HistogramFiller(bool reduce_hists=false, bool include_alp_ancestor_hists=false);
+  HistogramFiller(bool reduce_hists=false, bool include_alp_ancestor_hists=false, bool displaced_mass_cuts=true);
   ~HistogramFiller();
   
   void fill_deltaR_deltal_selections(const Particle* particle_1, const Particle* particle_2, const Event *event,

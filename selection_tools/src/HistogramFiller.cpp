@@ -10,9 +10,9 @@
 
 using namespace std;
 
-HistogramFiller::HistogramFiller(bool reduce_hists, bool include_alp_ancestor_hists)
+HistogramFiller::HistogramFiller(bool reduce_hists, bool include_alp_ancestor_hists, bool displaced_mass_cuts)
 {
-  cutsManager = CutsManager();
+  cutsManager = CutsManager(displaced_mass_cuts);
   reduceHists=reduceHists;
   
   vector<string> particle_names = {
@@ -239,6 +239,8 @@ void HistogramFiller::fill_final_selection_hists(const Particle* particle_1, con
     if(particle_1->four_vector.Pt() < ptCut || particle_2->four_vector.Pt() < ptCut) continue;
       
     string ptName = to_nice_string(ptCut);
+
+    fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, event, sign, "final_selection_pt-min"+ptName+"GeV");
     
     if(cutsManager.passes_mass_cuts(diparticle)){
       histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy, event);
@@ -247,9 +249,6 @@ void HistogramFiller::fill_final_selection_hists(const Particle* particle_1, con
       if(!reduceHists) histSets["final_selection_pt-min"+ptName+"GeV_mass-cuts_"+sign+"_dimuon"]->fill(particle_1, particle_2, event);
       
       fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, event, sign, "final_selection_pt-min"+ptName+"GeV_mass-cuts");
-    }
-    else{
-      fill_deltaR_deltal_selections(particle_maxlxy, particle_minlxy, event, sign, "final_selection_pt-min"+ptName+"GeV");
     }
   }
 };
@@ -330,42 +329,26 @@ void HistogramFiller::save_histograms(std::string output_path)
     output_file->mkdir("alp");
   }
 
-  // if (reduceHists){
-  //   for(auto &[hist_name, hist_set] : histSets){
-  //     if(hist_name.substr(0,15) == "final_selection"){
-  //       output_file->cd("final_selection");
-  //     }
-  //     if(hist_name.substr(0,5) == "alp_s"){
-  //       output_file->cd("alp_selections");
-  //     }
-  //     for(auto &[tmp, hist] : hist_set->hists){
-  //       hist->Write();
-  //     }
-  //     output_file->cd();
-  //   }
-  // }
-  // else {
-    for(auto &[hist_name, hist_set] : histSets){
-      if(hist_name.substr(0,15) == "final_selection"){
-        output_file->cd("final_selection");
-      }
-      if(hist_name.substr(0,3) == "sel"){
-        output_file->cd("intermediate_selections");
-      }
-      if(hist_name.substr(0,5) == "alp_s"){
-        output_file->cd("alp_selections");
-      }
-      else if(hist_name.substr(0,3) == "alp"){
-        output_file->cd("alp");
-      }
-      for(auto &[tmp, hist] : hist_set->hists){
-        hist->Write();
-      }
-      for(auto &[tmp, hist2d] : hist_set->hists2d){
-        hist2d->Write();
-      }
-      output_file->cd();
+  for(auto &[hist_name, hist_set] : histSets){
+    if(hist_name.substr(0,15) == "final_selection"){
+      output_file->cd("final_selection");
     }
-  // }
+    if(hist_name.substr(0,3) == "sel"){
+      output_file->cd("intermediate_selections");
+    }
+    if(hist_name.substr(0,5) == "alp_s"){
+      output_file->cd("alp_selections");
+    }
+    else if(hist_name.substr(0,3) == "alp"){
+      output_file->cd("alp");
+    }
+    for(auto &[tmp, hist] : hist_set->hists){
+      hist->Write();
+    }
+    for(auto &[tmp, hist2d] : hist_set->hists2d){
+      hist2d->Write();
+    }
+    output_file->cd();
+  }
   output_file->Close();
 }
