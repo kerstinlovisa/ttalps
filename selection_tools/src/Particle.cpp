@@ -48,7 +48,7 @@ void Particle::print()
   cout<<"\tbar: "<<barcode<<endl;
 }
 
-bool Particle::is_good_non_top_muon(const vector<Particle*> &particles)
+bool Particle::is_good_non_top_muon(const vector<Particle*> &particles, bool include_lxy_selection)
 {
   if(!is_final()) return false;
   if(abs(pdgid) != 13) return false;
@@ -56,6 +56,7 @@ bool Particle::is_good_non_top_muon(const vector<Particle*> &particles)
   if(pt() < 5) return false;
   if(has_top_ancestor(particles)) return false;
   if(pow(energy, 2) - pow(momentum(), 2) < 0) return false;
+  if(include_lxy_selection) {if(is_prompt()) return false;}
   
   return true;
 }
@@ -105,6 +106,11 @@ bool Particle::is_final()
   return true;
 }
 
+bool Particle::is_prompt()
+{
+  return sqrt(x*x + y*y) <= 0.2;
+}
+
 double Particle::eta()
 {
   return four_vector.Eta();
@@ -124,3 +130,4 @@ TVector3 Particle::get_boost() const
 {
   return four_vector.BoostVector();
 }
+

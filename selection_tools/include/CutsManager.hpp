@@ -15,7 +15,7 @@
 
 class CutsManager {
 public:
-  CutsManager();
+  CutsManager(bool displaced_mass_cuts=true);
   ~CutsManager(){}
   
   bool passes_mass_cuts(const TLorentzVector &diparticle);

@@ -118,15 +118,33 @@ int Event::check_sister(int sister_index, Particle *particle, vector<Particle*> 
 {
   // 0: bad particle, -1: opposite sign, +1: same sign
   if(sister_index < 0) return 0;
-  
+  sister_index = get_final_state_particle_index(sister_index, particles);
   auto sister = particles[sister_index];
+
   if(!sister->is_good_non_top_muon(particles)) return 0;
-  
   if(particle->pdgid == sister->pdgid)  return 1;
   else                                  return -1;
 }
 
-int Event::passes_preselection()
+int Event::get_final_state_particle_index(int particle_index, vector<Particle*> particles)
+{
+  bool daughter_exists = true;
+  int new_particle_index = particle_index;
+  while(daughter_exists){
+    daughter_exists = false;
+    for (auto daughter_index : particles[new_particle_index]->daughters){
+      if (daughter_index > 0) {
+        if (particles[daughter_index]->pdgid == particles[particle_index]->pdgid){
+          daughter_exists = true;
+          new_particle_index = daughter_index;
+        }
+      }
+    }
+  }
+  return new_particle_index;
+}
+
+int Event::passes_preselection(bool include_lxy_selection)
 {
   int n_non_top_muons = 0;
   int n_opposite_sign_pairs = 0;
@@ -141,7 +159,7 @@ int Event::passes_preselection()
   for(auto particle : particles){
     i_particle++;
     
-    if(!particle->is_good_non_top_muon(particles)) continue;
+    if(!particle->is_good_non_top_muon(particles, include_lxy_selection)) continue;
     
     if(particle->is_motherless()){
       cout<<"Found weird particle with no mothers... skipping."<<endl;
@@ -157,7 +175,12 @@ int Event::passes_preselection()
     
     // look for sisters
     auto mother = particles[particle->mothers[0]];
-    vector<int> sister_indices = get_sisters_indices(mother, i_particle);
+    auto last_muon_index = i_particle;
+    while (abs(mother->pdgid) == 13) {
+      last_muon_index = mother->index;
+      mother = particles[mother->mothers[0]];
+    }
+    vector<int> sister_indices = get_sisters_indices(mother, last_muon_index);
     
     for(int sister_index : sister_indices){
       already_accounted_for.push_back(sister_index);

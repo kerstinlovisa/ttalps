@@ -20,12 +20,13 @@ public:
   void print();
   
   bool is_muon(){return abs(pdgid)==13;}
-  bool is_good_non_top_muon(const std::vector<Particle*> &particles);
+  bool is_good_non_top_muon(const std::vector<Particle*> &particles, bool include_lxy_selection=false);
   bool is_motherless();
   
   bool has_top_ancestor(const std::vector<Particle*> &other_particles);
   bool has_alp_ancestor(const std::vector<Particle*> &other_particles);
   bool is_final();
+  bool is_prompt();
   
   double eta();
   double momentum() const;
