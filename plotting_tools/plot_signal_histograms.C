@@ -30,9 +30,9 @@ vector<int> rebin_histogram(TH1D* hist, string hist_name)
   vector<int> lxy_bins;
   if (hist_name == "minlxy-muon_lxy_rebinned") {lxy_bins = {0, 2, 10, 24, 31, 70, 110};} 
   if (hist_name == "maxlxy-muon_lxy_rebinned") {lxy_bins = {0, 2, 10, 24, 31, 70, 110};} 
-  if (hist_name == "minlxy-muon_lxy_rebinned_extended") {lxy_bins = {0, 2, 10, 24, 31, 70, 110, 1300, 3000, 7300};} 
-  if (hist_name == "minlxy-muon_lxy_rebinned_extended_gen") {lxy_bins = {0, 110, 1300, 3000, 7300};}
-  if (hist_name == "minlxy-muon_lxy_rebinned_extended_general") {lxy_bins = {0, 110, 1300, 3000, 7300};}
+  if (hist_name == "minlxy-muon_lxy_rebinned_extended") {lxy_bins = {0, 2, 10, 24, 31, 70, 110, 1310, 2950, 7285};} 
+  if (hist_name == "minlxy-muon_lxy_rebinned_extended_gen") {lxy_bins = {0, 110, 1310, 2950, 7285};}
+  if (hist_name == "minlxy-muon_lxy_rebinned_extended_general") {lxy_bins = {0, 110, 1310, 2950, 7285};}
   for(int i=0; i<hist->GetNbinsX(); i++){
     hist->SetBinContent(i+1, hist->GetBinContent(i+1)/(lxy_bins[i+1]-lxy_bins[i]));
   }
@@ -48,55 +48,32 @@ void set_hist_layout(THStack* stack, tuple<bool, bool, bool, int, double, double
     stack->SetMinimum(yMin);
   }
   stack->GetXaxis()->SetTitle(xlabel.c_str());
-  stack->GetXaxis()->SetTitleSize(0.050);
-  stack->GetXaxis()->SetLabelSize(0.050);
-  stack->GetYaxis()->SetTitleSize(0.050);
-  stack->GetYaxis()->SetLabelSize(0.050);
+  stack->GetXaxis()->SetTitleSize(0.04);
+  stack->GetYaxis()->SetTitleSize(0.04);
   stack->GetYaxis()->SetTitle(ylabel.c_str());
   stack->GetXaxis()->SetRangeUser(xMin, xMax);
-  stack->GetXaxis()->SetTitleOffset(1.2);
 }
 
-void plot_histograms()
+void plot_signal_histograms()
 {
   // Options for plotting:
   bool weighted = true;
   bool overflow = true;
-  bool selection_description = false;
-  int int_lumi = 150e3; // pb-1
+  bool selection_description = true;
 
   string username = getenv("USER");
 
-  // string base_path = "/nfs/dust/cms/user/" + username + "/ttalps/hists/";
-  string base_path; 
-  // string base_path_signal =  "/nfs/dust/cms/user/" + username + "/ttalps/signals_ctau-default/hists/";
-  // string base_path_signal =  "/nfs/dust/cms/user/" + username + "/ttalps/signals_ctau-default_non-prompt-selection/hists/";
-  // string base_path_signal =  "/nfs/dust/cms/user/" + username + "/ttalps/signals_ctau-default_non-muon-mothers/hists/";
-  // string base_path_signal =  "/nfs/dust/cms/user/" + username + "/ttalps/signals_ctau-default_muon-status/hists/";
-  string base_path_signal =  "/nfs/dust/cms/user/" + username + "/ttalps/signals_ctau-default_new-dimuon-mass-cuts/hists/";
-  // string base_path_background =  "/nfs/dust/cms/user/" + username + "/ttalps/backgrounds_JA-dir/hists/";
-  // string base_path_background =  "/nfs/dust/cms/user/" + username + "/ttalps/backgrounds_non-prompt-selection/hists/";
-  // string base_path_background =  "/nfs/dust/cms/user/" + username + "/ttalps/backgrounds_non-muon-mothers/hists/";
-  string base_path_background =  "/nfs/dust/cms/user/" + username + "/ttalps/backgrounds_new-dimuon-mass-cuts/hists/";
+  // string base_path = "/nfs/dust/cms/user/" + username + "/ttalps/signals_ctau-default_non-muon-mothers/hists/";
+  // string base_path = "/nfs/dust/cms/user/" + username + "/ttalps/signals_ctau-default_muon-status/hists/";
+  string base_path = "/nfs/dust/cms/user/" + username + "/ttalps/signals_ctau-default_non-prompt-selection/hists/";
+  // string base_path = "/nfs/dust/cms/user/" + username + "/ttalps/reweighted/hists/";
+  // string base_path = "/nfs/dust/cms/user/jalimena/ttalps/hists/backup_lovisa/";
   string output_path;
-  // if(username == "lrygaard") {output_path = "/afs/desy.de/user/l/lrygaard/ALPpheno/plots_non-prompt-selection/";}
-  if(username == "lrygaard") {output_path = "/afs/desy.de/user/l/lrygaard/ALPpheno/plots/";}
+  // if(username == "lrygaard") {output_path = "/afs/desy.de/user/l/lrygaard/ALPpheno/plots_signal_fs/";}
+  if(username == "lrygaard") {output_path = "/afs/desy.de/user/l/lrygaard/ALPpheno/plots_signal_non-prompt-selection/";}
   // else if(username == "jniedzie") {output_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/";}
   // Only set up for user lrygaard now
   else {cout << "Error: unrecognized user." << endl;}
-
-  // vector<const char*> selections = {
-  //   "l_{xy}^{#mu} > 200 #mum",
-  //   "|#eta^{#mu}| < 2.5",
-  //   "p_{T}^{#mu} > 10 GeV",
-  //   "m_{#mu#bar{#mu}}",
-  //   "R_{lxy} < 0.05",
-  // };
-  // vector<const char*> preselections = {
-  //   "l_{xy}^{#mu} > 200 #mum",
-  //   "|#eta^{#mu}| < 2.5",
-  //   "p_{T}^{#mu} > 5 GeV",
-  // };
 
   filesystem::path p(output_path);
   if(!filesystem::exists(p))
@@ -109,34 +86,38 @@ void plot_histograms()
     p = output_path + "alp";
     filesystem::create_directory(p);
   }
+
+  int int_lumi = 150e3; // pb-1
+
+  vector<int> lxy_bins;
   
-  map<string, tuple<int, string, int, bool, float, int> > file_names = {
-    // file name                                  // color  // legend            // linestyle    // signal   // cross-sec  // Ntot
-    {"01_muon_siblings/ttj.root",                  {33,    "ttj resonant",            kSolid,    false,      395.3,        12540000}},
-    // {"03_muon_siblings/ttmumu.root",               {45,    "tt#mu#mu resonant",       kSolid,    false,      0.02091,      9940000}},
-    // {"07_muon_siblings/tta_mAlp-0p35GeV.root",      {kViolet,    "0.35 GeV pair",     true,       0.1488,        1000000}},
-    // {"09_muon_siblings/tta_mAlp-2GeV.root",        {kRed,       "2 GeV pair",       true,       0.1469,        1000000}},
-    // {"11_muon_siblings/tta_mAlp-8GeV.root",        {kBlue,      "8 GeV pair",       true,       0.1448,        990000}},
-    // {"11_muon_siblings/tta_mAlp-10GeV.root",       {kBlue,      "10 GeV pair",      true,       0.1448,        980000}},
+  map<string, tuple<int, string, bool, float, int> > file_names = {
+    // file name    
+    // {"06_muon_siblings/tta_mAlp-8GeV_ctau-0p000010mm.root",{kGreen+2,     "0.3 GeV non-pair", true,     0.1188,        950000}},
+    {"05_muon_siblings/tta_mAlp-0p3GeV.root",      {kSpring-5,  "0.3 GeV pair",     true,       0.1173,        9900000}},
+    {"07_muon_siblings/tta_mAlp-0p5GeV.root",      {kViolet,    "0.5 GeV pair",     true,       0.1188,        1000000}},
+    // {"09_muon_siblings/tta_mAlp-2GeV.root",        {kRed,       "2 GeV pair",       true,       0.1188,        1000000}},
+    // {"11_muon_siblings/tta_mAlp-8GeV.root",        {kBlue,      "8 GeV pair",       true,       0.1148,        990000}},
+    // {"11_muon_siblings/tta_mAlp-10GeV.root",       {kBlue,      "10 GeV pair",      true,       0.1148,        980000}},
 
-    // {"05_tta_mAlp-0p3GeV.root",                    {kCyan,  "m_{a} = 0.3 GeV",    kSolid,    true,       0.1485,       990000}},
-    {"06_tta_mAlp-0p35GeV.root",                   {kSpring-5,  "m_{a} = 0.35 GeV",   kSolid,     true,       0.1480,       980000}},
-    // {"07_tta_mAlp-0p5GeV.root",                    {kSpring-5,  "m_{a} = 0.5 GeV",    kDashed,    true,       0.1483,       1000000}},
-    {"08_tta_mAlp-0p9GeV.root",                    {kOrange,    "m_{a} = 0.9 GeV",    kSolid,     true,       0.1486,       1000000}},
-    // {"09_tta_mAlp-1p25GeV.root",                   {kOrange,    "m_{a} = 1.25 GeV",   kDashed,    true,       0.1482,       990000}},
-    {"10_tta_mAlp-2GeV.root",                      {kMagenta,   "m_{a} = 2 GeV",      kSolid,     true,       0.1483,       1000000}},
-    // {"11_tta_mAlp-4GeV.root",                      {kMagenta,   "m_{a} = 4 GeV",      kDashed,    true,       0.1479,       1000000}},
-    {"12_tta_mAlp-8GeV.root",                      {kBlue,      "m_{a} = 8 GeV",      kSolid,     true,       0.1459,       990000}},
-    // {"13_tta_mAlp-10GeV.root",                     {kBlue,      "m_{a} = 10 GeV",     kDashed,    true,       0.1449,       980000}},
+    // {"03_tta_mAlp-0p2GeV.root",                    {kSpring-5,  "m_{a} = 0.2 GeV",        true,       0.117,        970000}},
+    // {"03_tta_mAlp-0p3GeV.root",                    {kSpring-5,  "m_{a} = 0.3 GeV",        true,       0.1173,       990000}},
+    // {"05_tta_mAlp-0p315GeV.root",                  {kSpring-5,  "m_{a} = 0.315 GeV",      true,       0.1169,       1000000}},
+    // {"05_tta_mAlp-0p35GeV.root",                   {kSpring-5,    "m_{a} = 0.35 GeV",       true,       0.1169,       1000000}},
+    // {"06_tta_mAlp-0p5GeV.root",                    {kOrange,    "m_{a} = 0.5 GeV",        true,       0.1181,       1000000}},
+    // {"06_tta_mAlp-0p9GeV.root",                    {kRed+2,     "m_{a} = 0.9 GeV",        true,       0.1181,       1000000}},
+    // {"07_tta_mAlp-1p25GeV.root",                   {kOrange,       "m_{a} = 1.25 GeV",       true,       0.1188,       1000000}},
+    // {"07_tta_mAlp-2GeV.root",                      {kMagenta, "m_{a} = 2 GeV",          true,       0.1188,       1000000}},
+    // {"07_tta_mAlp-4GeV.root",                      {kMagenta,   "m_{a} = 4 GeV",          true,       0.1188,       1000000}},
+    // {"08_tta_mAlp-8GeV.root",                      {kBlue,      "m_{a} = 8 GeV",          true,       0.1163,       990000}},
+    // {"11_tta_mAlp-10GeV.root",                     {kCyan,      "m_{a} = 10 GeV",         true,       0.1154,       980000}},
 
-    // {"01_ttj.root",              {kBlue-6,    "ttj",     false,      395.3,        12540000}},
-    // {"02_ttmumu.root",           {kOrange+1,  "tt#mu#mu",false,      0.02091,      9940000}},
-
-    {"02_muon_non_siblings/ttj.root",              {36,     "ttj non-resonant",       kSolid,     false,      395.3,        12540000}},
-    // {"04_muon_non_siblings/ttmumu.root",           {49,     "tt#mu#mu non-resonant",  kSolid,     false,      0.02091,      9940000}},
-    // {"08_muon_non_siblings/tta_mAlp-0p35GeV.root",  {kViolet+2,    "0.35 GeV non-pair", true,     0.1469,        1000000}},
-    // {"10_muon_non_siblings/tta_mAlp-2GeV.root",    {kRed+3,       "2 GeV non-pair",   true,     0.1469,        980000}},
-    // {"12_muon_non_siblings/tta_mAlp-8GeV.root",    {kBlue+3,      "8 GeV non-pair",   true,     0.1448,        890000}},
+    // {"06_muon_non_siblings/tta_mAlp-8GeV_ctau-0p000010mm.root",{kGreen+2,     "0.3 GeV non-pair", true,     0.1188,        950000}},
+    // {"06_muon_non_siblings/tta_mAlp-0p9GeV.root",{kGreen+2,     "0.3 GeV non-pair", true,     0.1188,        950000}},
+    {"06_muon_non_siblings/tta_mAlp-0p3GeV.root",  {kGreen+2,     "0.3 GeV non-pair",     true,     0.1173,        990000}},
+    {"08_muon_non_siblings/tta_mAlp-0p5GeV.root",  {kViolet+2,    "0.5 GeV non-pair",     true,     0.1188,        1000000}},
+    // {"10_muon_non_siblings/tta_mAlp-2GeV.root",    {kRed+3,       "2 GeV non-pair",       true,     0.1188,        1000000}},
+    // {"12_muon_non_siblings/tta_mAlp-8GeV.root",    {kBlue+7,      "8 GeV non-pair",   true,     0.1148,        890000}},
     // {"12_muon_non_siblings/tta_mAlp-10GeV.root",   {kBlue+2,      "10 GeV non-pair",  true,     3.046,        990000}},
   };
   
@@ -148,16 +129,17 @@ void plot_histograms()
     // {"first_mother_eta",          {false, false,  false,   1,      -3,      3,     0,   2000,      "#eta",         "Events "}},
     // {"maxlxy-muon_pt",            {true, false,  false,   5,      0,      50,     10,   3e5,      "p_{T}^{#mu} [GeV]",         "Events / 1.0 GeV"}},
     // {"minlxy-muon_pt",            {true, false,  false,   5,      0,      50,     10,   3e5,      "p_{T}^{#mu} [GeV]",         "Events / 1.0 GeV"}},
-    {"minpt-muon_pt",             {true, false,  false,   5,      0,      50,     3.5,   8e5,      "p_{T}^{#mu} [GeV]",         "Events / 1.0 GeV"}},
-    // {"minpt-muon_pt",             {true, false,  false,   5,      0,      50,     10,   3e5,      "p_{T}^{#mu} [GeV]",         "Events / 1.0 GeV"}},
-    // {"maxlxy-muon_pz",            {true, false,  false,   10,     0,      100,    0,      0,      "p_{z}^{#mu} [GeV]",      "Events / GeV"}},
-    // {"minlxy-muon_pz",            {true, false,  false,   10,     0,      100,    0,      0,      "p_{z}^{#mu} [GeV]",      "Events / GeV"}},
+    // {"minpt-muon_pt",             {true, false,  false,   5,      0,      200,    1000,   2e5,      "p_{T}^{#mu} [GeV]",         "Events / 1.0 GeV"}},
+    // // {"maxlxy-muon_pz",            {true, false,  false,   10,     0,      100,    0,      0,      "p_{z}^{#mu} [GeV]",      "Events / GeV"}},
+    // // {"minlxy-muon_pz",            {true, false,  false,   10,     0,      100,    0,      0,      "p_{z}^{#mu} [GeV]",      "Events / GeV"}},
     // {"maxlxy-muon_lxy",           {true, false,  false,   20,     0,      150,      5,    4e6,    "l_{xy}^{#mu} [mm]",         "Events / 2.0 mm"}},
     // {"minlxy-muon_lxy",           {true, false,  false,   20,     0,      150,     10,    6e6,    "l_{xy}^{#mu} [mm]",         "Events / 2.0 mm"}},
-    {"maxlxy-muon_lxy_rebinned",  {true, false,  true,    1,      0,      110,    0.00005,    5,    "l_{xy}^{#mu} [mm]",         "Events"}},
-    {"minlxy-muon_lxy_rebinned",  {true, false,  true,    1,      0,      110,    0.4,     1e5,    "l_{xy}^{#mu} [mm]",         "Events"}},
-    {"minlxy-muon_lxy_rebinned_extended",  {true, false,  true,    1,      0,      7285,    0.1,    1e3,    "l_{xy}^{#mu} [mm]",         "Events"}},
-    {"minlxy-muon_lxy_rebinned_extended_general",  {true, false,  true,    1,      0,      7285,    0.3,    5.5e3,    "l_{xy}^{#mu} [mm]",         "Events"}},
+    // {"minlxy-muon_lxy_logx",      {true, true,   false,    1,      0.0001, 100,     10,    6e6,    "l_{xy}^{#mu} [mm]",         "Events / 2.0 mm"}},
+    // {"maxlxy-muon_lxy_rebinned",  {true, false,  true,    1,      0,      110,    0.00005,    5,    "l_{xy}^{#mu} [mm]",         "Events"}},
+    // {"minlxy-muon_lxy_rebinned",  {true, false,  true,    1,      0,      110,    0.00005,    5,    "l_{xy}^{#mu} [mm]",         "Events"}},
+    // {"minlxy-muon_lxy_rebinned_extended",  {true, false,  true,    1,      0,      7285,    0.1,    1e5,    "l_{xy}^{#mu} [mm]",         "Events"}},
+    // {"maxlxy-muon_lxy_rebinned_extended",  {true, false,  true,    1,      0,      7285,    0.1,    1e5,    "l_{xy}^{#mu} [mm]",         "Events"}},
+    // {"minlxy-muon_lxy_rebinned_extended_general",  {true, false,  true,    1,      0,      7285,    0.1,    1e4,    "l_{xy}^{#mu} [mm]",         "Events"}},
     // {"maxlxy-muon_lxy_2bins",     {true, false,  true,    1,      0,      110,    0.1,    2e5,    "l_{xy}^{#mu} [mm]",         "Events / mm"}},
     // {"minlxy-muon_lxy_2bins",     {true, false,  true,    1,      0,      110,    0.1,    2e5,    "l_{xy}^{#mu} [mm]",         "Events / mm"}},
     // {"maxlxy-muon_lz",            {true, false,  false,   1,      0,      50,     0,      0,      "l_{z}^{#mu} [mm]",       "Events / mm"}},
@@ -170,16 +152,17 @@ void plot_histograms()
     // {"minlxy-muon_boost",         {true, false,  false,   20,     0,      120,    0,      0,      "Muon #gamma#beta",          "Events / GeV"}},
     // {"dimuon_pt",                 {true, false,  false,   10,     0,      100,    0,      0,      "Dimuon p_{T}[GeV]",         "Events / GeV"}},
     // {"dimuon_pz",                 {true, false,  false,   10,     0,      100,    0,      0,      "Dimuon p_{z}[GeV]",      "Events / GeV"}},
-    {"dimuon_mass",               {true, false,  false,   1,      0.1,    1,      0.001,    1e7,    "m_{#mu#bar{#mu}} [GeV]",      "Events / GeV"}},
-    {"dimuon_mass_log",           {true, true,   false,   3,      0.25,   10,     4.4,      4.3e7,    "m_{#mu#bar{#mu}} [GeV]",          "Events"}},
+    {"dimuon_mass",               {true, false,  false,   1,      0.1,    1,      0.01,      1e6,    "m_{#mu#bar{#mu}} [GeV]",      "Events / GeV"}},
+    {"minlxy-muon_mass",               {true, false,  false,   1,      0.1,    1,      0.01,      1e6,    "m_{#mu#bar{#mu}} [GeV]",      "Events / GeV"}},
+    // {"maxlxy-muon_mass",               {true, false,  false,   1,      0.1,    1,      0.01,      1e6,    "m_{#mu#bar{#mu}} [GeV]",      "Events / GeV"}},
+    // {"dimuon_mass_log",           {true, true,   false,   1,      0.25,   10,     10,      1e5,    "m_{#mu#bar{#mu}} [GeV]",          "Events"}},
     // {"first_mother_mass",         {true, false,  false,   1,      0.1,    1,      1,      1e6,     "m_{a} [GeV]",      "Events / GeV"}},
     // {"first_mother_mass_log",     {true, true,   false,   1,      0.25,   10,     1,      1e9,     "m_{a} [GeV]",          "Events / GeV"}},
     // {"dimuon_deltaR",             {true, false,  false,   1,      0,      1,      1,      2e5,    "#Delta R(#mu#bar{#mu})",            "Events"}},
     // {"dimuon_deltaPhi",           {true, false,  false,   1,     -4,      4,      0,      0,      "#Delta #phi(#mu#bar{#mu})",              "Events"}},
     // {"dimuon_deltalxy",           {true, false,  false,   1,      0,      0.001,  1,      1e6,    "#Delta l_{xy}(#mu#bar{#mu}) [mm]",          "Events / mm"}},
     // {"dimuon_deltalxy_diff_abs",  {true, false,  false,   1,      0,      10,     1,      1e6,    "|l_{xy}^{#mu} - l_{xy}^{#bar{#mu}}| [mm]",  "Events / mm"}},
-    {"dimuon_deltalxy_ratio_abs", {true, false,  false,   5,     0,      1.05,     0.45,    6e6,    "R_{lxy}",         "Events / 0.05"}},
-    // {"dimuon_deltalxy_ratio_abs", {true, false,  false,   1,     0,      1.05,     0.050,    6e6,    "R_{lxy}",         "Events / 0.01"}},
+    // {"dimuon_deltalxy_ratio_abs", {true, false,  false,   5,     0,      1.05,     1,    1e9,    "R_{lxy}",         "Events / 0.05"}},
     // {"dimuon_deltapt",            {true, false,  false,   1,      0,      100,    1,      1e5,     "#Delta p_{T}(#mu#bar{#mu}) [mm]",          "Events / GeV"}},
   };
 
@@ -187,6 +170,10 @@ void plot_histograms()
 
   vector<string> prefixes = {
     "", // this is for no selections
+    // "alp/alp_", 
+    // "alp/alp_eta-max1p0_", 
+    // "alp/alp_eta-max0p5_", 
+    // "alp/alp_eta-max0p1_", 
 
     // "intermediate_selections/sel_pt-min10p0GeV_",
     // "intermediate_selections/sel_mass-cuts_",
@@ -197,8 +184,9 @@ void plot_histograms()
     // "intermediate_selections/sel_eta-max0p1_",
 
     // "final_selection/final_selection_pt-min10p0GeV_mass-cuts_",
+
     // "final_selection/final_selection_pt-min10p0GeV_mass-cuts_deltalxy-max0p3mm_",
-    "final_selection/final_selection_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_",
+    // "final_selection/final_selection_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_",
     // "final_selection/final_selection_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_",
     // "final_selection/final_selection_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p5_",
 
@@ -212,39 +200,48 @@ void plot_histograms()
   
   vector<string> categories = {
     "os_",
-    "os_first_",
     // "ss_",
     // "single_",
+    "os_first_",
+    "os_first_mother_",
+    "os_last_mother_",
   };
   
   map<string, THStack*> stacks_signal;
-  map<string, THStack*> stacks_background;
   map<string, int> N_tot_background;
   for(auto &[hist_name, tmp] : hist_names){
     for(auto prefix : prefixes){
       for (auto category : categories) {
         string full_hist_name =  prefix + category + hist_name;
         stacks_signal[full_hist_name] = new THStack();
-        stacks_background[full_hist_name] = new THStack();
-        N_tot_background[full_hist_name] = 0;
-        if(hist_name == "minlxy-muon_lxy_rebinned_extended_general") {
-          stacks_signal[full_hist_name+"_1widthbins"] = new THStack();
-          stacks_background[full_hist_name+"_1widthbins"] = new THStack();
-        }
+        if(hist_name == "minlxy-muon_lxy_rebinned_extended_gen") stacks_signal[full_hist_name+"_1widthbins"] = new THStack();
+        if(hist_name == "minlxy-muon_lxy_rebinned_extended_general") stacks_signal[full_hist_name+"_1widthbins"] = new THStack();
       }
     }
   }
-
-  int n_bkg_processes = 0;
   
+  auto legend = new TLegend(0.11, 0.83, 0.89, 0.88);
+  legend->SetNColumns(4);
+  legend->SetBorderSize(0);
+  legend-> SetTextSize(0.036);
+  vector<string> in_legend;
+  TLatex text(0.6, 0.91, "L = 150 fb^{-1}, #sqrt{s} = 13 TeV");
+  text.SetNDC(kTRUE);
+  text.SetTextSize(0.036);
+  TLatex selection_text(0.13, 0.78, "#bf{Selection: p_{T}^{#mu} < 10 GeV, di-muon mass, R_{lxy} < 0.05}");
+  selection_text.SetNDC(kTRUE);
+  selection_text.SetTextSize(0.036);
+  
+  gStyle->SetStatStyle(0);
+  gStyle->SetTitleStyle(0);
+  gROOT->ForceStyle();
+
   if(!weighted){
     for(auto &[file_name_, params] : file_names){
-      auto [color, title, line, signal, cross_sec, N_tot] = params;
-      if(!signal){
+      auto [color, title, signal, cross_sec, N_tot] = params;
+        if(!signal){
         string file_name = file_name_;
         file_name.erase(0,3);
-
-        base_path = base_path_background;
 
         auto input_file = TFile::Open((base_path+file_name).c_str());
         
@@ -260,75 +257,22 @@ void plot_histograms()
             }
           }
         }
-        n_bkg_processes++;
       }
     }
   }
-  for(auto &[file_name_, params] : file_names){
-    auto [color, title, line, signal, cross_sec, N_tot] = params; 
-    if(!signal) n_bkg_processes++;
-  }
-  
-  // auto legend = new TLegend(0.14, 0.83, 0.89, 0.88);
-  // auto legend = new TLegend(0.14, 0.73, 0.89, 0.88);
-  auto legend = new TLegend(0.14, 0.78, 0.70, 0.88);
-  // legend->SetNColumns(3);
-  legend->SetNColumns(2);
-  legend->SetBorderSize(0);
-  legend->SetTextSize(0.050);
-  legend->SetTextFont(42);
-  double x_max = 0.89;
-  std::cout << "n_bkg_processes " << n_bkg_processes << std::endl;
-  if (n_bkg_processes <= 2) x_max = 0.68;
-  // auto legend_bkg = new TLegend(0.14, 0.68, x_max, 0.73);
-  auto legend_bkg = new TLegend(0.14, 0.73, x_max, 0.78);
-  legend_bkg->SetNColumns(4);
-  legend_bkg->SetBorderSize(0);
-  legend_bkg->SetTextSize(0.050);
-  legend_bkg->SetTextFont(42);
-  vector<string> in_legend;
-  TLatex text(0.53, 0.91, "L = 150 fb^{-1}, #sqrt{s} = 13 TeV");
-  text.SetNDC(kTRUE);
-  text.SetTextSize(0.050);
-  text.SetTextFont(42);
-
-  // TLatex selection_text(0.14, 0.63, "Selections: l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 10 GeV, m_{#mu#bar{#mu}}, R_{lxy} < 0.05");
-  // TLatex preselection_text(0.14, 0.63, "Selections: l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 5 GeV");
-  TLatex selection_text(0.14, 0.68, "Selections: l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 10 GeV, m_{#mu#bar{#mu}}, R_{lxy} < 0.05");
-  TLatex preselection_text(0.14, 0.68, "Selections: l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 5 GeV");
-  selection_text.SetNDC(kTRUE);
-  selection_text.SetTextSize(0.050);
-  selection_text.SetTextFont(42);
-  preselection_text.SetNDC(kTRUE);
-  preselection_text.SetTextSize(0.050);
-  preselection_text.SetTextFont(42);
-
-  auto legend_lines = new TLegend(0.14, 0.79, 0.89, 0.83);
-  legend_lines->SetNColumns(2);
-  legend_lines->SetBorderSize(0);
-  legend_lines->SetTextSize(0.050);
-  legend_lines->SetTextFont(42);
-  legend_lines->AddEntry((TObject*)0, "Resonsonant", "l");
-  legend_lines->AddEntry((TObject*)0, "Non-resonsonant", "l");
-
-  gStyle->SetStatStyle(0);
 
   for(auto &[file_name_, params] : file_names){
-    auto [color, title, line, signal, cross_sec, N_tot] = params;
+    auto [color, title, signal, cross_sec, N_tot] = params;
 
     string file_name = file_name_;
     file_name.erase(0,3);
 
-    if(signal) base_path = base_path_signal;
-    else base_path = base_path_background;
     auto input_file = TFile::Open((base_path+file_name).c_str());
     
     for(auto &[hist_name, params] : hist_names){
       for (auto prefix : prefixes){
         for (auto category : categories) {
-          if(category == "os_first_" && !signal) continue;
           string full_hist_name = prefix + category + hist_name;
-          
           auto hist = (TH1D*)input_file->Get(full_hist_name.c_str());
           auto [logy, logx, rebinned, rebin, xMin, xMax, yMin, yMax, xlabel, ylabel] = params;
           
@@ -337,37 +281,26 @@ void plot_histograms()
           
           if(rebinned)
           {
-            vector<int> lxy_bins = rebin_histogram(hist, hist_name);
+            rebin_histogram(hist, hist_name);
             if (hist_name == "minlxy-muon_lxy_rebinned_extended_general")
             {
               vector<string> bin_labels = {"Inner tracker 0-110", "Outer tracker 110-1300", "Calorimiter 1300-3000", "Muon system 3000-7300"};
               TH1D* hist_new = get_hist_with_same_width_bins(hist, full_hist_name, lxy_bins, bin_labels);
+              hist_new->SetLineColor(color);
+              hist_new->SetLineWidth(2);
               hist_new->Rebin(rebin);
               if(weighted) {hist_new->Scale(rebin*int_lumi*cross_sec/N_tot);}
               else{
-                if(signal) {hist_new->Scale(rebin/hist_new->Integral());}
-                else {
-                  hist_new->Scale(rebin/hist_new->Integral());
-                  hist_new->Scale((hist_new->GetEntries()*int_lumi*cross_sec/N_tot)/N_tot_background[full_hist_name]);
-                }
+                hist_new->Scale(rebin/hist_new->Integral());
               }
               hist_new->Sumw2(false);
-              hist_new->SetLineWidth(2);
-              if(signal) {
-                hist_new->SetLineColor(color);
-                hist_new->SetLineStyle(line);
-                stacks_signal[full_hist_name+"_1widthbins"]->Add(hist_new);
-              }
-              else {
-                hist_new->SetLineColorAlpha(color, 0);
-                hist_new->SetFillColorAlpha(color, 0.7);
-                stacks_background[full_hist_name+"_1widthbins"]->Add(hist_new);
-              }
+              stacks_signal[full_hist_name+"_1widthbins"]->Add(hist_new);
               get<5>(params) = lxy_bins.size();
               hist_names_1widthbins[hist_name+"_1widthbins"] = params;
             }
           }
 
+          // hist->SetLineColor(color);
           hist->SetLineWidth(2);
           hist->Rebin(rebin);
           if(weighted) {hist->Scale(rebin*int_lumi*cross_sec/N_tot);}
@@ -382,19 +315,12 @@ void plot_histograms()
 
           if(overflow) add_overflow_bin(hist, xMax);
           
-          if(signal) {
-            hist->SetLineColor(color);
-            hist->SetLineStyle(line);
-            stacks_signal[full_hist_name]->Add(hist);}
-          else {
-            hist->SetLineColorAlpha(color, 0);
-            hist->SetFillColorAlpha(color, 0.7);
-            stacks_background[full_hist_name]->Add(hist);
-          }
+          hist->SetLineColor(color);
+          stacks_signal[full_hist_name]->Add(hist);
         
           if(find(in_legend.begin(), in_legend.end(), file_name) == in_legend.end()){
             if(signal){legend->AddEntry(hist, title.c_str(), "l");}
-            else {legend_bkg->AddEntry(hist, title.c_str(), "f");}
+            else {legend->AddEntry(hist, title.c_str(), "f");}
             in_legend.push_back(file_name);
           }
           input_file->cd();
@@ -415,15 +341,11 @@ void plot_histograms()
     for(auto prefix : prefixes){
       for (auto category : categories) {
         string full_hist_name = prefix + category + hist_name;
-        string bkg_hist_name = prefix + category + hist_name;
-        if(category == "os_first_") bkg_hist_name = prefix + "os_" + hist_name;
     
         auto [logy, logx, rebinned, rebin, xMin, xMax, yMin, yMax, xlabel, ylabel] = params;
 
         auto canvas = new TCanvas("canvas", "canvas");
         canvas->cd();
-        canvas->SetBottomMargin(0.15); 
-        canvas->SetLeftMargin(0.12); 
 
         if(hist_name == "dimuon_mass" || hist_name == "dimuon_mass_log")
         {
@@ -438,8 +360,8 @@ void plot_histograms()
           ghost_stack->Add(ghost_hist);
           ghost_stack->Draw();
           set_hist_layout(ghost_stack, params);
-          
-          stacks_background[bkg_hist_name]->Draw("same");
+
+          stacks_signal[full_hist_name]->Draw("nostack same");
         }
         else if(hist_name == "minlxy-muon_lxy_rebinned_extended_general_1widthbins")
         {
@@ -456,57 +378,38 @@ void plot_histograms()
           ghost_stack->GetXaxis()->ChangeLabel(4,-1,-1,-1,-1,-1,"3000");
           ghost_stack->GetXaxis()->ChangeLabel(5,-1,-1,-1,-1,-1,"7300");
           ghost_stack->GetXaxis()->SetNdivisions(4);
-          stacks_background[full_hist_name]->Draw("same");
+          stacks_signal[full_hist_name]->Draw("same");
 
-          vector<string> bin_labels = {"Inner tracker", "Outer tracker", "Calorimeter", "Muon system"};
+          vector<string> bin_labels = {"#bf{Inner tracker}", "#bf{Outer tracker}", "#bf{Calorimeter}", "#bf{Muon system}"};
           TLatex* l = new TLatex();
-          vector<double> y = {0.6, 0.3, 0.14, 0.14};
+          vector<double> y = {0.6, 0.3, 0.11, 0.11};
           for (int i=0; i<n_bins; i++){
-            double x = i*0.2+0.14;
+            double x = i*0.2+0.13;
             l->SetNDC(kTRUE);
-            l->SetTextSize(0.050);
-            l->SetTextFont(42);
+            l->SetTextSize(0.036);
             l->DrawLatex(x, y[i], bin_labels[i].c_str());
           }
         }
         else{
-          stacks_background[bkg_hist_name]->Draw();
+          stacks_signal[full_hist_name]->Draw("nostack");
         }
-        stacks_signal[full_hist_name]->Draw("nostack same");
 
-        set_hist_layout(stacks_background[bkg_hist_name], params);
+        stacks_signal[full_hist_name]->GetXaxis()->SetLimits(xMin, xMax);
+        if(yMax != 0){
+          stacks_signal[full_hist_name]->SetMaximum(yMax);
+          stacks_signal[full_hist_name]->SetMinimum(yMin);
+        }
+
+        set_hist_layout(stacks_signal[full_hist_name], params);
 
         gPad->Modified();
         gPad->RedrawAxis();
-
         if(logy) canvas->SetLogy();
         if(logx) canvas->SetLogx();
 
         legend->Draw();
-        legend_bkg->Draw();
-        // legend_lines->Draw();
         if(weighted) {text.Draw();}
-        // TLatex latex;
-        // latex.SetTextSize(0.050);
-        // latex.SetTextFont(42);
-        // latex.SetNDC(kTRUE);
-        // double y = 0.76;
-        // double x = 0.77;
-        // latex.DrawLatex(x-0.2, y, "Selections: ");
-        if(prefix.substr(0,15) == "final_selection") {
-          selection_text.Draw();
-          // for(auto sel : selections){
-          //   latex.DrawLatex(0.7, y, sel);
-          //   y -= 0.05;
-          // }
-        }
-        else {
-          preselection_text.Draw();
-          // for(auto sel : preselections){
-          //   latex.DrawLatex(0.7, y, sel);
-          //   y -= 0.05;
-          // }
-        }
+        if(prefix.substr(0,15) == "final_selection") {selection_text.Draw();}
 
         canvas->Update();
         
