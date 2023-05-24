@@ -34,10 +34,10 @@ selection_tools/prepare_histograms
 selection_tools/*.pdf
 selection_tools/*.root
 
-external_tools/hepmc2root/__pycache__/*
-external_tools/hepmc2root/hepmc2root
-external_tools/hepmc2root/xHepmcToRoot.xcodeproj/*
-external_tools/hepmc2root/test.root
+general_tools/hepmc2root/__pycache__/*
+general_tools/hepmc2root/hepmc2root
+general_tools/hepmc2root/xHepmcToRoot.xcodeproj/*
+general_tools/hepmc2root/test.root
 
 TdAlps/__pycache__/*
 
