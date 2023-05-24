@@ -1,6 +1,6 @@
 from math import sqrt, pi
 
-from ROOT import TFile, kGreen, kYellow, TCanvas, gPad, TGraph, kRed, kViolet, kBlue, TLegend, kCyan, kOrange
+from ROOT import TFile, kGreen, kYellow, TCanvas, gPad, TGraph, kRed, kViolet, kBlue, TLegend, kCyan, kOrange, kBlack, TF1, kWhite, kPink
 
 from limits_tools import alp_cross_section_only_top_coupling, cross_section_to_coupling
 
@@ -8,11 +8,49 @@ from limits_tools import alp_cross_section_only_top_coupling, cross_section_to_c
 base_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/"
 
 limits_variants = [
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1", kViolet+1, 1, "default_lifetime"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_ctau-1e5mm", kCyan+1, 1, "1e5 mm"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_ctau-1e2mm", kBlue, 1, "100 mm"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_ctau-1mm", kGreen+1, 1, "1 mm"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p1_ctau-1em4mm", kOrange, 1, "1e-4 mm"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default", kBlack, 2, "default"),
+
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_default_ptAlp-ge5GeV_pt-10GeV", kGreen+1, 1, "no alp pt cut, muon pt > 10 GeV"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_default_ptAlp-ge5GeV_pt-5GeV", kBlue, 1, "no alp pt cut, muon pt > 5 GeV"),
+
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_displacedOnly", kGreen+1, 1, "default, l_xy > 200 #mu m"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_newCuts", kBlack, 1, "default, new cuts"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_newCuts_firstMin", kRed, 3, "default, new cuts, first"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_firstMuon", kBlack, 2, "default, first muon"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_lastMuon", kGreen+1, 3, "default, last muon"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_trackerOnly", kBlack, 2, "default lifetime, tracker only"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1mm", kViolet, 1, "1 mm"),
+    
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e0mm_newCuts", kPink,        1, "1e0 mm, new cuts"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e1mm_newCuts", kViolet,      1, "1e1 mm, new cuts"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e4mm_newCuts", kBlue,        1, "1e4 mm, new cuts"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e5mm_newCuts", kCyan+1,      1, "1e5 mm, new cuts"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e6mm_newCuts", kGreen+1,     1, "1e6 mm, new cuts"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e7mm_newCuts", kOrange+1,    1, "1e7 mm, new cuts"),
+    #
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e4mm", kBlue, 2, "1e4 mm"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e5mm", kCyan+1, 2, "1e5 mm"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e6mm", kGreen+1, 2, "1e6 mm"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e7mm", kOrange+1, 2, "1e7 mm"),
+    
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-1e6mm_trackerOnly", kGreen+1, 2, "1e6 mm, tracker only"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-2e6mm", kGreen+1, 2, "2e6 mm"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-3e6mm", kGreen+1, 3, "3e6 mm"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-3e6mm_moreStats", kGreen, 3, "3e6 mm"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-5e6mm", kGreen+1, 1, "5e6 mm"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-5e6mm_ref-1pb_rescaled", kGreen+1, 1, "5e6 mm, 1 pb (rescaled)"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-5e6mm_ref-0p1pb_rescaled", kBlue, 2, "5e6 mm, 0.1 pb (rescaled)"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-5e6mm_ref-0p1pb_nonRescaled", kViolet, 1, "5e6 mm, 0.1 pb (not rescaled)"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-8e6mm", kGreen+1, 5, "8e6 mm"),
+    
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-2e7mm", kOrange+1, 2, "2e7 mm"),
+    
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-0", kBlack, 1, "default, bck=0"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1em10", kViolet, 1, "default, bck=1e-10"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1em5", kBlue, 1, "default, bck=1e-5"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1em1", kCyan+1, 1, "default, bck=1e-1"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1e0", kGreen+1, 1, "default, bck=1e0"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1e1", kOrange, 1, "default, bck=1e1"),
 ]
 
 
@@ -35,10 +73,13 @@ def main():
     # gPad.SetLogx()
     
     theory_line.SetLineColor(kRed)
+    theory_line.SetLineColor(kWhite)
     theory_line.Draw("AL")
     
-    theory_line.SetMinimum(2e-5)
-    theory_line.SetMaximum(2e3)
+    # theory_line.SetMinimum(2e-5)
+    theory_line.SetMinimum(1e-4)
+    # theory_line.SetMaximum(2e3)
+    theory_line.SetMaximum(1e-2)
     theory_line.GetXaxis().SetRangeUser(0.3, 10)
     
     theory_line.GetYaxis().SetTitle("#sigma(pp#rightarrow t#bar{t}a) #times BR(a#rightarrow #mu#mu) (pb)")
@@ -72,8 +113,15 @@ def main():
         graph_mean.SetLineColor(color)
         graph_mean.SetLineStyle(style)
 
+        if graph_mean.GetN() == 1:
+            graph_mean.SetMarkerStyle(20)
+            graph_mean.SetMarkerSize(1.0)
+            graph_mean.SetMarkerColor(color)
+        else:
+            graph_mean.SetMarkerSize(0)
+
         canvas_cross_section.cd()
-        graph_mean.Draw("Lsame")
+        graph_mean.Draw("LPsame")
 
         canvas_coupling.cd()
         graph_mean_coupling = cross_section_to_coupling(graph_mean)
@@ -86,8 +134,48 @@ def main():
     dummy_graph = TGraph()
     legend.AddEntry(dummy_graph, "", "")
     
+    line_1pb = TF1("1pb", "1", 0, 100)
+    line_1pb.SetLineColor(kGreen+1)
+    line_1pb.SetLineStyle(2)
+
+    line_0p1pb = TF1("1pb", "0.1", 0, 100)
+    line_0p1pb.SetLineColor(kViolet)
+    line_0p1pb.SetLineStyle(2)
+    
+    # optimal_graph_5e6mm = TGraph()
+    # optimal_graph_5e6mm.SetPoint(0, 0.35, 32.33333333333333)
+    # optimal_graph_5e6mm.SetPoint(1, 0.5, 22.222222222222225)
+    # optimal_graph_5e6mm.SetPoint(2, 0.9, 8.25)
+    # optimal_graph_5e6mm.SetPoint(3, 1.25, 4.166666666666666)
+    # optimal_graph_5e6mm.SetPoint(4, 2, 2.6133333333333333)
+    # optimal_graph_5e6mm.SetPoint(5, 4, 1.2452830188679245)
+    # optimal_graph_5e6mm.SetPoint(6, 8, 0.825)
+    # optimal_graph_5e6mm.SetPoint(7, 10, 0.5952380952380953)
+    #
+    # optimal_graph_5e6mm.SetLineColor(kGreen+1)
+    # optimal_graph_5e6mm.SetLineStyle(2)
+    # legend.AddEntry(optimal_graph_5e6mm, "10 events at 5e6 mm", "L")
+    #
+    # optimal_graph_1e5mm = TGraph()
+    # optimal_graph_1e5mm.SetPoint(0, 0.35, 0.3010752688172043)
+    # optimal_graph_1e5mm.SetPoint(1, 0.5, 0.28860028860028863)
+    # optimal_graph_1e5mm.SetPoint(2, 0.9, 0.21221864951768488)
+    # optimal_graph_1e5mm.SetPoint(3, 1.25, 0.12865497076023394)
+    # optimal_graph_1e5mm.SetPoint(4, 2, 0.09116022099447513)
+    # optimal_graph_1e5mm.SetPoint(5, 4, 0.059620596205962065)
+    # optimal_graph_1e5mm.SetPoint(6, 8, 0.0316844487552538)
+    # optimal_graph_1e5mm.SetPoint(7, 10, 0.01614481409001957)
+    #
+    # optimal_graph_1e5mm.SetLineColor(kCyan+1)
+    # optimal_graph_1e5mm.SetLineStyle(2)
+    # legend.AddEntry(optimal_graph_1e5mm, "10 events at 1e5 mm", "L")
+    
     canvas_cross_section.cd()
     legend.Draw()
+    # line_1pb.Draw("same")
+    # line_0p1pb.Draw("same")
+    # optimal_graph_5e6mm.Draw("Lsame")
+    # optimal_graph_1e5mm.Draw("Lsame")
 
     canvas_coupling.cd()
     legend.Draw()

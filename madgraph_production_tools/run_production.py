@@ -9,7 +9,8 @@ import random
 import subprocess
 import physics as ph
 
-username = os.getlogin()
+#username = os.getlogin()
+username = "jniedzie"
 
 if username == "jniedzie":
     python_path = "/afs/desy.de/user/j/jniedzie/miniconda3/envs/tta/bin/python3"
@@ -216,7 +217,8 @@ def main():
         ("# ma", "dummy_value"): alp_mass,
         ("# ax", "dummy_value"): gamma,
     }
-
+    print(f"{alp_mass=}, {gamma=}, lifetime= {ph.sm['c'] * ph.sm['hbar'] / gamma * 10} mm")
+    
     copy_and_update_config(base_param_card, new_param_card_path, to_change)
 
     # run production

@@ -4,12 +4,15 @@ from ROOT import TGraphAsymmErrors
 
 import physics as ph
 
+tiny_scale = 1e9
+large_scale = 1e3
+
 regions_to_mask = {
-    "rho/omega": (0.74, 0.82),
-    "phi": (0.97, 1.07),
+    # "rho/omega": (0.74, 0.82),
+    # "phi": (0.97, 1.07),
     "j/psi": (2.94, 3.24),
     "psi": (3.50, 3.86),
-    "z": (86.63, 95.75),
+    # "z": (86.63, 95.75),
 }
 
 
@@ -47,26 +50,57 @@ alp_cross_section_only_top_coupling = {
 }
 
 
-def find_lifetime_for_mass(mass, coupling, Lambda):
+def find_lifetime_for_mass(mass, coupling, Lambda, boost=False):
     ctau = ph.ctaua(mass, coupling, coupling, Lambda)  # in cm
     
-    boost = 1 / mass
+    if boost:
+        boost = 1 / mass
+        
+        if mass < 3:
+            boost *= 223
+        elif mass < 20:
+            boost *= 230
+        elif mass < 30:
+            boost *= 240
+        elif mass < 50:
+            boost *= 260
+        else:
+            boost *= 296
+        
+        ctau *= boost
     
-    if mass < 3:
-        boost *= 223
-    elif mass < 20:
-        boost *= 230
-    elif mass < 30:
-        boost *= 240
-    elif mass < 50:
-        boost *= 260
-    else:
-        boost *= 296
+    ctau *= 10  # cm -> mm
     
-    return boost * ctau
+    return ctau
+
+
+def find_lifetime_for_mass_mumuonly_noboost(mass, coupling, Lambda):
+    lscs = ph.getLSfromctt(coupling, coupling, Lambda, mass)
+    gamma_mumu = ph.Gammaatoll(mass, ph.readCmumu(lscs), ph.sm['mmu'], Lambda)
+    
+    if gamma_mumu == 0:
+        return 999999
+    
+    lifetime_mumu = ph.sm["c"] * ph.sm["hbar"] / gamma_mumu
+    lifetime_mumu *= 10  # convert to mm
+    
+    return lifetime_mumu
+
+
+def get_theory_lifetime_vs_mass_mumu_only():
+    graph = TGraph()
+    graph.SetLineColor(kRed)
+    
+    for i_mass, mass in enumerate(linspace(0, 10)):
+        graph.SetPoint(i_mass, mass, find_lifetime_for_mass_mumuonly_noboost(mass, coupling, Lambda))
+    
+    return graph
 
 
 def mass_to_lifetime(input_graph, coupling, Lambda):
+    if input_graph is None:
+        return None
+    
     output_graph = TGraphAsymmErrors()
     
     for i in range(input_graph.GetN()):
@@ -85,25 +119,30 @@ def mass_to_lifetime(input_graph, coupling, Lambda):
 
 def find_coupling_for_cross_section(x_sec, mass):
     coeffs = {
-        0.1: 0.1177,
-        0.2: 0.1192,
-        0.3: 0.1173,
-        0.315: 0.1183,
+        0.1: 0.11770,
+        0.2: 0.11920,
+        0.3: 0.11730,
+        0.315: 0.11830,
         0.35: 0.11790,
-        0.5: 0.1186,
-        0.9: 0.1170,
-        1: 0.1171,
-        1.25: 0.1176,
-        2: 0.1180,
-        4: 0.1178,
-        8: 0.1165,
-        8.5: 0.1170,
-        10: 0.1143,
-        20: 0.1090,
-        40: 0.0923,
-        50: 0.0848,
-        70: 0.0715,
-        80: 0.0652,
+        0.5: 0.11860,
+        0.9: 0.11700,
+        1: 0.11710,
+        1.25: 0.11760,
+        2: 0.11800,
+        2.5: 0.11650,
+        2.75: 0.11690,
+        3: 0.11700,
+        4: 0.11780,
+        8: 0.11700,
+        8.25: 0.11460,
+        8.5: 0.11640,
+        9: 0.11650,
+        10: 0.11700,
+        20: 0.11430,
+        40: 0.10900,
+        50: 0.09231,
+        70: 0.08479,
+        80: 0.07151,
     }
     
     couping = x_sec / coeffs[mass]
@@ -112,6 +151,9 @@ def find_coupling_for_cross_section(x_sec, mass):
 
 
 def cross_section_to_coupling(input_graph):
+    if input_graph is None:
+        return None
+    
     output_graph = TGraphAsymmErrors()
     
     for i in range(input_graph.GetN()):

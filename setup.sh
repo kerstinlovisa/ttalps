@@ -6,9 +6,10 @@ __set_conda() {
 }
 
 __set_pythonpath() {
-    local svj_analysis_dir=$1
-    export PYTHONPATH="${svj_analysis_dir}/"
-    export PYTHONPATH="${PYTHONPATH}:${svj_analysis_dir}/TdAlps/"
+    local analysis_dir=$1
+    export PYTHONPATH="${analysis_dir}/"
+    export PYTHONPATH="${PYTHONPATH}:${analysis_dir}/TdAlps/"
+    export PYTHONPATH="${PYTHONPATH}:${analysis_dir}/limits_tools/"
 }
 
 
