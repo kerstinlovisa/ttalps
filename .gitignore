@@ -38,6 +38,7 @@ general_tools/hepmc2root/__pycache__/*
 general_tools/hepmc2root/hepmc2root
 general_tools/hepmc2root/xHepmcToRoot.xcodeproj/*
 general_tools/hepmc2root/test.root
+general_tools/*pdf
 
 TdAlps/__pycache__/*
 
