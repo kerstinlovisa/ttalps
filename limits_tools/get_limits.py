@@ -24,6 +24,7 @@ import limits_params as params
 # sample = "default_non-muon-mothers"
 # sample = "default_non-prompt-selection"
 sample = "default_new-dimuon-mass-cuts"
+# sample = "default_ptAlp-ge5GeV"
 
 # sample = "2e6mm_updated"
 # sample = "3e6mm_updated"
@@ -33,7 +34,7 @@ sample = "default_new-dimuon-mass-cuts"
 # sample = "2e8mm_updated"
 
 zero_signal_value = 1e-50
-zero_background_value = 1e-2
+zero_background_value = 0
 
 sample_short = sample.split("mm")[0]
 sample_short = sample_short.split("_")[0]
@@ -42,6 +43,26 @@ parser = OptionParser()
 addDatacardParserOptions(parser)
 options, args = parser.parse_args()
 options.bin = True  # make a binary workspace
+
+correct_for_branching_ratios = True
+
+branching_ratio_to_muons = {
+    0.3: 0.9999516480656298,
+    0.35: 0.999954381388671,
+    0.5: 0.9998929187578673,
+    0.9: 0.9994465135087311,
+    1.25: 0.24705198671664572,
+    2: 0.17681064813740055,
+    2.5: 0.0847743832312974,
+    2.75: 0.004604980707690422,
+    3.0: 0.003401542021041526,
+    4: 0.0018272180991503392,
+    8: 0.0010447039648636659,
+    8.25: 0.0008904841549107469,
+    8.5: 3.9530535748123676e-05,
+    9.0: 1.987044074364474e-05,
+    10: 1.35213783949236e-05,
+}
 
 
 def init_datacard():
@@ -91,7 +112,7 @@ def get_datacard_for_signal(expected):
     return data_card
     
 
-def save_datacard(processes):
+def save_datacard(processes, mass):
     hists = {}
     files = {}
     
@@ -120,6 +141,9 @@ def save_datacard(processes):
             bin_content = float(hists[name].GetBinContent(i_bin + 1))
             # bin_width = hists[name].GetXaxis().GetBinWidth(i_bin + 1)
             # bin_content /= bin_width
+            
+            if name == "tta" and correct_for_branching_ratios:
+                bin_content *= branching_ratio_to_muons[mass]
             
             bin_dict[name] = bin_content / n_generated_events * params.lumi * cross_section
             
@@ -150,7 +174,7 @@ def save_datacard(processes):
     model_builder.doModel()
     
 
-def get_limits_for_signal(signal):
+def get_limits_for_signal(signal, mass):
     processes = {
         "ttj": (params.get_base_background_path(sample)+"ttj.root", params.n_generated_ttj, params.cross_section_ttj),
         "ttmumu": (params.get_base_background_path(sample)+"ttmumu.root", params.n_generated_ttmumu, params.cross_section_ttmumu),
@@ -158,7 +182,7 @@ def get_limits_for_signal(signal):
     }
     
     print("\n\nPreparing datacard\n\n")
-    save_datacard(processes)
+    save_datacard(processes, mass)
     
     print("\n\nRunning combine\n\n")
     os.system(f"combine {params.tmp_combine_file_name} -M AsymptoticLimits > {params.tmp_output_file_name}")
@@ -208,7 +232,7 @@ def main():
 
             print(f"{updated_signal=}")
 
-            limits_per_signal[name] = get_limits_for_signal(updated_signal)
+            limits_per_signal[name] = get_limits_for_signal(updated_signal, mass)
         
             reference_x_sec = signal[-1]
         
