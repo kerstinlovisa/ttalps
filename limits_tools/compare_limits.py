@@ -8,7 +8,11 @@ from limits_tools import alp_cross_section_only_top_coupling, cross_section_to_c
 base_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/"
 
 limits_variants = [
-    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default", kBlack, 2, "default"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default", kBlack, 2, "default"),
+
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_default_ptAlp-ge5GeV_pt-10GeV", kGreen+1, 1, "no alp pt cut, muon pt > 10 GeV"),
+    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_default_ptAlp-ge5GeV_pt-5GeV", kBlue, 1, "no alp pt cut, muon pt > 5 GeV"),
+
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_displacedOnly", kGreen+1, 1, "default, l_xy > 200 #mu m"),
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_newCuts", kBlack, 1, "default, new cuts"),
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_newCuts_firstMin", kRed, 3, "default, new cuts, first"),
@@ -41,12 +45,12 @@ limits_variants = [
     
     # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-2e7mm", kOrange+1, 2, "2e7 mm"),
     
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-0", kBlack, 1, "default, bck=0"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1em10", kViolet, 1, "default, bck=1e-10"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1em5", kBlue, 1, "default, bck=1e-5"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1em1", kCyan+1, 1, "default, bck=1e-1"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1e0", kGreen+1, 1, "default, bck=1e0"),
-    ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1e1", kOrange, 1, "default, bck=1e1"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-0", kBlack, 1, "default, bck=0"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1em10", kViolet, 1, "default, bck=1e-10"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1em5", kBlue, 1, "default, bck=1e-5"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1em1", kCyan+1, 1, "default, bck=1e-1"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1e0", kGreen+1, 1, "default, bck=1e0"),
+    # ("pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_zeroBck-1e1", kOrange, 1, "default, bck=1e1"),
 ]
 
 
@@ -109,8 +113,15 @@ def main():
         graph_mean.SetLineColor(color)
         graph_mean.SetLineStyle(style)
 
+        if graph_mean.GetN() == 1:
+            graph_mean.SetMarkerStyle(20)
+            graph_mean.SetMarkerSize(1.0)
+            graph_mean.SetMarkerColor(color)
+        else:
+            graph_mean.SetMarkerSize(0)
+
         canvas_cross_section.cd()
-        graph_mean.Draw("Lsame")
+        graph_mean.Draw("LPsame")
 
         canvas_coupling.cd()
         graph_mean_coupling = cross_section_to_coupling(graph_mean)

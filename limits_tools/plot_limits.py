@@ -9,7 +9,8 @@ from limits_tools import alp_cross_section_only_top_coupling, mass_to_lifetime, 
 
 # input_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/limits_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-2e7mm.root"
 # input_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/limits_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default.root"
-input_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/limits_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_newCuts.root"
+# input_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/limits_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_newCuts.root"
+input_path = "/Users/jeremi/Documents/Physics/DESY/ttalps/data.nosync/hists/limits_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_ctau-default_newCuts_BRincluded.root"
 # input_path = "limits_ctau_vs_mass.root"
 
 mask_masses = True
@@ -20,6 +21,8 @@ Lambda = 4*pi*1000
 coupling = 0.5
 
 max_x = 10
+muons_only_br = False
+
 
 color_palette_wong = (
     TColor.GetColor(230, 159, 0),  # orange
@@ -30,14 +33,6 @@ color_palette_wong = (
     TColor.GetColor(240, 228, 66),  # yellow
     TColor.GetColor(204, 121, 167),  # pink
 )
-
-
-# default colors
-# run2_expected_color = kBlack
-# run2_1sigma_color = kGreen+1
-# run2_2sigma_color = kYellow
-# hllhc_expected_color = kViolet
-# theory_color = kRed
 
 # wong colors
 run2_expected_color = kBlack
@@ -112,13 +107,13 @@ def prepare_2sigma_graph(graph, x_title, y_title, mode):
         graph.GetXaxis().SetTitleOffset(1.3)
         graph.GetXaxis().SetLabelSize(0.03)
     elif mode == "xsec_vs_mass" or "coupling_vs_mass":
-        graph.GetYaxis().SetTitleSize(0.07)
-        graph.GetYaxis().SetTitleOffset(1.2)
-        graph.GetYaxis().SetLabelSize(0.07)
+        graph.GetYaxis().SetTitleSize(0.07 if muons_only_br else 0.06)
+        graph.GetYaxis().SetTitleOffset(1.2 if muons_only_br else 1.3)
+        graph.GetYaxis().SetLabelSize(0.06)
     
-        graph.GetXaxis().SetTitleSize(0.07)
+        graph.GetXaxis().SetTitleSize(0.06)
         graph.GetXaxis().SetTitleOffset(1.0)
-        graph.GetXaxis().SetLabelSize(0.07)
+        graph.GetXaxis().SetLabelSize(0.06)
     else:
         graph.GetXaxis().SetLabelSize(0.1)
         graph.GetXaxis().SetTitleSize(0.1)
@@ -135,8 +130,8 @@ def prepare_2sigma_graph(graph, x_title, y_title, mode):
     
     if mode == "coupling_vs_mass":
         gPad.SetLogy()
-        graph.SetMinimum(5e-4)
-        graph.SetMaximum(0.2e1)
+        graph.SetMinimum(5e-4 if muons_only_br else 1e-3)
+        graph.SetMaximum(0.2e1 if muons_only_br else 0.2e3)
         graph.GetXaxis().SetLimits(0, max_x)
     elif mode == "mass_vs_lifetime":
         gPad.SetLogx()
@@ -152,8 +147,7 @@ def prepare_2sigma_graph(graph, x_title, y_title, mode):
     elif mode == "xsec_vs_mass":
         gPad.SetLogy()
         graph.SetMinimum(3e-6)
-        # graph.SetMinimum(5e-5)
-        graph.SetMaximum(1e-2)
+        graph.SetMaximum(1e-2 if muons_only_br else 1e3)
         graph.GetXaxis().SetLimits(0, max_x)
     
   
@@ -200,16 +194,23 @@ def get_hllhc_graph(input_graph, with_errors=False):
     
 def get_arrows(mode):
     x_pos = 5
-    y_min = 5e-4 if mode == "xsec_vs_mass" else 7e-2
-    y_max = 2e-3 if mode == "xsec_vs_mass" else 3e-1
+    
+    if muons_only_br:
+        y_min = 5e-4 if mode == "xsec_vs_mass" else 7e-2
+        y_max = 2e-3 if mode == "xsec_vs_mass" else 3e-1
+    else:
+        y_min = 0.3 if mode == "xsec_vs_mass" else 1.6
+        y_max = 1.0 if mode == "xsec_vs_mass" else 5
     
     arrow_150 = TArrow(x_pos, y_min, x_pos, y_max, 0.01, "|>")
     arrow_150.SetLineColor(run2_expected_color)
+    arrow_150.SetFillColor(run2_expected_color)
     arrow_150.SetLineWidth(2)
     arrow_150.Draw()
     
     arrow_3000 = TArrow(x_pos, y_min / 20, x_pos, y_max / 20, 0.01, "|>")
     arrow_3000.SetLineColor(hllhc_expected_color)
+    arrow_3000.SetFillColor(hllhc_expected_color)
     arrow_3000.SetLineWidth(2)
     arrow_3000.Draw()
     
@@ -219,9 +220,15 @@ def get_arrows(mode):
 def get_lumi_labels(mode):
     x_pos_150 = 0.6
     x_pos_3000 = 0.62
-    y_pos_150 = 0.72 if mode == "xsec_vs_mass" else 0.68
-    y_pos_3000 = 0.44 if mode == "xsec_vs_mass" else 0.39
-    angle = 17 if mode == "xsec_vs_mass" else 11
+    
+    if muons_only_br:
+        y_pos_150 = 0.72 if mode == "xsec_vs_mass" else 0.68
+        y_pos_3000 = 0.44 if mode == "xsec_vs_mass" else 0.39
+        angle = 17 if mode == "xsec_vs_mass" else 11
+    else:
+        y_pos_150 = 0.65 if mode == "xsec_vs_mass" else 0.68
+        y_pos_3000 = 0.54 if mode == "xsec_vs_mass" else 0.49
+        angle = 11 if mode == "xsec_vs_mass" else 9
     
     lumi_150 = TLatex(x_pos_150, y_pos_150, "150 fb^{-1}")
     lumi_150.SetNDC(True)
@@ -264,8 +271,13 @@ def save_canvas(theory_line, graph_mean, graph_1sigma, graph_2sigma, mode):
     
     if mask_masses:
         boxes = []
-        y_low = 1e-3 if mode == "coupling_vs_mass" else 5e-6
-        y_high = 5e-1 if mode == "coupling_vs_mass" else 9e-3
+        
+        if muons_only_br:
+            y_low = 1e-3 if mode == "coupling_vs_mass" else 5e-6
+            y_high = 5e-1 if mode == "coupling_vs_mass" else 9e-3
+        else:
+            y_low = 5e-3 if mode == "coupling_vs_mass" else 5e-6
+            y_high = 10 if mode == "coupling_vs_mass" else 1
 
         for low, high in regions_to_mask.values():
             if high > 90:
@@ -476,7 +488,10 @@ def main():
             i_point += 1
             
         mode = "xsec_vs_mass"
-        prepare_2sigma_graph(graph_1sigma, "m_{a} [GeV]", "#sigma(pp#rightarrow t#bar{t}a) [pb] ", mode)
+        
+        y_title = "#sigma(pp#rightarrow t#bar{t}a) [pb] " if muons_only_br else "#sigma(pp#rightarrow t#bar{t}a) #times B(a #rightarrow #mu#bar{#mu}) [pb]"
+        
+        prepare_2sigma_graph(graph_1sigma, "m_{a} [GeV]", y_title, mode)
         save_canvas(theory_line, graph_mean, graph_1sigma, graph_2sigma, mode)
     
         theory_line_lifetime = mass_to_lifetime(theory_line, coupling, Lambda)

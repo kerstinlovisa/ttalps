@@ -87,8 +87,8 @@ def main():
         line.DrawClone()
 
     legend = TLegend(0.5, 0.7, 0.9, 0.9)
-    legend.AddEntry(graphs[0.005], "c_{tt}/f_{a} = 0.01 [TeV^{-1} ]  ", "l")
-    legend.AddEntry(graphs[0.5], "c_{tt}/f_{a} = 1.00 [TeV^{-1} ]  ", "l")
+    legend.AddEntry(graphs[0.005], "c_{tt}/f_{a} = 0.01 / TeV ", "l")
+    legend.AddEntry(graphs[0.5], "c_{tt}/f_{a} = 1.00 / TeV ", "l")
 
     legend.Draw()
     
