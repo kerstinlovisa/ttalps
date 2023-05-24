@@ -58,14 +58,14 @@ def get_efficiency(signal):
 def main():
     lumi_run2 = 150.0 * 1000.0  # pb
     lumi_hllhc = 3000.0 * 1000.0  # pb
-    n_min = 10.0
+    minimum_number_of_events = 10.0
     
-    for name, (mass, signal) in params.signals[sample_short].items():
+    for _, (mass, signal) in params.signals[sample_short].items():
         efficiency = get_efficiency(signal)
         
         
-        x_sec_min_run_2 = n_min/(efficiency * lumi_run2)
-        x_sec_min_hllhc = n_min / (efficiency * lumi_hllhc)
+        x_sec_min_run_2 = minimum_number_of_events / (efficiency * lumi_run2)
+        x_sec_min_hllhc = minimum_number_of_events / (efficiency * lumi_hllhc)
 
         print(f"{mass}: {efficiency:.2f}, x_sec_r2: {x_sec_min_run_2:.0e} pb, x_sec_hllhc:{x_sec_min_hllhc:.0e} pb")
         

@@ -23,7 +23,7 @@ def main():
         graph.SetPoint(i_mass, mass, branching_ratio)
         # print(f"{mass}: {branching_ratio}")
 
-    for mass in (0.3, 0.35, 0.5, 0.9, 1.25, 2, 4, 8, 10):
+    for mass in (0.3, 0.35, 0.5, 0.9, 1.25, 2, 2.5, 2.75, 3.0, 4, 8, 8.25, 8.5, 9.0, 10):
         gamma_total = find_lifetime_for_mass(mass, coupling, Lambda)
         gamma_mumu = find_lifetime_for_mass_mumuonly_noboost(mass, coupling, Lambda)
         branching_ratio = gamma_total/gamma_mumu

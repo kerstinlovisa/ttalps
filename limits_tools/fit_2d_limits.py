@@ -183,42 +183,42 @@ def draw_params_graph(graph, name):
 
 
 def get_params_function(name):
-    fun = TF1(f"{name}_vs_c_tau", "[0]+[1]*x+[2]*pow(x, 2)", 0, 1e8)
-    fun.SetParameter(0, 0)
-    fun.SetParameter(1, 1)
-    fun.SetParameter(2, 0)
+    function = TF1(f"{name}_vs_c_tau", "[0]+[1]*x+[2]*pow(x, 2)", 0, 1e8)
+    function.SetParameter(0, 0)
+    function.SetParameter(1, 1)
+    function.SetParameter(2, 0)
     
-    return fun
+    return function
 
 
 def get_2d_limits_function(param_vs_c_tau_functions, scale=1.0):
-    fun = TF2("2d_fun", "[9]*([0]+[1]*y+[2]*y*y)/x+([3]+[4]*y+[5]*y*y)+([6]+[7]*y+[8]*y*y)*x", 0, 10, 1e-5, 1e10)
-    fun.SetNpy(10000)
+    function = TF2("2d_fun", "[9]*([0]+[1]*y+[2]*y*y)/x+([3]+[4]*y+[5]*y*y)+([6]+[7]*y+[8]*y*y)*x", 0, 10, 1e-5, 1e10)
+    function.SetNpy(10000)
     
     if re_fit_2d_limits:
-        fun.SetParameter(0, param_vs_c_tau_functions[0].GetParameter(0))
-        fun.SetParameter(1, param_vs_c_tau_functions[0].GetParameter(1))
-        fun.SetParameter(2, param_vs_c_tau_functions[0].GetParameter(2))
-        fun.SetParameter(3, param_vs_c_tau_functions[1].GetParameter(0))
-        fun.SetParameter(4, param_vs_c_tau_functions[1].GetParameter(1))
-        fun.SetParameter(5, param_vs_c_tau_functions[1].GetParameter(2))
-        fun.SetParameter(6, param_vs_c_tau_functions[2].GetParameter(0))
-        fun.SetParameter(7, param_vs_c_tau_functions[2].GetParameter(1))
-        fun.SetParameter(8, param_vs_c_tau_functions[2].GetParameter(2))
+        function.SetParameter(0, param_vs_c_tau_functions[0].GetParameter(0))
+        function.SetParameter(1, param_vs_c_tau_functions[0].GetParameter(1))
+        function.SetParameter(2, param_vs_c_tau_functions[0].GetParameter(2))
+        function.SetParameter(3, param_vs_c_tau_functions[1].GetParameter(0))
+        function.SetParameter(4, param_vs_c_tau_functions[1].GetParameter(1))
+        function.SetParameter(5, param_vs_c_tau_functions[1].GetParameter(2))
+        function.SetParameter(6, param_vs_c_tau_functions[2].GetParameter(0))
+        function.SetParameter(7, param_vs_c_tau_functions[2].GetParameter(1))
+        function.SetParameter(8, param_vs_c_tau_functions[2].GetParameter(2))
     else:
-        fun.FixParameter(0, param_vs_c_tau_functions[0].GetParameter(0))
-        fun.FixParameter(1, param_vs_c_tau_functions[0].GetParameter(1))
-        fun.FixParameter(2, param_vs_c_tau_functions[0].GetParameter(2))
-        fun.FixParameter(3, param_vs_c_tau_functions[1].GetParameter(0))
-        fun.FixParameter(4, param_vs_c_tau_functions[1].GetParameter(1))
-        fun.FixParameter(5, param_vs_c_tau_functions[1].GetParameter(2))
-        fun.FixParameter(6, param_vs_c_tau_functions[2].GetParameter(0))
-        fun.FixParameter(7, param_vs_c_tau_functions[2].GetParameter(1))
-        fun.FixParameter(8, param_vs_c_tau_functions[2].GetParameter(2))
+        function.FixParameter(0, param_vs_c_tau_functions[0].GetParameter(0))
+        function.FixParameter(1, param_vs_c_tau_functions[0].GetParameter(1))
+        function.FixParameter(2, param_vs_c_tau_functions[0].GetParameter(2))
+        function.FixParameter(3, param_vs_c_tau_functions[1].GetParameter(0))
+        function.FixParameter(4, param_vs_c_tau_functions[1].GetParameter(1))
+        function.FixParameter(5, param_vs_c_tau_functions[1].GetParameter(2))
+        function.FixParameter(6, param_vs_c_tau_functions[2].GetParameter(0))
+        function.FixParameter(7, param_vs_c_tau_functions[2].GetParameter(1))
+        function.FixParameter(8, param_vs_c_tau_functions[2].GetParameter(2))
         
-    fun.FixParameter(9, scale)
+    function.FixParameter(9, scale)
     
-    return fun
+    return function
     
     
 def draw_2d_limits_function(function):
@@ -283,9 +283,9 @@ def main():
     gPad.SetLogz()
     gPad.SetRightMargin(0.2)
 
-    limits_fun = get_2d_limits_function(param_vs_c_tau_functions, scale=1)
-    limits_fun_tiny = get_2d_limits_function(param_vs_c_tau_functions, scale=tiny_scale)
-    limits_fun_large = get_2d_limits_function(param_vs_c_tau_functions, scale=large_scale)
+    limits_function = get_2d_limits_function(param_vs_c_tau_functions, scale=1)
+    limits_function_tiny = get_2d_limits_function(param_vs_c_tau_functions, scale=tiny_scale)
+    limits_function_large = get_2d_limits_function(param_vs_c_tau_functions, scale=large_scale)
 
     limits_graph_tiny = TGraph2DErrors(limits_graph)
     limits_graph_large = TGraph2DErrors(limits_graph)
@@ -294,14 +294,14 @@ def main():
     limits_graph_large.Scale(large_scale)
 
     if re_fit_2d_limits:
-        limits_graph.Fit(limits_fun)
-        limits_graph_tiny.Fit(limits_fun_tiny)
-        limits_graph_large.Fit(limits_fun_large)
+        limits_graph.Fit(limits_function)
+        limits_graph_tiny.Fit(limits_function_tiny)
+        limits_graph_large.Fit(limits_function_large)
 
-    print_chi2(limits_fun)
-    print_chi2(limits_fun_tiny)
-    print_chi2(limits_fun_large)
-    draw_2d_limits_function(limits_fun)
+    print_chi2(limits_function)
+    print_chi2(limits_function_tiny)
+    print_chi2(limits_function_large)
+    draw_2d_limits_function(limits_function)
 
     # save results
     canvas.Update()
@@ -309,14 +309,14 @@ def main():
 
     output_file = TFile("lifetime_vs_mass_limits_function.root", "recreate")
     output_file.cd()
-    limits_fun.SetName("limits")
-    limits_fun.Write()
+    limits_function.SetName("limits")
+    limits_function.Write()
 
-    limits_fun_tiny.SetName("limits_tiny")
-    limits_fun_tiny.Write()
+    limits_function_tiny.SetName("limits_tiny")
+    limits_function_tiny.Write()
 
-    limits_fun_large.SetName("limits_large")
-    limits_fun_large.Write()
+    limits_function_large.SetName("limits_large")
+    limits_function_large.Write()
 
     output_file.Close()
     
