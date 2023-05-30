@@ -15,18 +15,10 @@ then
   if [[ $process == "ttj" || $process == "ttmumu" ]]
   then
     base_output_path="${base_output_path}/backgrounds"
-    # base_output_path="${base_output_path}/backgrounds_non-prompt-selection"
-    # base_output_path="${base_output_path}/backgrounds_non-muon-mothers"
     base_input_path="${base_input_path}/backgrounds_non-muon-mothers"
   else
-    # base_output_path="${base_output_path}/signals_ctau-default"
-    base_output_path="${base_output_path}/signals_default_ptAlp-ge5GeV"
-    # base_output_path="${base_output_path}/signals_ctau-default_muon-status"
-    # base_output_path="${base_output_path}/signals_ctau-default_non-muon-mothers"
-    # base_input_path="${base_input_path}/signals_ctau-default_non-muon-mothers"
-    base_input_path="${base_input_path}/signals_default_ptAlp-ge5GeV"
-    # base_output_path="${base_output_path}/signals_ctau-default"
-    # base_input_path="${base_input_path}/signals_ctau-default"
+    base_output_path="${base_output_path}/signals_ctau-default"
+    base_input_path="${base_input_path}/signals_ctau-default"
   fi
 else
   base_output_path="${base_output_path}/signals_ctau-${ctau_option}mm"

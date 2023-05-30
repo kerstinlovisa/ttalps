@@ -5,6 +5,9 @@ ctau_option=$2
 username=`whoami`
 
 # run as: ./run_merge_histograms process ctau_option
+# process:	 ttj / ttmumu       for background
+#            tta_mAlp-0p35GeV   for one signal
+#            all                for all signals
 # ctau_option:	 0 	= default
 #		-1 	= reweighted
 #		 value 	= ctau in input directory
@@ -24,16 +27,9 @@ if [ $ctau_option == 0 ]
 then
   if [[ $process == "ttj" || $process == "ttmumu" ]]
   then
-    # base_path="${base_path}/backgrounds_JA-dir_updated/hists"
-    # base_path="${base_path}/backgrounds_non-muon-mothers/hists"
-    # base_path="${base_path}/backgrounds_non-prompt-selection/hists"
     base_path="${base_path}/backgrounds/hists"
   else
-    # base_path="${base_path}/signals_ctau-default_muon-status/hists"
-    # base_path="${base_path}/signals_ctau-default_non-muon-mothers/hists"
-    # base_path="${base_path}/signals_ctau-default_non-prompt-selection/hists"
-    # base_path="${base_path}/signals_ctau-default/hists"
-    base_path="${base_path}/signals_default_ptAlp-ge5GeV/hists"
+    base_path="${base_path}/signals_ctau-default/hists"
   fi
 else 
   echo $ctau_option

@@ -30,13 +30,6 @@ void plot_signal_2dhistograms()
   
   map<string, tuple<int, string, bool, float, int> > file_names = {
     // file name    
-    // {"06_muon_siblings/tta_mAlp-8GeV_ctau-0p000010mm.root",{kGreen+2,     "0.3 GeV non-pair", true,     0.1188,        950000}},
-    // {"05_muon_siblings/tta_mAlp-0p315GeV.root",    {kSpring-5,  "0.315 GeV pair",   true,       0.1188,        1000000}},
-    // {"07_muon_siblings/tta_mAlp-0p5GeV.root",      {kViolet,    "0.5 GeV pair",     true,       0.1188,        1000000}},
-    // {"09_muon_siblings/tta_mAlp-2GeV.root",        {kRed,       "2 GeV pair",       true,       0.1169,        1000000}},
-    // {"11_muon_siblings/tta_mAlp-8GeV.root",        {kBlue,      "8 GeV pair",       true,       0.1148,        990000}},
-    // {"11_muon_siblings/tta_mAlp-10GeV.root",       {kBlue,      "10 GeV pair",      true,       0.1148,        980000}},
-
     // {"03_tta_mAlp-0p2GeV.root",                    {kSpring-5,  "m_{a} = 0.2 GeV",        true,       0.117,        970000}},
     {"03_tta_mAlp-0p3GeV.root",                    {kSpring-5,  "m_{a} = 0.3 GeV",        true,       0.1173,       990000}},
     // {"05_tta_mAlp-0p315GeV.root",                  {kSpring-5,  "m_{a} = 0.315 GeV",      true,       0.1169,       1000000}},
@@ -48,14 +41,6 @@ void plot_signal_2dhistograms()
     // {"07_tta_mAlp-4GeV.root",                      {kMagenta,       "m_{a} = 4 GeV",          true,       0.1188,       1000000}},
     {"08_tta_mAlp-8GeV.root",                      {kBlue,      "m_{a} = 8 GeV",          true,       0.1163,       990000}},
     {"11_tta_mAlp-10GeV.root",                     {kCyan,      "m_{a} = 10 GeV",         true,       0.1154,       980000}},
-
-    // {"06_muon_non_siblings/tta_mAlp-8GeV_ctau-0p000010mm.root",{kGreen+2,     "0.3 GeV non-pair", true,     0.1188,        950000}},
-    // {"06_muon_non_siblings/tta_mAlp-0p9GeV.root",{kGreen+2,     "0.3 GeV non-pair", true,     0.1188,        950000}},
-    // {"06_muon_non_siblings/tta_mAlp-0p315GeV.root",{kGreen+2,     "0.3 GeV non-pair", true,     0.1188,        950000}},
-    // {"08_muon_non_siblings/tta_mAlp-0p5GeV.root",  {kViolet+2,    "0.5 GeV non-pair", true,     0.1188,        860000}},
-    // {"10_muon_non_siblings/tta_mAlp-2GeV.root",    {kRed+3,       "2 GeV non-pair",   true,     0.1169,        980000}},
-    // {"12_muon_non_siblings/tta_mAlp-8GeV.root",    {kBlue+2,      "8 GeV non-pair",   true,     0.1148,        890000}},
-    // {"12_muon_non_siblings/tta_mAlp-10GeV.root",   {kBlue+2,      "10 GeV non-pair",  true,     3.046,        990000}},
   };
 
   map<string, tuple<bool, bool, bool, int, double, double, double, double, string, string>> hist_names = {
@@ -75,8 +60,6 @@ void plot_signal_2dhistograms()
 
   vector<string> categories = {
     "os_",
-    // "ss_",
-    // "single_",
   };
 
   gStyle->SetStatStyle(0);
@@ -112,21 +95,14 @@ void plot_signal_2dhistograms()
 
           hist->GetXaxis()->SetTitle(xlabel.c_str());
           hist->GetYaxis()->SetTitle(ylabel.c_str());
-          // hist->GetXaxis()->SetTitle("m_{#mu#bar{#mu}} [GeV]");
-          // hist->GetYaxis()->SetTitle("m_{a} [GeV]");
 
-          std::cout << xMin << "\t" << xMax << std::endl;
-          // hist->GetXaxis()->SetLimits(xMin, xMax);
           hist->GetXaxis()->SetRangeUser(xMin, xMax);
           hist->GetYaxis()->SetRangeUser(xMin, xMax);
           
-          // hist->SetMinimum(xMin);
-          // hist->SetMaximum(xMax);
-
           gPad->Modified();
-          // gPad->RedrawAxis();
+          gPad->RedrawAxis();
           canvas->SetLogz();
-          // hist->Sumw2(false);
+          hist->Sumw2(false);
 
           gStyle->SetOptTitle(kFALSE);
           gStyle->SetOptStat(0);
@@ -142,28 +118,6 @@ void plot_signal_2dhistograms()
 
           delete canvas;
 
-          // hist->SetLineColor(color);
-          // hist->SetLineWidth(2);
-          // hist->Rebin(rebin);
-          // if(weighted) {hist->Scale(rebin*int_lumi*cross_sec/N_tot);}
-          // else{
-          //   if(signal) {hist->Scale(rebin/hist->Integral());}
-          //   else {
-          //     hist->Scale(rebin/hist->Integral());
-          //     hist->Scale((hist->GetEntries()*int_lumi*cross_sec/N_tot)/N_tot_background[full_hist_name]);
-          //   }
-          // }
-          // hist->Sumw2(false);
-          
-          // if(signal) {
-          //   hist->SetLineColor(color);
-          //   stacks_signal[full_hist_name]->Add(hist);}
-        
-          // if(find(in_legend.begin(), in_legend.end(), file_name) == in_legend.end()){
-          //   if(signal){legend->AddEntry(hist, title.c_str(), "l");}
-          //   else {legend->AddEntry(hist, title.c_str(), "f");}
-          //   in_legend.push_back(file_name);
-          // }
           input_file->cd();
         }
       }
