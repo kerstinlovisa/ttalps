@@ -23,57 +23,14 @@ vector<double> figure_of_merit(vector<double> sig_events, double bkg_n, double b
   return fom;
 }
 
-void print_latex(string output_file, vector<string> hist_names, vector<vector<double> > s, vector<vector<double> > s_sigma, vector<vector<double> > b, vector<vector<double> > b_sigma)
-{
-  // Create and open a text file
-  ofstream output(output_file);
-  vector<double> s0 = s[0];
-  vector<double> b0 = b[0];
-
-  output << "\\begin{table}[H] \n    \\centering \n    \\resizebox{\\textwidth}{!}{ \n    \\begin{tabular}{|l|";
-  for(int i=0; i<(s0.size()+b0.size()); i++){ output << "c|";}
-  output << "} \\hline" << endl;
-  output << "        cuts:";
-  for(int i=0; i<(s0.size()+b0.size()); i++){
-    output << " & " << " ";
-  }
-  output << " \\\\" << endl;
-  output << "        \\hline" << endl;
-  for(int i=0; i<hist_names.size(); i++){
-    vector<double> ss = s[i];
-    vector<double> ssigma = s_sigma[i];
-    vector<double> bb = b[i];
-    vector<double> bsigma = b_sigma[i];
-    output << "        " << hist_names[i];
-    for(int j=0; j<ss.size(); j++){
-      output << " & " << ss[j] << " $\\pm$ " << ssigma[j];
-    }
-    for(int j=0; j<bb.size(); j++){
-      output << " & " << bb[j] << " $\\pm$ " << bsigma[j];
-    }
-    output << " \\\\" << endl;
-  }
-  output << "        \\hline \n    \\end{tabular}} \n    \\caption{Caption} \n    \\label{tab:my_label} \n\\end{table}" << endl;
-
-  output.close();
-}
-
-
-void number_of_events()
+void print_number_of_events()
 {
   int int_lumi = 150e3;
 
-  // string base_path = "/nfs/dust/cms/user/lrygaard/ttalps/hists/";
-  // string base_path_sig = "/nfs/dust/cms/user/lrygaard/ttalps/signals_default_ptAlp-ge5GeV/hists/";
   string base_path_sig = "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-default_new-dimuon-mass-cuts/hists/";
-  // string base_path_sig = "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-default_non-prompt-selection/hists/";
-  // string base_path_sig = "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-default_non-muon-mothers/hists/";
-  // string base_path_sig = "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-default_muon-status/hists/";
   // string base_path_sig = "/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-default/hists/";
   string base_path_bkg = "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds_new-dimuon-mass-cuts/hists/";
-  // string base_path_bkg = "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds_non-prompt-selection/hists/";
-  // string base_path_bkg = "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds_non-muon-mothers/hists/";
-  // string base_path_bkg = "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds_JA-dir_updated/hists/";
+  // string base_path_bkg = "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds/hists/";
   string output_path = "/afs/desy.de/user/l/lrygaard/ALPpheno/selections/";
 
   map<string, tuple<int, string, bool, float, int, float> > background_files = {
@@ -84,7 +41,7 @@ void number_of_events()
 
   map<string, tuple<int, string, bool, float, int, float> > signal_files = {
     // file name                                // color        // legend            // signal   // cross-sec  // Ntot      // BR(a->mumu)
-    {"05_tta_mAlp-0p3GeV.root",                    {kCyan,      "m_{a} = 0.3 GeV",    true,       0.1485,       990000,    0.9999516480656298 }},
+    // {"05_tta_mAlp-0p3GeV.root",                    {kCyan,      "m_{a} = 0.3 GeV",    true,       0.1485,       990000,    0.9999516480656298 }},
     {"06_tta_mAlp-0p35GeV.root",                   {kSpring-5,  "m_{a} = 0.35 GeV",    true,       0.1480,       1000000,   0.999954381388671 }},
     // {"07_tta_mAlp-0p5GeV.root",                    {kSpring-5,  "m_{a} = 0.5 GeV",    true,       0.1483,       1000000,   0.9998929187578673 }},
     {"08_tta_mAlp-0p9GeV.root",                    {kOrange,    "m_{a} = 0.9 GeV",     true,       0.1486,       1000000,   0.9994465135087311 }},
@@ -153,10 +110,7 @@ void number_of_events()
       std::cout << hist_name << std::endl;
       n_events = hist->GetEntries();
       n_events_weighted = n_events*int_lumi*cross_sec*BR/N_tot;
-      std::cout << BR << std::endl;
-      // cout << n_events << "\t" << n_events_weighted << endl;
       n_events_sigma = sqrt(n_events)*int_lumi*cross_sec*BR/N_tot;
-      // bkg_events.push_back(n_events_weighted);
       bkg_events.push_back(n_events_weighted);
       bkg_sigmas.push_back(n_events_sigma);
       bkg_eff.push_back(100*n_events/N_tot);
@@ -194,12 +148,9 @@ void number_of_events()
         n_events += hist->GetBinContent(i);
       }
       n_events_weighted = n_events*int_lumi*cross_sec*BR/N_tot;
-      // cout << n_events << "\t" << n_events_weighted << endl;
       n_events_sigma = sqrt(n_events)*int_lumi*cross_sec*BR/N_tot;
-      // sig_events.push_back(n_events_weighted);
       sig_events.push_back(n_events_weighted);
       sig_sigmas.push_back(n_events_sigma);
-      // cout << n_events << "\t" << N_tot << endl;
       sig_eff.push_back(100*n_events/N_tot);
       sig_eff_sigmas.push_back(100*sqrt(n_events)/N_tot);
     }
@@ -211,30 +162,8 @@ void number_of_events()
 
   double bkg_n;
   double bkg_sigma;
-  // for(int i = 0; i<hist_names.size(); i++){
-  //   vector<double> s = sig_events_hists[i];
-  //   vector<double> s_eff = sig_eff_hists[i];
-  //   vector<double> b = bkg_events_hists[i];
-  //   vector<double> b_sigma = bkg_sigmas_hists[i];
-  //   vector<double> b_eff = bkg_eff_hists[i];
-  //   bkg_n = B(bkg_events);
-  //   bkg_sigma = B_sigma(bkg_sigmas);
-  //   vector<double> fom = figure_of_merit(sig_events, bkg_n, bkg_sigma);
-  //   cout << "--- " << hist_names[i] << endl;
-  //   cout << "   --- Backgrounds:" << endl;
-  //   for(int j=0; j<b.size(); j++){
-  //     cout << "\t" << b[j] << "\t" << b_eff[j] << endl;
-  //   }
-  //   cout << "   --- Signals:" << endl;
-  //   for(int j=0; j<s.size(); j++){
-  //     cout << "\t" << s[j] << "\t" << s_eff[j] << "\t" << fom[j] << endl;
-  //   }
-  // }
-
-  // for(int i = 0; i<hist_names.size(); i++){
   vector<double> s_start = sig_events_hists[0];
   int j = 0;
-  // for(int j=0; j<s_start.size(); j++){
   for(auto &[file_name_, params] : signal_files){
     auto [color, title, signal, cross_sec, N_tot, BR] = params;
     std::cout << "---------------------- SIGNAL: " << title << " ---------------------- " << std::endl;
@@ -251,7 +180,6 @@ void number_of_events()
 
   vector<double> b_start = bkg_events_hists[0];
   j = 0;
-  // for(int j=0; j<b_start.size(); j++){
   for(auto &[file_name_, params] : background_files){
     auto [color, title, signal, cross_sec, N_tot, BR] = params;
     std::cout << "---------------------- BACKGROUND: " << title << " ---------------------- " << std::endl;
@@ -264,11 +192,5 @@ void number_of_events()
     }
     j++;
   }
-
-  string output_file =  "test.txt";
-  print_latex(output_file, hist_names, sig_events_hists, sig_sigmas_hists, bkg_events_hists, bkg_sigmas_hists);
-
-  output_file =  "test_eff.txt";
-  print_latex(output_file, hist_names, sig_eff_hists, sig_eff_sigmas_hists, bkg_eff_hists, bkg_eff_sigmas_hists);
 
 };
