@@ -21,19 +21,6 @@ void plot_dimuon_mass_log()
   // Only set up for user lrygaard now
   else {cout << "Error: unrecognized user." << endl;}
 
-  vector<const char*> selections = {
-    "l_{xy}^{#mu} > 200 #mum",
-    "|#eta^{#mu}| < 2.5",
-    "p_{T}^{#mu} > 10 GeV",
-    "R_{lxy} < 0.05",
-  };
-
-  // vector<const char*> preselections = {
-  //   "l_{xy}^{#mu} > 200 #mum",
-  //   "|#eta^{#mu}| < 2.5",
-  //   "p_{T}^{#mu} > 5 GeV",
-  // };
-
   filesystem::path p(output_path);
   if(!filesystem::exists(p))
   {
@@ -45,6 +32,14 @@ void plot_dimuon_mass_log()
     p = output_path + "alp";
     filesystem::create_directory(p);
   }
+
+  // N-1 selection
+  vector<const char*> selections = {
+    "l_{xy} > 200 #mum",
+    "|#eta^{#mu}| < 2.5",
+    "p_{T}^{#mu} > 10 GeV",
+    "R_{lxy} < 0.05",
+  };
 
   vector<int> color_palette = {
     TColor::GetColor(230, 159, 0),
@@ -58,10 +53,6 @@ void plot_dimuon_mass_log()
     // file name                                  // color  // legend            // linestyle    // signal   // cross-sec  // Ntot
     {"01_muon_siblings/ttj.root",                  {33,    "t#bar{t}j resonant",            kSolid,    false,      395.3,        12540000,    1}},
     // {"03_muon_siblings/ttmumu.root",               {45,    "t#bar{t}#mu#mu resonant",       kSolid,    false,      0.02091,      9940000}},
-    // {"07_muon_siblings/tta_mAlp-0p35GeV.root",      {kViolet,    "0.35 GeV pair",     true,       0.1488,        1000000}},
-    // {"09_muon_siblings/tta_mAlp-2GeV.root",        {kRed,       "2 GeV pair",       true,       0.1469,        1000000}},
-    // {"11_muon_siblings/tta_mAlp-8GeV.root",        {kBlue,      "8 GeV pair",       true,       0.1448,        990000}},
-    // {"11_muon_siblings/tta_mAlp-10GeV.root",       {kBlue,      "10 GeV pair",      true,       0.1448,        980000}},
 
     // {"05_tta_mAlp-0p3GeV.root",                    {kCyan,  "m_{a} = 0.3 GeV",    kSolid,    true,       0.1485,       990000,        0.9999516480656298}},
     {"06_tta_mAlp-0p35GeV.root",                   {color_palette[0],   "m_{a} = 0.35 GeV",   kSolid,     true,       0.1480,       980000,         0.999954381388671}},
@@ -73,29 +64,21 @@ void plot_dimuon_mass_log()
     {"12_tta_mAlp-8GeV.root",                      {color_palette[4],   "m_{a} = 8 GeV",      kSolid,     true,       0.1459,       990000,     0.0010447039648636659}},
     // {"13_tta_mAlp-10GeV.root",                     {kBlue,      "m_{a} = 10 GeV",     kDashed,    true,       0.1449,       980000,     1.35213783949236e-05}},
 
-    // {"01_ttj.root",              {kBlue-6,    "ttj",     false,      395.3,        12540000}},
-    // {"02_ttmumu.root",           {kOrange+1,  "tt#mu#mu",false,      0.02091,      9940000}},
-
     {"02_muon_non_siblings/ttj.root",              {36,     "t#bar{t}j non-resonant",       kSolid,     false,      395.3,        12540000,    1}},
     // {"04_muon_non_siblings/ttmumu.root",           {49,     "t#bar{t}#mu#mu non-resonant",  kSolid,     false,      0.02091,      9940000}},
-    // {"08_muon_non_siblings/tta_mAlp-0p35GeV.root",  {kViolet+2,    "0.35 GeV non-pair", true,     0.1469,        1000000}},
-    // {"10_muon_non_siblings/tta_mAlp-2GeV.root",    {kRed+3,       "2 GeV non-pair",   true,     0.1469,        980000}},
-    // {"12_muon_non_siblings/tta_mAlp-8GeV.root",    {kBlue+3,      "8 GeV non-pair",   true,     0.1448,        890000}},
-    // {"12_muon_non_siblings/tta_mAlp-10GeV.root",   {kBlue+2,      "10 GeV non-pair",  true,     3.046,        990000}},
   };
   
   map<string, tuple<bool, bool, bool, int, double, double, double, double, string, string>> hist_names = {
     // Rebinned option implies histograms with cutomized binning
 //                                logy   logx   rebinned  rebin   xMin    xMax    yMin    yMax    xlabel                       ylabel
-    // {"dimuon_mass_log",           {true, true,   false,   3,      0.25,   10,     3.5,      5e5,    "m_{#mu#mu} [GeV]",          "Events"}},
     {"dimuon_mass_log",           {true, true,   false,   3,      0.25,   10,     4,      4.7e6,    "m_{#mu#mu} [GeV]",          "Events"}},
     };
 
   vector<string> prefixes = {
-    "", // this is for no selections
+    // "", // this is for no selections
 
     "final_selection/final_selection_pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_",
-    "final_selection/final_selection_pt-min0p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_",
+    // "final_selection/final_selection_pt-min0p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05_",
     "final_selection/final_selection_pt-min10p0GeV_deltalxy_ratio_abs-max0p05_",
 
   };
@@ -106,7 +89,7 @@ void plot_dimuon_mass_log()
   };
 
   map<const char*, tuple<double, double, double> > mass_labels = {
-    // mass       // x        // y    // tilt
+    // mass           // x        // y    // tilt
     {"0.35 GeV",      {0.17,      0.45,    90}},
     {"0.5 GeV",       {0.25,      0.45,    90}},
     {"0.9 GeV",       {0.37,      0.45,    90}},
@@ -129,7 +112,8 @@ void plot_dimuon_mass_log()
       }
     }
   }
-  
+
+  // Calculating total number of scaled background events to properly divide the fraction of events in stack  
   if(!weighted){
     for(auto &[file_name_, params] : file_names){
       auto [color, title, line, signal, cross_sec, N_tot, BR] = params;
@@ -138,7 +122,6 @@ void plot_dimuon_mass_log()
         file_name.erase(0,3);
 
         base_path = base_path_background;
-
         auto input_file = TFile::Open((base_path+file_name).c_str());
         
         for(auto &[hist_name, params] : hist_names){
@@ -157,41 +140,16 @@ void plot_dimuon_mass_log()
     }
   }
   
-  // auto legend = new TLegend(0.14, 0.83, 0.89, 0.88);
-  // auto legend = new TLegend(0.14, 0.73, 0.89, 0.88);
-  auto legend = new TLegend(0.14, 0.78, 0.70, 0.88);
-  // legend->SetNColumns(3);
-  legend->SetNColumns(1);
-  legend->SetBorderSize(0);
-  legend->SetTextSize(0.050);
-  legend->SetTextFont(42);
-  double x_max = 0.68;
-  // auto legend_bkg = new TLegend(0.14, 0.68, x_max, 0.73);
-  // auto legend_bkg = new TLegend(0.14, 0.73, x_max, 0.78);
-  // auto legend_bkg = new TLegend(0.14, 0.83, x_max, 0.88);
+  auto legend_sig = new TLegend(0.14, 0.78, 0.70, 0.88);
+  set_legend_layout(legend_sig);
   auto legend_bkg = new TLegend(0.14, 0.76, 0.30, 0.88);
-
-  legend_bkg->SetNColumns(1);
-  legend_bkg->SetBorderSize(0);
-  legend_bkg->SetTextSize(0.050);
-  legend_bkg->SetTextFont(42);
+  set_legend_layout(legend_bkg);
   vector<string> in_legend;
-  TLatex text(0.53, 0.91, "L = 150 fb^{-1}, #sqrt{s} = 13 TeV");
-  text.SetNDC(kTRUE);
-  text.SetTextSize(0.050);
-  text.SetTextFont(42);
 
-  // TLatex selection_text(0.14, 0.63, "Selections: l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 10 GeV, m_{#mu#bar{#mu}}, R_{lxy} < 0.05");
-  // TLatex preselection_text(0.14, 0.63, "Selections: l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 5 GeV");
-  // TLatex selection_text(0.14, 0.68, "l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 10 GeV, m_{#mu#bar{#mu}}, R_{lxy} < 0.05");
-  TLatex selection_text(0.15, 0.76, "l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 10 GeV, R_{lxy} < 0.05");
-  TLatex preselection_text(0.15, 0.76, "l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 5 GeV");
-  selection_text.SetNDC(kTRUE);
-  selection_text.SetTextSize(0.050);
-  selection_text.SetTextFont(42);
-  preselection_text.SetNDC(kTRUE);
-  preselection_text.SetTextSize(0.050);
-  preselection_text.SetTextFont(42);
+  TLatex text_header(0.53, 0.91, "L = 150 fb^{-1}, #sqrt{s} = 13 TeV");
+  text_header.SetNDC(kTRUE);
+  text_header.SetTextSize(0.050);
+  text_header.SetTextFont(42);
 
   gStyle->SetStatStyle(0);
 
@@ -234,15 +192,21 @@ void plot_dimuon_mass_log()
           if(signal) {
             hist->SetLineColor(color);
             hist->SetLineStyle(line);
-            stacks_signal[full_hist_name]->Add(hist);}
-          else {
+            vector<TH1D*> hists = break_into_smaller_histograms(hist, 0.5, true);
+            for(int i=0; i<hists.size(); i++) {
+              hists[i]->SetLineColor(color);
+              hists[i]->SetLineStyle(line);
+              hists[i]->SetLineWidth(2);
+              stacks_signal[full_hist_name]->Add(hists[i]);
+            }
+          } else {
             hist->SetLineColorAlpha(color, 0);
             hist->SetFillColorAlpha(color, 0.7);
             stacks_background[full_hist_name]->Add(hist);
           }
         
           if(find(in_legend.begin(), in_legend.end(), file_name) == in_legend.end()){
-            if(signal){legend->AddEntry(hist, title.c_str(), "l");}
+            if(signal){legend_sig->AddEntry(hist, title.c_str(), "l");}
             else {legend_bkg->AddEntry(hist, title.c_str(), "f");}
             in_legend.push_back(file_name);
           }
@@ -267,31 +231,24 @@ void plot_dimuon_mass_log()
 
         auto canvas = new TCanvas("canvas", "canvas");
         canvas->cd();
-        canvas->SetBottomMargin(0.15); 
-        canvas->SetLeftMargin(0.12); 
+        canvas->SetBottomMargin(0.15);
+        canvas->SetLeftMargin(0.12);
 
-        if(hist_name == "dimuon_mass" || hist_name == "dimuon_mass_log")
-        {
-          // This is to update the x-axis region which couldn't be done for the mass.
-          int n_bins = 100;
-          float* binList = new float[n_bins+1];
-          for (int i=0; i<n_bins+1; i++) {
-            binList[i] = (pow(10,log10(xMin)+((log10(xMax)-log10(xMin))/n_bins)*i));
-          }
-          ghost_hist = new TH1F("hist","",n_bins, binList);
-          THStack* ghost_stack = new THStack();
-          ghost_stack->Add(ghost_hist);
-          ghost_stack->Draw();
-          set_hist_layout(ghost_stack, params);
-          
-          stacks_background[bkg_hist_name]->Draw("same");
+        int n_bins = 100;
+        float* binList = new float[n_bins+1];
+        for (int i=0; i<n_bins+1; i++) {
+          binList[i] = (pow(10,log10(xMin)+((log10(xMax)-log10(xMin))/n_bins)*i));
         }
-        else{
-          stacks_background[bkg_hist_name]->Draw();
-        }
-        stacks_signal[full_hist_name]->Draw("nostack same");
+        ghost_hist = new TH1F("hist","",n_bins, binList);
+        THStack* ghost_stack = new THStack();
+        ghost_stack->Add(ghost_hist);
+        ghost_stack->Draw();
+        set_hist_layout(ghost_stack, params, weighted);
+        
+        stacks_background[bkg_hist_name]->Draw("same ][");
+        stacks_signal[full_hist_name]->Draw("nostack same ][");
 
-        set_hist_layout(stacks_background[bkg_hist_name], params);
+        set_hist_layout(stacks_background[bkg_hist_name], params, weighted);
 
         gPad->Modified();
         gPad->RedrawAxis();
@@ -299,34 +256,14 @@ void plot_dimuon_mass_log()
         if(logy) canvas->SetLogy();
         if(logx) canvas->SetLogx();
 
-        // legend->Draw();
-        legend_bkg->Draw();
-        // legend_lines->Draw();
-        if(weighted) {text.Draw();}
+        double x_selection = 0.68;
+        draw_legends_and_text(nullptr, legend_bkg, selections, prefix, x_selection, weighted, false);
+
         TLatex latex;
         latex.SetTextSize(0.050);
         latex.SetTextFont(42);
         latex.SetNDC(kTRUE);
-        double y = 0.84;
-        // double x = 0.77;
-        // latex.DrawLatex(x-0.2, y, "Selections: ");
-        if(prefix.substr(0,15) == "final_selection") {
-          // selection_text.Draw();
-          for(auto sel : selections){
-            latex.DrawLatex(0.68, y, sel);
-            y -= 0.06;
-          }
-        }
-        else {
-          // preselection_text.Draw();
-          // for(auto sel : preselections){
-          //   latex.DrawLatex(0.68, y, sel);
-          //   y -= 0.06;
-          // }
-        }
-
         for(auto &[mass_name, position] : mass_labels){
-          std::cout << mass_name << std::endl;
           auto [x, y, tilt] = position;
           latex.SetTextAngle(tilt);
           latex.DrawLatex(x, y, mass_name);
@@ -338,10 +275,7 @@ void plot_dimuon_mass_log()
         canvas->SaveAs(file_name.c_str());
 
         delete canvas;
-        if(hist_name == "dimuon_mass" || hist_name == "dimuon_mass_log")
-        {
-          delete ghost_hist;
-        }
+        delete ghost_hist;
       }
     }
   }

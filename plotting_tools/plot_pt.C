@@ -19,18 +19,6 @@ void plot_pt()
   // Only set up for user lrygaard now
   else {cout << "Error: unrecognized user." << endl;}
 
-  vector<const char*> selections = {
-    "l_{xy}^{#mu} > 200 #mum",
-    "|#eta^{#mu}| < 2.5",
-    "m_{#mu#mu} #neq m_{J/#Psi},m_{#Psi}",
-    "R_{lxy} < 0.05",
-  };
-  // vector<const char*> preselections = {
-  //   "l_{xy}^{#mu} > 200 #mum",
-  //   "|#eta^{#mu}| < 2.5",
-  //   "p_{T}^{#mu} > 5 GeV",
-  // };
-
   filesystem::path p(output_path);
   if(!filesystem::exists(p))
   {
@@ -43,6 +31,14 @@ void plot_pt()
     filesystem::create_directory(p);
   }
 
+  // N-1 selection
+  vector<const char*> selections = {
+    "l_{xy} > 200 #mum",
+    "|#eta^{#mu}| < 2.5",
+    "m_{#mu#mu} #neq m_{J/#Psi},m_{#Psi}",
+    "R_{lxy} < 0.05",
+  };
+
   vector<int> color_palette = {
     TColor::GetColor(230, 159, 0),
     TColor::GetColor(86, 180, 233),
@@ -51,25 +47,10 @@ void plot_pt()
     TColor::GetColor(213, 94, 0),
   };
   
-
   map<string, tuple<int, string, int, bool, float, int, float> > file_names = {
     // file name                                  // color  // legend            // linestyle    // signal   // cross-sec  // Ntot
     {"01_muon_siblings/ttj.root",                  {33,    "t#bar{t}j resonant",            kSolid,    false,      395.3,        12540000,    1 }},
     // {"03_muon_siblings/ttmumu.root",               {45,    "tt#mu#mu resonant",       kSolid,    false,      0.02091,      9940000}},
-    // {"07_muon_siblings/tta_mAlp-0p35GeV.root",      {kViolet,    "0.35 GeV pair",     true,       0.1488,        1000000}},
-    // {"09_muon_siblings/tta_mAlp-2GeV.root",        {kRed,       "2 GeV pair",       true,       0.1469,        1000000}},
-    // {"11_muon_siblings/tta_mAlp-8GeV.root",        {kBlue,      "8 GeV pair",       true,       0.1448,        990000}},
-    // {"11_muon_siblings/tta_mAlp-10GeV.root",       {kBlue,      "10 GeV pair",      true,       0.1448,        980000}},
-
-    // // {"05_tta_mAlp-0p3GeV.root",                    {kCyan,  "m_{a} = 0.3 GeV",    kSolid,    true,       0.1485,       990000}},
-    // {"06_tta_mAlp-0p35GeV.root",                   {kSpring-5,  "m_{a} = 0.35 GeV",   kSolid,     true,       0.1480,       980000}},
-    // // {"07_tta_mAlp-0p5GeV.root",                    {kSpring-5,  "m_{a} = 0.5 GeV",    kDashed,    true,       0.1483,       1000000}},
-    // {"08_tta_mAlp-0p9GeV.root",                    {kOrange,    "m_{a} = 0.9 GeV",    kSolid,     true,       0.1486,       1000000}},
-    // // {"09_tta_mAlp-1p25GeV.root",                   {kOrange,    "m_{a} = 1.25 GeV",   kDashed,    true,       0.1482,       990000}},
-    // {"10_tta_mAlp-2GeV.root",                      {kMagenta,   "m_{a} = 2 GeV",      kSolid,     true,       0.1483,       1000000}},
-    // // {"11_tta_mAlp-4GeV.root",                      {kMagenta,   "m_{a} = 4 GeV",      kDashed,    true,       0.1479,       1000000}},
-    // {"12_tta_mAlp-8GeV.root",                      {kBlue,      "m_{a} = 8 GeV",      kSolid,     true,       0.1459,       990000}},
-    // // {"13_tta_mAlp-10GeV.root",                     {kBlue,      "m_{a} = 10 GeV",     kDashed,    true,       0.1449,       980000}},
 
     // {"05_tta_mAlp-0p3GeV.root",                    {kCyan,      "m_{a} = 0.3 GeV",    kSolid,    true,       0.1485,       990000,          0.9999516480656298}},
     {"06_tta_mAlp-0p35GeV.root",                   {color_palette[0],  "m_{a} = 0.35 GeV",   kSolid,     true,       0.1480,       980000,          0.999954381388671}},
@@ -81,15 +62,8 @@ void plot_pt()
     {"12_tta_mAlp-8GeV.root",                      {color_palette[4],  "m_{a} = 8 GeV",      kSolid,     true,       0.1459,       990000,       0.0010447039648636659}},
     // {"13_tta_mAlp-10GeV.root",                     {kBlue,      "m_{a} = 10 GeV",     kDashed,    true,       0.1449,       980000,        1.35213783949236e-05}},
 
-    // {"01_ttj.root",              {kBlue-6,    "ttj",     false,      395.3,        12540000}},
-    // {"02_ttmumu.root",           {kOrange+1,  "tt#mu#mu",false,      0.02091,      9940000}},
-
     {"02_muon_non_siblings/ttj.root",              {36,     "t#bar{t}j non-resonant",       kSolid,     false,      395.3,        12540000,       1 }},
     // {"04_muon_non_siblings/ttmumu.root",           {49,     "tt#mu#mu non-resonant",  kSolid,     false,      0.02091,      9940000}},
-    // {"08_muon_non_siblings/tta_mAlp-0p35GeV.root",  {kViolet+2,    "0.35 GeV non-pair", true,     0.1469,        1000000}},
-    // {"10_muon_non_siblings/tta_mAlp-2GeV.root",    {kRed+3,       "2 GeV non-pair",   true,     0.1469,        980000}},
-    // {"12_muon_non_siblings/tta_mAlp-8GeV.root",    {kBlue+3,      "8 GeV non-pair",   true,     0.1448,        890000}},
-    // {"12_muon_non_siblings/tta_mAlp-10GeV.root",   {kBlue+2,      "10 GeV non-pair",  true,     3.046,        990000}},
   };
   
   map<string, tuple<bool, bool, bool, int, double, double, double, double, string, string>> hist_names = {
@@ -127,6 +101,7 @@ void plot_pt()
     }
   }
   
+  // Calculating total number of scaled background events to properly divide the fraction of events in stack
   if(!weighted){
     for(auto &[file_name_, params] : file_names){
       auto [color, title, line, signal, cross_sec, N_tot, BR] = params;
@@ -135,7 +110,6 @@ void plot_pt()
         file_name.erase(0,3);
 
         base_path = base_path_background;
-
         auto input_file = TFile::Open((base_path+file_name).c_str());
         
         for(auto &[hist_name, params] : hist_names){
@@ -154,37 +128,12 @@ void plot_pt()
     }
   }
   
-  // auto legend = new TLegend(0.14, 0.73, 0.65, 0.83);
-  auto legend = new TLegend(0.40, 0.64, 0.65, 0.88);
-  legend->SetNColumns(1);
-  legend->SetBorderSize(0);
-  legend->SetTextSize(0.050);
-  legend->SetTextFont(42);
-  legend->SetMargin(0.2);
-  // double x_max = 0.70;
-  double x_max = 0.35;
+  auto legend_sig = new TLegend(0.40, 0.64, 0.65, 0.88);
+  set_legend_layout(legend_sig);
+  legend_sig->SetMargin(0.2);
   auto legend_bkg = new TLegend(0.14, 0.76, 0.30, 0.88);
-  legend_bkg->SetNColumns(1);
-  legend_bkg->SetBorderSize(0);
-  legend_bkg->SetTextSize(0.050);
-  legend_bkg->SetTextFont(42);
+  set_legend_layout(legend_bkg);
   vector<string> in_legend;
-  TLatex text(0.53, 0.91, "L = 150 fb^{-1}, #sqrt{s} = 13 TeV");
-  text.SetNDC(kTRUE);
-  text.SetTextSize(0.050);
-  text.SetTextFont(42);
-
-  // TLatex selection_text(0.14, 0.63, "Selections: l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 10 GeV, m_{#mu#bar{#mu}}, R_{lxy} < 0.05");
-  // TLatex preselection_text(0.14, 0.63, "Selections: l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 5 GeV");
-  // TLatex selection_text(0.14, 0.68, "l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 10 GeV, m_{#mu#bar{#mu}}, R_{lxy} < 0.05");
-  TLatex selection_text(0.14, 0.68, "l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, m_{#mu#mu} #neq m_{J/#Psi},m_{#Psi}, R_{lxy} < 0.05");
-  TLatex preselection_text(0.15, 0.68, "l_{xy}^{#mu} > 200 #mum, |#eta^{#mu}| < 2.5, p_{T}^{#mu} > 5 GeV");
-  selection_text.SetNDC(kTRUE);
-  selection_text.SetTextSize(0.050);
-  selection_text.SetTextFont(42);
-  preselection_text.SetNDC(kTRUE);
-  preselection_text.SetTextSize(0.050);
-  preselection_text.SetTextFont(42);
 
   gStyle->SetStatStyle(0);
 
@@ -227,17 +176,21 @@ void plot_pt()
           if(signal) {
             hist->SetLineColor(color);
             hist->SetLineStyle(line);
-            float epsilon= 0.1;
-            add_epsilon_to_zero_bins(hist, epsilon);
-            stacks_signal[full_hist_name]->Add(hist);}
-          else {
+            vector<TH1D*> hists = break_into_smaller_histograms(hist, 0.1, false);
+            for(int i=0; i<hists.size(); i++) {
+              hists[i]->SetLineColor(color);
+              hists[i]->SetLineStyle(line);
+              hists[i]->SetLineWidth(2);
+              stacks_signal[full_hist_name]->Add(hists[i]);
+            }
+          } else {
             hist->SetLineColorAlpha(color, 0);
             hist->SetFillColorAlpha(color, 0.7);
             stacks_background[full_hist_name]->Add(hist);
           }
         
           if(find(in_legend.begin(), in_legend.end(), file_name) == in_legend.end()){
-            if(signal){legend->AddEntry(hist, title.c_str(), "l");}
+            if(signal){legend_sig->AddEntry(hist, title.c_str(), "l");}
             else {legend_bkg->AddEntry(hist, title.c_str(), "f");}
             in_legend.push_back(file_name);
           }
@@ -249,8 +202,7 @@ void plot_pt()
 
   // TODO: make this possible to run with only signal or only background
   cout << "Saving all plots in: " << output_path << endl;
-  // gROOT->SetBatch(kTRUE);
-  TH1F *ghost_hist;
+  gROOT->SetBatch(kTRUE);
   for(auto &[hist_name, params] : hist_names){
     for(auto prefix : prefixes){
       for (auto category : categories) {
@@ -269,39 +221,16 @@ void plot_pt()
         stacks_background[bkg_hist_name]->Draw();
         stacks_signal[full_hist_name]->Draw("nostack same");
 
-        set_hist_layout(stacks_background[bkg_hist_name], params);
+        set_hist_layout(stacks_background[bkg_hist_name], params, weighted);
 
         gPad->Modified();
         gPad->RedrawAxis();
-        // gStyle->SetLineWidth(2);
 
         if(logy) canvas->SetLogy();
         if(logx) canvas->SetLogx();
 
-        legend->Draw();
-        legend_bkg->Draw();
-        // legend_lines->Draw();
-        if(weighted) {text.Draw();}
-        TLatex latex;
-        latex.SetTextSize(0.050);
-        latex.SetTextFont(42);
-        latex.SetNDC(kTRUE);
-        double y = 0.84;
-        // latex.DrawLatex(x-0.2, y, "Selections: ");
-        if(prefix.substr(0,15) == "final_selection") {
-          // selection_text.Draw();
-          for(auto sel : selections){
-            latex.DrawLatex(0.68, y, sel);
-            y -= 0.06;
-          }
-        }
-        else {
-          preselection_text.Draw();
-          // for(auto sel : preselections){
-          //   latex.DrawLatex(0.7, y, sel);
-          //   y -= 0.05;
-          // }
-        }
+        double x_selection = 0.68;
+        draw_legends_and_text(nullptr, legend_bkg, selections, prefix, x_selection, weighted, false);
 
         canvas->Update();
         
@@ -309,10 +238,6 @@ void plot_pt()
         canvas->SaveAs(file_name.c_str());
 
         delete canvas;
-        if(hist_name == "dimuon_mass" || hist_name == "dimuon_mass_log")
-        {
-          delete ghost_hist;
-        }
       }
     }
   }
