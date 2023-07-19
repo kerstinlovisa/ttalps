@@ -88,8 +88,8 @@ def get_datacard_for_signal(expected):
     data_card = init_datacard()
     
     for i_bin in range(len(expected)):
-        data_card.bins.append(f"bin{i_bin+1}")
-        data_card.obs[f"bin{i_bin+1}"] = 0.0
+        data_card.bins.append(f"bin{i_bin+1}")  
+        data_card.obs[f"bin{i_bin+1}"] = expected[i_bin]["ttj"] + expected[i_bin]["ttmumu"]
         data_card.exp[f"bin{i_bin+1}"] = expected[i_bin]
     
     data_card.processes = ['tta', 'ttj', 'ttmumu']
@@ -118,11 +118,13 @@ def save_datacard(processes, mass):
     
     n_bins = 0
     
+    
+    
     for name, (input_file_name, _, _) in processes.items():
         files[name] = TFile.Open(input_file_name)
         
         hist_name = params.signal_hist_name if name == "tta" else params.background_hist_name
-        print(f"Loading histogram: {hist_name}")
+        print(f"Loading histogram: {hist_name} from file: {input_file_name}")
         
         hists[name] = files[name].Get(hist_name)
 
@@ -134,6 +136,7 @@ def save_datacard(processes, mass):
     expected = []
     
     n_signal_events = 0
+    n_signal_bin_content = 0
     
     for i_bin in range(n_bins):
         bin_dict = {}
@@ -157,11 +160,15 @@ def save_datacard(processes, mass):
             bin_dict["ttmumu"] = zero_background_value
 
         n_signal_events += bin_dict["tta"]
+        n_signal_bin_content += hists["tta"].GetBinContent(i_bin + 1)
         
         expected.append(bin_dict)
         print(f"Adding bin: {expected[-1]})")
     
     print(f"Total number of signal events: {n_signal_events}")
+    print(f"Raw total number of signal events: {n_signal_bin_content}")
+    
+    print(f"{bin_dict=}")
     
     data_card = get_datacard_for_signal(expected)
     
@@ -185,6 +192,7 @@ def get_limits_for_signal(signal, mass):
     save_datacard(processes, mass)
     
     print("\n\nRunning combine\n\n")
+    print(f"combine {params.tmp_combine_file_name} -M AsymptoticLimits > {params.tmp_output_file_name}")
     os.system(f"combine {params.tmp_combine_file_name} -M AsymptoticLimits > {params.tmp_output_file_name}")
     
     print("\n\nReading limits from combine output\n\n")

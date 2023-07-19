@@ -15,12 +15,12 @@ username = "jniedzie"
 if username == "jniedzie":
     python_path = "/afs/desy.de/user/j/jniedzie/miniconda3/envs/tta/bin/python3"
     mg_path = "/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/bin/mg5_aMC"
-    hepmc_path = "/afs/desy.de/user/j/jniedzie/ttalps/ttalps/external_tools/hepmc2root/hepmc2root"
+    hepmc_path = "/afs/desy.de/user/j/jniedzie/ttalps/ttalps/general_tools/hepmc2root/hepmc2root"
     pythia_path = "/afs/desy.de/user/j/jniedzie/MG5_aMC_v3_4_2/HEPTools/pythia8/share/Pythia8/xmldoc"
 elif username == "lrygaard":
     python_path = "/afs/desy.de/user/l/lrygaard/tools/miniconda3/envs/tta/bin/python3"
     mg_path = "/afs/desy.de/user/l/lrygaard/tools/MG5_aMC_v3_4_2/bin/mg5_aMC"
-    hepmc_path = "/afs/desy.de/user/l/lrygaard/ALPpheno/ttalps/external_tools/hepmc2root/hepmc2root"
+    hepmc_path = "/afs/desy.de/user/l/lrygaard/ALPpheno/ttalps/general_tools/hepmc2root/hepmc2root"
     pythia_path = "/afs/desy.de/user/l/lrygaard/tools/MG5_aMC_v3_4_2/HEPTools/pythia8/share/Pythia8/xmldoc"
 else:
     print("Error: unrecognized username")
@@ -92,7 +92,7 @@ def run_command(config_path, output_path, file_name):
     remove_existing_files(output_path, file_name)
     run_madgraph(config_path)
     convert_hepmc_to_root(output_path, file_name)
-    move_and_cleanup_files(output_path, file_name)
+    # move_and_cleanup_files(output_path, file_name)
     
     
 def create_paths(paths):
