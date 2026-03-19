@@ -124,7 +124,7 @@ void HistogramFiller::fill_deltaR_deltal_selections(const Particle* particle_1,
   float delta_lxy_ratio_abs = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))/sqrt(pow(abs(x1) + abs(x2), 2) + pow(abs(y1) + abs(y2), 2));
 
   const Particle* particle_minpt;
-  if(particle_1->pt() < particle_1->pt()) {particle_minpt = particle_1;}
+  if(particle_1->pt() < particle_2->pt()) {particle_minpt = particle_1;}
   else {particle_minpt = particle_2;}
 
   if(delta_lxy <= 0.3){
@@ -171,7 +171,7 @@ void HistogramFiller::fill_hists(const Particle* particle_1, const Particle* par
     particle_maxlxy = particle_2;
     particle_minlxy = particle_1;
   }
-  if(particle_1->pt() < particle_1->pt()) {particle_minpt = particle_1;}
+  if(particle_1->pt() < particle_2->pt()) {particle_minpt = particle_1;}
   else {particle_minpt = particle_2;}
     
   histSets[sign+"_maxlxy-muon"]->fill(particle_maxlxy, event);
@@ -230,7 +230,7 @@ void HistogramFiller::fill_final_selection_hists(const Particle* particle_1, con
     particle_maxlxy = particle_2;
     particle_minlxy = particle_1;
   }
-  if(particle_1->pt() < particle_1->pt()) {particle_minpt = particle_1;}
+  if(particle_1->pt() < particle_2->pt()) {particle_minpt = particle_1;}
   else {particle_minpt = particle_2;}
 
   TLorentzVector diparticle = particle_1->four_vector + particle_2->four_vector;
@@ -270,7 +270,7 @@ void HistogramFiller::fill_alp_in_preselection_hists(const Particle* particle_1,
     particle_maxlxy = particle_2;
     particle_minlxy = particle_1;
   }
-  if(particle_1->pt() < particle_1->pt()) {particle_minpt = particle_1;}
+  if(particle_1->pt() < particle_2->pt()) {particle_minpt = particle_1;}
   else {particle_minpt = particle_2;}
     
   histSets["alp_"+sign+"_maxlxy-muon"]->fill(particle_maxlxy);
