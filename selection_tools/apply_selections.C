@@ -98,6 +98,16 @@ int main(int argc, char *argv[])
     if(!event->has_ttbar_pair()) continue;
     cut_flow["1_tt_pair"]++;
     
+    // check n_muons >= 2
+    if(event->get_n_muons() >= 2){
+    cut_flow["2_n_muons_ge_2"]++;
+    } else continue;
+
+    // check n_non_top_muons >= 2
+    if(event->get_n_non_top_muons() >= 2){
+    cut_flow["3_n_non_top_muons_ge_2"]++;
+    } else continue;
+    
     // check if has opposite-sign muon siblings
     int preselection_code = event->passes_preselection();
     
