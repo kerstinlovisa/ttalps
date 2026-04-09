@@ -10,7 +10,7 @@ GetEnv                = True
 output                = output/$(ClusterId).$(ProcId).out
 error                 = error/$(ClusterId).$(ProcId).err
 log                   = log/$(ClusterId).log
-requirements 	      = (OpSysAndVer =?= "CentOS7")
+requirements 	      = (OpSysAndVer =?= "RedHat9")
 Request_Memory	      = 8GB
 +JobFlavour           = "espresso"
 
