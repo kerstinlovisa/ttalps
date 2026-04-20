@@ -26,9 +26,11 @@ def get_base_background_path(sample):
     if sample == "default_non-prompt-selection":
         return "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds_non-prompt-selection/hists/"
     elif sample == "default_new-dimuon-mass-cuts":
-        return "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds_new-dimuon-mass-cuts/hists/"
+        # return "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds_new-dimuon-mass-cuts/hists/"
+        return "/nfs/dust/cms/user/jalimena/ttalps/ttalps_backup_default_July23/backgrounds_new-dimuon-mass-cuts/hists/"    
     
-    return "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds_new-dimuon-mass-cuts/hists/"
+    # return "/nfs/dust/cms/user/lrygaard/ttalps/backgrounds_new-dimuon-mass-cuts/hists/"
+    return "/nfs/dust/cms/user/jalimena/ttalps/ttalps_backup_default_July23/backgrounds_new-dimuon-mass-cuts/hists/"
 
 
 def get_base_path(sample):
@@ -43,7 +45,8 @@ def get_base_path(sample):
     elif sample == "default_ptAlp-ge5GeV":
         return "/nfs/dust/cms/user/lrygaard/ttalps/signals_default_ptAlp-ge5GeV/hists/"
     
-    return f"/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-{sample}/hists/"
+    # return f"/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-{sample}/hists/"
+    return f"/nfs/dust/cms/user/lrygaard/ttalps/signals_ctau-{sample}_rerun/hists/"
 
 
 cuts = "pt-min10p0GeV_mass-cuts_deltalxy_ratio_abs-max0p05"
@@ -74,7 +77,7 @@ signals = {
         "tta_mAlp-2p5GeV":  (2.5,   ("tta_mAlp-2p5GeV.root",    1000000.0,  1e-3)),
         "tta_mAlp-2p75GeV": (2.75,  ("tta_mAlp-2p75GeV.root",   990000.0,   1e-3)),
         "tta_mAlp-3GeV":    (3.0,   ("tta_mAlp-3GeV.root",      1000000.0,  1e-3)),
-        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      1000000.0,  1e-3)),
+        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      1000000.0,  1e0)),
         "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      990000.0,   1e-3)),
         "tta_mAlp-8p25GeV": (8.25,  ("tta_mAlp-8p25GeV.root",   1000000.0,  1e-3)),
         "tta_mAlp-8p5GeV":  (8.5,   ("tta_mAlp-8p5GeV.root",    1000000.0,  1e3)),
@@ -91,18 +94,18 @@ signals = {
         "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      1000000.0,  1e-3)),
         "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      990000.0,   1e-3)),
         "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      980000.0,   1e-3)),
-        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     990000.0,   1e-3)),
+        "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     990000.0,   1e-1)),
     },
     "1e1": {
         #                   mass    file                        n_gen       ref. x_sec (pb)
-        "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    990000.0,   1e-3)),
-        "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   990000.0,   1e-3)),
-        "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    990000.0,   1e-3)),
-        "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    1000000.0,  1e-3)),
-        "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   1000000.0,  1e-3)),
-        "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      1000000.0,  1e-3)),
-        "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      1000000.0,  1e-3)),
-        "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      990000.0,   1e-3)),
+        # "tta_mAlp-0p3GeV":  (0.3,   ("tta_mAlp-0p3GeV.root",    990000.0,   1e-3)),
+        # "tta_mAlp-0p35GeV": (0.35,  ("tta_mAlp-0p35GeV.root",   990000.0,   1e-3)),
+        # "tta_mAlp-0p5GeV":  (0.5,   ("tta_mAlp-0p5GeV.root",    990000.0,   1e-3)),
+        # "tta_mAlp-0p9GeV":  (0.9,   ("tta_mAlp-0p9GeV.root",    1000000.0,  1e-3)),
+        # "tta_mAlp-1p25GeV": (1.25,  ("tta_mAlp-1p25GeV.root",   1000000.0,  1e-3)),
+        # "tta_mAlp-2GeV":    (2.0,   ("tta_mAlp-2GeV.root",      1000000.0,  1e-3)),
+        # "tta_mAlp-4GeV":    (4.0,   ("tta_mAlp-4GeV.root",      1000000.0,  1e-3)),
+        # "tta_mAlp-8GeV":    (8.0,   ("tta_mAlp-8GeV.root",      990000.0,   1e-3)),
         "tta_mAlp-10GeV":   (10,    ("tta_mAlp-10GeV.root",     990000.0,   1e-3)),
     },
     "5e3": {
